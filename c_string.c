@@ -1,6 +1,5 @@
 #include "c_string.h"
 #include <stdio.h>
-#include <string.h>
 
 // helping functions
 
@@ -40,13 +39,24 @@ int c_strlen(const char s[]) {
   return chars;
 }
 
-int c_strcpy(char to[], const char from[]) {
+void c_strcpy(char to[], const char from[]) {
 
   int i = 0;
   while ((to[i] = from[i]) != '\0')
     ++i;
+}
 
-  return 0;
+void c_strcat(char to[], char from[]) {
+
+  int start_insert_from = c_strlen(to) + 1;
+
+  int i = start_insert_from;
+  int result_string_size = c_strlen(to) + c_strlen(from) + 1;
+  for (int j = 0; i < result_string_size; ++i) {
+    to[i] = from[j++];
+  }
+
+  to[i] = '\0';
 }
 
 int c_to_lower(char s[]) {
@@ -184,16 +194,7 @@ int c_remove_numbers(char s[]) {
   return num_digits_removed;
 }
 
-int c_count_words(char s[]) {
-
-  const int copy_size = c_strlen(s) + 1;
-  int num_of_words = 0;
-
-  // Dynamic size?
-  char arr[copy_size][copy_size];
-
-  return num_of_words;
-}
+// int c_count_words(char s[]) { return 0; }
 
 int c_is_string_of_digits(char s[]) {
   int is_all_digits = 1;
@@ -259,7 +260,67 @@ int c_is_palindrom(char s[]) {
   return 1;
 }
 
-char c_first_unique_symbol(char s[]) { return 0; }
+int c_first_unique_symbol(char s[]) {
+
+  const int end_symbol = c_strlen(s) - 2;
+
+  for (int i = 0; i <= end_symbol; ++i) {
+    int j = i + 1;
+    int find_duplicate = 0;
+
+    for (; s[j] != '\0'; ++j) {
+      if (s[j] == s[i]) {
+        find_duplicate = 1;
+        break;
+      }
+    }
+    if (!find_duplicate) {
+      return s[i];
+    }
+  }
+
+  return -1;
+}
+
+int c_is_digit(char c) { return (c >= '0' && c <= '9') ? 1 : 0; }
+
+int c_is_symbol(char c) { return (!c_is_digit(c)) ? 1 : 0; }
+
+int c_is_space(char c) { return (c == ' ') ? 1 : 0; }
+
+int c_is_tab(char c) { return (c == '\t') ? 1 : 0; }
+
+void c_trim(char s[]) {
+
+  const int copy_size = c_strlen(s) + 1;
+  char trimmed_copy[copy_size];
+
+  int i = 0;
+  int j = c_strlen(s) - 1;
+
+  while (c_is_space(s[i]) || c_is_tab(s[i])) {
+    ++i;
+  }
+
+  while (c_is_space(s[j]) || c_is_tab(s[j])) {
+    --j;
+  }
+
+  int k = 0;
+
+  for (; i < j; ++i) {
+    trimmed_copy[k++] = s[i];
+  }
+
+  trimmed_copy[k] = '\0';
+
+  int l = 0;
+  for (; trimmed_copy[l] != '\0'; ++l) {
+    s[l] = trimmed_copy[l];
+  }
+
+  s[l] = '\0';
+}
 
 /////////////////////////////
 
@@ -307,13 +368,4 @@ void correct_string(char s[], int length) {
     s[k] = cp_s[k];
   }
   s[j] = '\0';
-}
-
-int main(void) {
-  char s[] = "       .";
-  char d[] = "tat";
-
-  printf("%c\n", c_first_unique_symbol(d));
-
-  return 0;
 }
