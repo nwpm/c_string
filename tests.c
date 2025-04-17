@@ -41,6 +41,35 @@ void test_c_count_symbols(char s[], int res) {
   printf("string : \"%s\" has %d symbols : c_count_symbols passed\n", s, res);
 }
 
+void test_c_remove_digits(char s[], int res_num, char res_s[]) {
+  assert(c_remove_digits(s) == res_num);
+  assert(strcmp(s, res_s) == 0);
+  printf("string : \"%s\", remove %d numbers : c_remove_numbers passed\n", s,
+         res_num);
+}
+
+void test_c_is_string_of_digits(char s[], int res) {
+  assert(c_is_string_of_digits(s) == res);
+  printf("string : \"%s\" : c_is_string_of_digits passed\n", s);
+}
+
+void test_c_delete_duplicates(char s[], char s_res[]) {
+  c_delete_duplicates(s);
+  assert(strcmp(s, s_res) == 0);
+  printf("string : \"%s\" : c_delete_duplicates passed\n", s);
+}
+
+void test_c_strcat(char s[], char s_add[], char res[]) {
+  c_strcat(s, s_add);
+  assert(strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_strcpy passed\n", s);
+}
+
+void test_c_is_palindrome(char s[], int res) {
+  assert(c_is_palindrom(s) == res);
+  printf("string : \"%s\" : c_is_palindrom passed\n", s);
+}
+
 void all_tests_c_strlen() {
   test_c_strlen("");
   test_c_strlen("Hello World");
@@ -146,6 +175,90 @@ void all_tests_c_count_symbols() {
   test_c_count_symbols(s5, 7);
 }
 
+void all_tests_c_remove_digits() {
+  char s1[] = "12345";
+  test_c_remove_digits(s1, 5, "");
+
+  char s2[] = "abc";
+  test_c_remove_digits(s2, 0, "abc");
+
+  char s3[] = "abc123";
+  test_c_remove_digits(s3, 3, "abc");
+
+  char s4[] = "#####";
+  test_c_remove_digits(s4, 0, "#####");
+}
+
+void all_tests_c_is_string_of_digits() {
+  char s1[] = "12345";
+  test_c_is_string_of_digits(s1, 1);
+
+  char s2[] = "abc";
+  test_c_is_string_of_digits(s2, 0);
+
+  char s3[] = "";
+  test_c_is_string_of_digits(s3, 0);
+
+  char s5[] = "abc123";
+  test_c_is_string_of_digits(s5, 0);
+
+  char s6[] = "123a";
+  test_c_is_string_of_digits(s6, 0);
+}
+
+void all_test_c_delete_duplicates() {
+  char s1[] = "abc";
+  test_c_delete_duplicates(s1, "abc");
+
+  char s2[] = "";
+  test_c_delete_duplicates(s2, "");
+
+  char s3[] = "123";
+  test_c_delete_duplicates(s3, "123");
+
+  char s4[] = "aabc";
+  test_c_delete_duplicates(s4, "abc");
+
+  char s5[] = "\t\t";
+  test_c_delete_duplicates(s5, "\t");
+
+  // ???
+  // char s6[] = "   ";
+  // test_c_delete_duplicates(s6, " ");
+}
+
+void all_tests_c_strcat() {
+  char s1[] = "abc";
+  char s_add1[] = "abc";
+  test_c_strcat(s1, s_add1, "abcabc");
+
+  char s2[] = "abc";
+  char s_add2[] = "";
+  test_c_strcat(s2, s_add2, "abc");
+
+  char s3[] = "";
+  char s_add3[] = "abc";
+  test_c_strcat(s3, s_add3, "abc");
+
+  char s4[] = "abc";
+  char s_add4[] = "1";
+  test_c_strcat(s4, s_add4, "abc1");
+}
+
+void all_tests_c_is_palindrom() {
+  char s1[] = "abc";
+  test_c_is_palindrome(s1, 0);
+
+  char s2[] = "";
+  test_c_is_palindrome(s2, 0);
+
+  char s3[] = "tat";
+  test_c_is_palindrome(s3, 1);
+
+  char s4[] = "a";
+  test_c_is_palindrome(s4, 1);
+}
+
 int main(void) {
   printf("\nc_strlen tests started!\n");
   all_tests_c_strlen();
@@ -164,6 +277,21 @@ int main(void) {
 
   printf("\nc_count_symbols tests started!\n");
   all_tests_c_count_symbols();
+
+  printf("\nc_remove_digits tests started!\n");
+  all_tests_c_remove_digits();
+
+  printf("\nc_is_string_of_digits tests started!\n");
+  all_tests_c_is_string_of_digits();
+
+  printf("\nc_delete_duplicates tests started!\n");
+  all_test_c_delete_duplicates();
+
+  printf("\nc_strcat tests started!\n");
+  all_tests_c_strcat();
+
+  printf("\nc_is_palindrome tests started!\n");
+  all_tests_c_is_palindrom();
 
   printf("\nAll tests passed!\n");
   return 0;
