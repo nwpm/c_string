@@ -22,13 +22,14 @@ void _c_get_words_array(char **arr, char s[]); // !
 
 // 14
 int c_strlen(const char s[]);
-void c_strcpy(char to[], const char from[]);
 int c_strcmp(const char first[], const char second[]);
-
-int c_to_lower(char s[]);
-int c_to_upper(char s[]);
 int c_count_symbols(const char s[]);
 int c_remove_numbers(char s[]);
+
+void c_strcpy(char to[], const char from[]); //!
+void c_to_lower(char s[]);
+void c_to_upper(char s[]);
+
 // int c_count_words(char s[]); // !
 int c_is_string_of_digits(char s[]);
 int c_delete_duplicates(char s[]);

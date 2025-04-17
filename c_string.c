@@ -59,14 +59,12 @@ void c_strcat(char to[], char from[]) {
   to[i] = '\0';
 }
 
-int c_to_lower(char s[]) {
+void c_to_lower(char s[]) {
   _c_change_letter_size(s, upper_start, upper_end, PLUS);
-  return 0;
 }
 
-int c_to_upper(char s[]) {
+void c_to_upper(char s[]) {
   _c_change_letter_size(s, lower_start, lower_end, MINUS);
-  return 0;
 }
 
 int c_strcmp(const char first[], const char second[]) {
@@ -110,13 +108,13 @@ void c_delete_spaces(char s[]) {
 
 int c_count_symbols(const char s[]) {
 
-  const int symbols_start = 33;
-  const int symbols_end = 126;
+  const int ascii_symbols_start = 33;
+  const int ascii_symbols_end = 126;
 
   int result = 0;
 
   for (int i = 0; s[i] != '\0'; ++i) {
-    if ((s[i] >= symbols_start) && (s[i] <= symbols_end)) {
+    if ((s[i] >= ascii_symbols_start) && (s[i] <= ascii_symbols_end)) {
       ++result;
     }
   }
