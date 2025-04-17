@@ -48,10 +48,10 @@ void c_strcpy(char to[], const char from[]) {
 
 void c_strcat(char to[], char from[]) {
 
-  int start_insert_from = c_strlen(to) + 1;
+  int start_insert_from = c_strlen(to);
 
   int i = start_insert_from;
-  int result_string_size = c_strlen(to) + c_strlen(from) + 1;
+  int result_string_size = start_insert_from + c_strlen(from);
   for (int j = 0; i < result_string_size; ++i) {
     to[i] = from[j++];
   }
@@ -163,7 +163,7 @@ void c_change_symbol_to(char s[], char remove_char, char add_char) {
   }
 }
 
-int c_remove_numbers(char s[]) {
+int c_remove_digits(char s[]) {
 
   int j = 0;
   int num_digits_removed = 0;
@@ -194,7 +194,14 @@ int c_remove_numbers(char s[]) {
 
 // int c_count_words(char s[]) { return 0; }
 
+int c_is_empty_string(char s[]) { return !c_strcmp(s, ""); }
+
 int c_is_string_of_digits(char s[]) {
+
+  if (c_is_empty_string(s)) {
+    return 0;
+  }
+
   int is_all_digits = 1;
   for (int i = 0; s[i] != '\0'; ++i) {
     if (!((s[i] >= '0') && (s[i] <= '9'))) {
@@ -244,6 +251,11 @@ int c_delete_duplicates(char s[]) {
 }
 
 int c_is_palindrom(char s[]) {
+
+  if (c_is_empty_string(s)) {
+    return 0;
+  }
+
   const int copy_size = c_strlen(s) + 1;
   char copy_string[copy_size];
 
