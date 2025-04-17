@@ -24,6 +24,23 @@ void test_c_strcmp(const char first[], const char second[]) {
   printf("string1 : \"%s\" string2 \"%s\" : c_strcmp passed\n", first, second);
 }
 
+void test_c_to_lower(char s1[], char s2[]) {
+  c_to_lower(s1);
+  assert(strcmp(s1, s2) == 0);
+  printf("string \"%s\" : c_to_lower passed\n", s1);
+}
+
+void test_c_to_upper(char s1[], char s2[]) {
+  c_to_upper(s1);
+  assert(strcmp(s1, s2) == 0);
+  printf("string \"%s\" : c_to_upper passed\n", s1);
+}
+
+void test_c_count_symbols(char s[], int res) {
+  assert(c_count_symbols(s) == res);
+  printf("string : \"%s\" has %d symbols : c_count_symbols passed\n", s, res);
+}
+
 void all_tests_c_strlen() {
   test_c_strlen("");
   test_c_strlen("Hello World");
@@ -72,6 +89,63 @@ void all_tests_c_strcmp() {
   test_c_strcmp("abc\0def", "abc");
 }
 
+void all_tests_c_to_lower() {
+  char s1[] = "ABC";
+  test_c_to_lower(s1, "abc");
+
+  char s2[] = "AbC";
+  test_c_to_lower(s2, "abc");
+
+  char s3[] = "abc";
+  test_c_to_lower(s3, "abc");
+
+  char s4[] = "+1 Abc";
+  test_c_to_lower(s4, "+1 abc");
+
+  char s5[] = "";
+  test_c_to_lower(s5, "");
+
+  char s6[] = "@";
+  test_c_to_lower(s6, "@");
+}
+
+void all_tests_c_to_upper() {
+  char s1[] = "ABC";
+  test_c_to_upper(s1, "ABC");
+
+  char s2[] = "AbC";
+  test_c_to_upper(s2, "ABC");
+
+  char s3[] = "abc";
+  test_c_to_upper(s3, "ABC");
+
+  char s4[] = "+1 Abc";
+  test_c_to_upper(s4, "+1 ABC");
+
+  char s5[] = "";
+  test_c_to_upper(s5, "");
+
+  char s6[] = "@";
+  test_c_to_upper(s6, "@");
+}
+
+void all_tests_c_count_symbols() {
+  char s1[] = "abc";
+  test_c_count_symbols(s1, 3);
+
+  char s2[] = "";
+  test_c_count_symbols(s2, 0);
+
+  char s3[] = "abc123";
+  test_c_count_symbols(s3, 6);
+
+  char s4[] = "abc  def";
+  test_c_count_symbols(s4, 6);
+
+  char s5[] = "\tabc  #// !";
+  test_c_count_symbols(s5, 7);
+}
+
 int main(void) {
   printf("\nc_strlen tests started!\n");
   all_tests_c_strlen();
@@ -81,6 +155,15 @@ int main(void) {
 
   printf("\nc_strcmp tests started!\n");
   all_tests_c_strcmp();
+
+  printf("\nc_to_lower tests started!\n");
+  all_tests_c_to_lower();
+
+  printf("\nc_to_upper tests started!\n");
+  all_tests_c_to_upper();
+
+  printf("\nc_count_symbols tests started!\n");
+  all_tests_c_count_symbols();
 
   printf("\nAll tests passed!\n");
   return 0;
