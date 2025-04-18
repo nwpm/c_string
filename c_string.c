@@ -1,6 +1,4 @@
 #include "c_string.h"
-#include <stdio.h>
-
 // helping functions
 
 void _c_change_letter_size(char s[], int bottom_border, int upper_border,
@@ -8,10 +6,10 @@ void _c_change_letter_size(char s[], int bottom_border, int upper_border,
   for (int i = 0; s[i] != '\0'; ++i) {
     if (((s[i] >= bottom_border) && (s[i] <= upper_border)) &&
         (operation == PLUS)) {
-      s[i] += difference_letters_size;
+      s[i] += DIFFERENCE_LETTERS_SIZE;
     } else if (((s[i] >= bottom_border) && (s[i] <= upper_border)) &&
                (operation == MINUS)) {
-      s[i] -= difference_letters_size;
+      s[i] -= DIFFERENCE_LETTERS_SIZE;
     }
   }
 }
@@ -60,11 +58,11 @@ void c_strcat(char to[], char from[]) {
 }
 
 void c_to_lower(char s[]) {
-  _c_change_letter_size(s, upper_start, upper_end, PLUS);
+  _c_change_letter_size(s, UPPER_LETTER_START, UPPER_LETTER_END, PLUS);
 }
 
 void c_to_upper(char s[]) {
-  _c_change_letter_size(s, lower_start, lower_end, MINUS);
+  _c_change_letter_size(s, LOWER_LETTER_START, LOWER_LETTER_END, MINUS);
 }
 
 int c_strcmp(const char first[], const char second[]) {
@@ -85,10 +83,10 @@ int c_strcmp(const char first[], const char second[]) {
 void c_invert_symbols(char s[]) {
 
   for (int i = 0; s[i] != '\0'; ++i) {
-    if ((s[i] >= upper_start) && (s[i] <= upper_end)) {
-      s[i] += difference_letters_size;
-    } else if ((s[i] >= lower_start) && (s[i] <= lower_end)) {
-      s[i] -= difference_letters_size;
+    if ((s[i] >= UPPER_LETTER_START) && (s[i] <= UPPER_LETTER_END)) {
+      s[i] += DIFFERENCE_LETTERS_SIZE;
+    } else if ((s[i] >= LOWER_LETTER_START) && (s[i] <= LOWER_LETTER_END)) {
+      s[i] -= DIFFERENCE_LETTERS_SIZE;
     }
   }
 }
@@ -192,9 +190,57 @@ int c_remove_digits(char s[]) {
   return num_digits_removed;
 }
 
-// int c_count_words(char s[]) { return 0; }
+int c_count_words(char s[]) {
 
-int c_is_empty_string(char s[]) { return !c_strcmp(s, ""); }
+  // TODO Make dynamic array_of_words
+  const int length_string = c_strlen(s);
+  char array_of_words[length_string][length_string];
+
+  /*
+   * 1) Create array for all words in string
+   * 2) Make 2 index for current word and char in these word
+   * 3) Iterate string and add char in separate words
+   * 4) Add '\0' in the end
+   * 5) Count all words in for
+   *
+   */
+
+  int is_word = FALSE;
+  int words_index = 0;
+  int char_index = 0;
+  int result = 0;
+
+  int i = 0;
+
+  for (; s[i] != '\0'; ++i) {
+    if (!c_is_letter(s[i]) && is_word) {
+      is_word = FALSE;
+      array_of_words[words_index][char_index] = '\0';
+      words_index++;
+      char_index = 0;
+    } else if (c_is_letter(s[i]) && !is_word) {
+      is_word = TRUE;
+      array_of_words[words_index][char_index++] = s[i];
+    } else if (c_is_letter(s[i]) && is_word) {
+      array_of_words[words_index][char_index++] = s[i];
+    }
+  }
+
+  if (is_word) {
+    array_of_words[words_index][char_index] = '\0';
+    array_of_words[words_index + 1][0] = '\0';
+  } else {
+    array_of_words[words_index][0] = '\0';
+  }
+
+  for (int i = 0; array_of_words[i][0] != '\0'; ++i) {
+    result++;
+  }
+
+  return result;
+}
+
+int c_is_empty_string(const char s[]) { return !c_strcmp(s, ""); }
 
 int c_is_string_of_digits(char s[]) {
 
@@ -253,7 +299,7 @@ int c_delete_duplicates(char s[]) {
 int c_is_palindrom(char s[]) {
 
   if (c_is_empty_string(s)) {
-    return 0;
+    return FALSE;
   }
 
   const int copy_size = c_strlen(s) + 1;
@@ -264,10 +310,10 @@ int c_is_palindrom(char s[]) {
 
   for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] != copy_string[i]) {
-      return 0;
+      return FALSE;
     }
   }
-  return 1;
+  return TRUE;
 }
 
 int c_first_unique_symbol(char s[]) {
@@ -292,13 +338,20 @@ int c_first_unique_symbol(char s[]) {
   return -1;
 }
 
-int c_is_digit(char c) { return (c >= '0' && c <= '9') ? 1 : 0; }
+int c_is_digit(const char c) { return (c >= '0' && c <= '9') ? TRUE : FALSE; }
 
-int c_is_symbol(char c) { return (!c_is_digit(c)) ? 1 : 0; }
+int c_is_symbol(const char c) { return (c >= '!' && c <= '~') ? TRUE : FALSE; }
 
-int c_is_space(char c) { return (c == ' ') ? 1 : 0; }
+int c_is_space(const char c) { return (c == ' ') ? TRUE : FALSE; }
 
-int c_is_tab(char c) { return (c == '\t') ? 1 : 0; }
+int c_is_tab(const char c) { return (c == '\t') ? TRUE : FALSE; }
+
+int c_is_letter(const char c) {
+  return ((c >= LOWER_LETTER_START && c <= LOWER_LETTER_END) ||
+          (c >= UPPER_LETTER_START && c <= UPPER_LETTER_END))
+             ? TRUE
+             : FALSE;
+}
 
 void c_trim(char s[]) {
 
@@ -330,52 +383,4 @@ void c_trim(char s[]) {
   }
 
   s[l] = '\0';
-}
-
-/////////////////////////////
-
-int get_line(char s[], int s_length) {
-  int c = 0;
-  int i;
-
-  for (i = 0; (i < (s_length - 1)) && ((c = getchar()) != EOF) && (c != '\n');
-       ++i) {
-    s[i] = c;
-  }
-  s[i] = '\0';
-  return i;
-}
-
-void correct_string(char s[], int length) {
-
-  char cp_s[length];
-
-  int i = 0;
-  int j = 0;
-
-  int start_space = 0;
-
-  while (s[i] != '\0') {
-    if (start_space && ((s[i] == ' ') || (s[i] == '\t'))) {
-      ;
-    } else if (s[i] == '\t') {
-      start_space = 1;
-      cp_s[j] = ' ';
-      ++j;
-    } else if (s[i] == ' ') {
-      start_space = 1;
-      cp_s[j] = ' ';
-      ++j;
-    } else {
-      start_space = 0;
-      cp_s[j] = s[i];
-      ++j;
-    }
-    ++i;
-  }
-
-  for (int k = 0; k < j; ++k) {
-    s[k] = cp_s[k];
-  }
-  s[j] = '\0';
 }
