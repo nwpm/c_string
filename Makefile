@@ -2,7 +2,8 @@ TARGET = tests
 OBJS = c_string.o tests.o
 
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
+DCFLAGS = -g -O0 -Wall -Wextra -std=c99
+CFLAGS = -Wall -Wextra -std=c99 
 
 all : $(TARGET)
 
@@ -10,7 +11,7 @@ $(TARGET) : $(OBJS)
 	$(CC) $(OBJS) -o $(TARGET)
 
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(DCFLAGS) -c $< -o $@
 
 clean:
 	rm -f *.o $(TARGET)
