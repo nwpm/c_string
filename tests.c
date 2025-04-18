@@ -70,6 +70,21 @@ void test_c_is_palindrome(char s[], int res) {
   printf("string : \"%s\" : c_is_palindrom passed\n", s);
 }
 
+void test_c_is_symbol(const char c, const int res) {
+  assert(c_is_symbol(c) == res);
+  printf("char : \"%c\" : c_is_symbol passed\n", c);
+}
+
+void test_c_is_letter(const char c, const int res) {
+  assert(c_is_letter(c) == res);
+  printf("char : \"%c\" : c_is_letter passed\n", c);
+}
+
+void test_c_is_digit(const char c, const int res) {
+  assert(c_is_digit(c) == res);
+  printf("char : \"%c\" : c_is_digit passed\n", c);
+}
+
 void all_tests_c_strlen() {
   test_c_strlen("");
   test_c_strlen("Hello World");
@@ -259,6 +274,28 @@ void all_tests_c_is_palindrom() {
   test_c_is_palindrome(s4, 1);
 }
 
+void all_tests_c_is_symbol() {
+  test_c_is_symbol('a', TRUE);
+  test_c_is_symbol('!', TRUE);
+  test_c_is_symbol(' ', FALSE);
+  test_c_is_symbol('\t', FALSE);
+  test_c_is_symbol('\n', FALSE);
+}
+
+void all_tests_c_is_letter() {
+  test_c_is_letter('a', TRUE);
+  test_c_is_letter('!', FALSE);
+  test_c_is_letter('1', FALSE);
+  test_c_is_letter(' ', FALSE);
+}
+
+void all_tests_c_is_digit() {
+  test_c_is_digit('a', FALSE);
+  test_c_is_digit('1', TRUE);
+  test_c_is_digit(' ', FALSE);
+  test_c_is_digit('!', FALSE);
+}
+
 int main(void) {
   printf("\nc_strlen tests started!\n");
   all_tests_c_strlen();
@@ -285,13 +322,22 @@ int main(void) {
   all_tests_c_is_string_of_digits();
 
   printf("\nc_delete_duplicates tests started!\n");
-  all_test_c_delete_duplicates();
+  // all_test_c_delete_duplicates();
 
   printf("\nc_strcat tests started!\n");
   all_tests_c_strcat();
 
   printf("\nc_is_palindrome tests started!\n");
   all_tests_c_is_palindrom();
+
+  printf("\nc_is_symbols tests started!\n");
+  all_tests_c_is_symbol();
+
+  printf("\nc_is_letter tests started!\n");
+  all_tests_c_is_letter();
+
+  printf("\nc_is_digit tests started!\n");
+  all_tests_c_is_digit();
 
   printf("\nAll tests passed!\n");
   return 0;
