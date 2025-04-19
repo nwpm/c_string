@@ -120,6 +120,75 @@ int c_count_symbols(const char s[]) {
   return result;
 }
 
+// TODO
+void c_entab(char s[], const int space_for_tab) {
+  int is_space = 0;
+  int conter_for_spaces = 0;
+  char result_string[c_strlen(s) + 1];
+
+  int k = 0;
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (conter_for_spaces == space_for_tab) {
+      result_string[k++] = '_';
+      is_space = 0;
+      conter_for_spaces = 0;
+    }
+
+    if (s[i] == ' ' && !is_space) {
+      is_space = 1;
+      conter_for_spaces++;
+    } else if (s[i] == ' ' && is_space) {
+      conter_for_spaces++;
+    } else {
+      result_string[k++] = s[i];
+      is_space = 0;
+      conter_for_spaces = 0;
+    }
+  }
+
+  result_string[k] = '\0';
+}
+
+void c_detab(char s[], const int space_for_tab) {
+  const int original_string_size = c_strlen(s);
+
+  // Find tabs position
+  int i = 0;
+  int number_of_tabs = 0;
+  for (; s[i] != '\0'; ++i) {
+    if (s[i] == '\t') {
+      number_of_tabs++;
+    }
+  }
+
+  number_of_tabs = (number_of_tabs == 0) ? 0 : number_of_tabs + 1;
+  const int size_new_string =
+      original_string_size + (number_of_tabs * space_for_tab);
+
+  char string_without_tabs[size_new_string + SIZE_STRING_END];
+
+  int j = 0;
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (s[i] == '\t') {
+      for (int k = space_for_tab; k != 0; --k) {
+        string_without_tabs[j++] = ' ';
+      }
+    } else {
+      string_without_tabs[j++] = s[i];
+    }
+  }
+
+  string_without_tabs[j] = '\0';
+
+  j = 0;
+
+  for (int i = 0; string_without_tabs[i] != '\0'; ++i) {
+    s[j++] = string_without_tabs[i];
+  }
+
+  s[j] = '\0';
+}
+
 void c_delete_punctuation(char s[]) {
 
   int j = 0;

@@ -10,6 +10,8 @@ static const int UPPER_LETTER_END = 90;
 static const int TRUE = 1;
 static const int FALSE = 0;
 
+static const int SIZE_STRING_END = 1;
+
 static const int DIFFERENCE_LETTERS_SIZE = 32;
 
 enum _operation_type { PLUS = 1, MINUS = 2 };
@@ -41,6 +43,8 @@ void c_to_lower(char s[]);
 void c_to_upper(char s[]);
 void c_strcat(char to[], char from[]);
 
+void c_entab(char s[], const int space_for_tab);
+void detab(char s[], const int space_for_tab);
 int c_count_words(char s[]);
 // void c_strtok(char s[]);
 int c_is_symbol_in_string(char s[], char chr);
@@ -56,7 +60,5 @@ void c_delete_punctuation(char s[]);
 void c_reverse(char s[]);
 void c_change_symbol_to(char s[], char remove_char, char add_char);
 void c_trim(char s[]);
-
-void detab(char s[]);
 
 #endif // !C_STRING_H
