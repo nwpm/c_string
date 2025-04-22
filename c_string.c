@@ -49,6 +49,41 @@ void _c_init_char_arr(char s[], char init_by, const int arr_size) {
   }
 }
 
+void _c_init_char_arr2d(char init_by, const int rows, const int cols,
+                        char (*arr_words)[cols]) {
+  for (int i = 0; i < rows; ++i) {
+    for (int j = 0; j < cols; ++j) {
+      arr_words[i][j] = init_by;
+    }
+  }
+}
+
+void _c_get_arr_of_words(const int rows, const int cols,
+                         char (*arr_words)[cols], const char s[]) {
+  // TODO Make dynamic array_of_words
+  int in_word = FALSE;
+  int words_index = 0;
+  int char_index = 0;
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (!c_is_letter(s[i]) && in_word) {
+      in_word = FALSE;
+      arr_words[words_index][char_index] = '\0';
+      words_index++;
+      char_index = 0;
+    } else if (c_is_letter(s[i]) && !in_word) {
+      in_word = TRUE;
+      arr_words[words_index][char_index++] = s[i];
+    } else if (c_is_letter(s[i]) && in_word) {
+      arr_words[words_index][char_index++] = s[i];
+    }
+  }
+
+  if (in_word) {
+    arr_words[words_index][char_index] = '\0';
+  }
+}
+
 //
 
 int c_strlen(const char s[]) {
@@ -238,46 +273,13 @@ int c_count_words(const char s[]) {
 
   // TODO Make dynamic array_of_words
   const int length_string = c_strlen(s);
-  char array_of_words[length_string][length_string];
+  char arr_words[length_string][length_string];
+  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
 
-  /*
-   * 1) Create array for all words in string
-   * 2) Make 2 index for current word and char in these word
-   * 3) Iterate string and add char in separate words
-   * 4) Add '\0' in the end
-   * 5) Count all words in for
-   *
-   */
-
-  int is_word = FALSE;
-  int words_index = 0;
-  int char_index = 0;
   int result = 0;
+  _c_get_arr_of_words(length_string, length_string, arr_words, s);
 
-  int i = 0;
-
-  for (; s[i] != '\0'; ++i) {
-    if (!c_is_letter(s[i]) && is_word) {
-      is_word = FALSE;
-      array_of_words[words_index][char_index] = '\0';
-      words_index++;
-      char_index = 0;
-    } else if (c_is_letter(s[i]) && !is_word) {
-      is_word = TRUE;
-      array_of_words[words_index][char_index++] = s[i];
-    } else if (c_is_letter(s[i]) && is_word) {
-      array_of_words[words_index][char_index++] = s[i];
-    }
-  }
-
-  if (is_word) {
-    array_of_words[words_index][char_index] = '\0';
-    array_of_words[words_index + 1][0] = '\0';
-  } else {
-    array_of_words[words_index][0] = '\0';
-  }
-
-  for (int i = 0; array_of_words[i][0] != '\0'; ++i) {
+  for (int i = 0; arr_words[i][0] != '\0'; ++i) {
     result++;
   }
 
