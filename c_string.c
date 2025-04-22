@@ -27,6 +27,28 @@ int _c_compare_symbols(const char first[], const char second[],
   return 0;
 }
 
+int _c_count_tabs(char s[]) {
+
+  int number_of_tabs = 0;
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (s[i] == '\t') {
+      number_of_tabs++;
+    }
+  }
+
+  return number_of_tabs;
+}
+
+void _c_init_char_arr(char s[], char init_by, const int arr_size) {
+
+  s[arr_size] = '\0';
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    s[i] = init_by;
+  }
+}
+
 //
 
 int c_strlen(const char s[]) {
@@ -67,8 +89,8 @@ void c_to_upper(char s[]) {
 
 int c_strcmp(const char first[], const char second[]) {
 
-  const int size_first = (c_strlen(first) + 1);
-  const int size_second = (c_strlen(second) + 1);
+  const int size_first = (c_strlen(first) + STR_END_SYMBOL);
+  const int size_second = (c_strlen(second) + STR_END_SYMBOL);
 
   if (size_first == size_second) {
     return _c_compare_symbols(first, second, size_first);
@@ -106,13 +128,13 @@ void c_delete_spaces(char s[]) {
 
 int c_count_symbols(const char s[]) {
 
-  const int ascii_symbols_start = 33;
-  const int ascii_symbols_end = 126;
+  const int ASCII_SYMBOLS_START = 33;
+  const int ASCII_SYMBOLS_END = 126;
 
   int result = 0;
 
   for (int i = 0; s[i] != '\0'; ++i) {
-    if ((s[i] >= ascii_symbols_start) && (s[i] <= ascii_symbols_end)) {
+    if ((s[i] >= ASCII_SYMBOLS_START) && (s[i] <= ASCII_SYMBOLS_END)) {
       ++result;
     }
   }
@@ -120,52 +142,23 @@ int c_count_symbols(const char s[]) {
   return result;
 }
 
-// TODO
-void c_entab(char s[], const int space_for_tab) {
-  int is_space = 0;
-  int conter_for_spaces = 0;
-  char result_string[c_strlen(s) + 1];
-
-  int k = 0;
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (conter_for_spaces == space_for_tab) {
-      result_string[k++] = '_';
-      is_space = 0;
-      conter_for_spaces = 0;
-    }
-
-    if (s[i] == ' ' && !is_space) {
-      is_space = 1;
-      conter_for_spaces++;
-    } else if (s[i] == ' ' && is_space) {
-      conter_for_spaces++;
-    } else {
-      result_string[k++] = s[i];
-      is_space = 0;
-      conter_for_spaces = 0;
-    }
-  }
-
-  result_string[k] = '\0';
-}
+// TODO:Does not work properly
+void c_entab(char s[], const int space_for_tab) {}
 
 void c_detab(char s[], const int space_for_tab) {
-  const int original_string_size = c_strlen(s);
 
-  // Find tabs position
-  int i = 0;
-  int number_of_tabs = 0;
-  for (; s[i] != '\0'; ++i) {
-    if (s[i] == '\t') {
-      number_of_tabs++;
-    }
+  // Find number of tabs
+  int number_of_tabs = _c_count_tabs(s);
+
+  if (number_of_tabs == 0) {
+    return;
   }
 
-  number_of_tabs = (number_of_tabs == 0) ? 0 : number_of_tabs + 1;
+  const int original_string_size = c_strlen(s) + STR_END_SYMBOL;
   const int size_new_string =
       original_string_size + (number_of_tabs * space_for_tab);
 
-  char string_without_tabs[size_new_string + SIZE_STRING_END];
+  char string_without_tabs[size_new_string];
 
   int j = 0;
   for (int i = 0; s[i] != '\0'; ++i) {
@@ -180,13 +173,7 @@ void c_detab(char s[], const int space_for_tab) {
 
   string_without_tabs[j] = '\0';
 
-  j = 0;
-
-  for (int i = 0; string_without_tabs[i] != '\0'; ++i) {
-    s[j++] = string_without_tabs[i];
-  }
-
-  s[j] = '\0';
+  c_strcpy(s, string_without_tabs);
 }
 
 void c_delete_punctuation(char s[]) {
@@ -205,36 +192,30 @@ void c_delete_punctuation(char s[]) {
 // Add version without second char array
 void c_reverse(char s[]) {
 
-  const int copy_size = c_strlen(s) + 1;
+  const int copy_size = c_strlen(s) + STR_END_SYMBOL;
+  const int str_last_position = c_strlen(s) - STR_END_SYMBOL;
 
-  char copy_string[copy_size];
+  char reverse_copy[copy_size];
   int j = 0;
 
-  for (int i = (copy_size - 2); i >= 0; --i) {
-    copy_string[j++] = s[i];
+  for (int i = str_last_position; i >= 0; --i) {
+    reverse_copy[j++] = s[i];
   }
 
-  copy_string[j] = '\0';
+  reverse_copy[j] = '\0';
 
-  for (int j = 0; copy_string[j] != '\0'; ++j) {
-    s[j] = copy_string[j];
-  }
+  c_strcpy(s, reverse_copy);
 }
 
-void c_change_symbol_to(char s[], char remove_char, char add_char) {
-
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (s[i] == remove_char) {
-      s[i] = add_char;
-    }
-  }
+void c_change_char_to(char s[], const int pos, const char add_char) {
+  s[pos] = add_char;
 }
 
 int c_remove_digits(char s[]) {
 
   int j = 0;
   int num_digits_removed = 0;
-  const int copy_string_size = c_strlen(s) + 1;
+  const int copy_string_size = c_strlen(s) + STR_END_SYMBOL;
 
   char string_without_nums[copy_string_size];
 
@@ -248,18 +229,12 @@ int c_remove_digits(char s[]) {
 
   string_without_nums[j] = '\0';
 
-  int k = 0;
-
-  for (int i = 0; string_without_nums[i] != '\0'; ++i) {
-    s[k++] = string_without_nums[i];
-  }
-
-  s[k] = '\0';
+  c_strcpy(s, string_without_nums);
 
   return num_digits_removed;
 }
 
-int c_count_words(char s[]) {
+int c_count_words(const char s[]) {
 
   // TODO Make dynamic array_of_words
   const int length_string = c_strlen(s);
@@ -311,13 +286,13 @@ int c_count_words(char s[]) {
 
 int c_is_empty_string(const char s[]) { return !c_strcmp(s, ""); }
 
-int c_is_string_of_digits(char s[]) {
+int c_is_string_of_digits(const char s[]) {
 
   if (c_is_empty_string(s)) {
     return 0;
   }
 
-  int is_all_digits = 1;
+  int is_all_digits = TRUE;
   for (int i = 0; s[i] != '\0'; ++i) {
     if (!((s[i] >= '0') && (s[i] <= '9'))) {
       return !is_all_digits;
@@ -327,9 +302,9 @@ int c_is_string_of_digits(char s[]) {
   return is_all_digits;
 }
 
-int c_is_symbol_in_string(char s[], char chr) {
+int c_is_char_in_string(const char s[], const char chr) {
 
-  int char_in_string = 1;
+  int char_in_string = TRUE;
 
   for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] == chr) {
@@ -342,36 +317,32 @@ int c_is_symbol_in_string(char s[], char chr) {
 
 int c_delete_duplicates(char s[]) {
 
-  const int cleaned_string_size = c_strlen(s) + 1;
+  const int cleaned_string_size = c_strlen(s) + STR_END_SYMBOL;
   char cleaned_string[cleaned_string_size];
+  _c_init_char_arr(cleaned_string, '\0', cleaned_string_size);
 
   int j = 0;
 
   for (int i = 0; s[i] != '\0'; ++i) {
-    if (!c_is_symbol_in_string(cleaned_string, s[i])) {
+    if (!c_is_char_in_string(cleaned_string, s[i])) {
       cleaned_string[j++] = s[i];
     }
   }
 
   cleaned_string[j] = '\0';
-  j = 0;
 
-  for (int i = 0; cleaned_string[i] != '\0'; ++i) {
-    s[j++] = cleaned_string[i];
-  }
-
-  s[j] = '\0';
+  c_strcpy(s, cleaned_string);
 
   return 0;
 }
 
-int c_is_palindrom(char s[]) {
+int c_is_palindrom(const char s[]) {
 
   if (c_is_empty_string(s)) {
     return FALSE;
   }
 
-  const int copy_size = c_strlen(s) + 1;
+  const int copy_size = c_strlen(s) + STR_END_SYMBOL;
   char copy_string[copy_size];
 
   c_strcpy(copy_string, s);
@@ -385,17 +356,22 @@ int c_is_palindrom(char s[]) {
   return TRUE;
 }
 
-int c_first_unique_symbol(char s[]) {
+// TODO:Simplify
+int c_first_unique_char(const char s[]) {
+
+  if (c_strlen(s) == 1) {
+    return s[0];
+  }
 
   const int end_symbol = c_strlen(s) - 2;
 
   for (int i = 0; i <= end_symbol; ++i) {
     int j = i + 1;
-    int find_duplicate = 0;
+    int find_duplicate = FALSE;
 
     for (; s[j] != '\0'; ++j) {
       if (s[j] == s[i]) {
-        find_duplicate = 1;
+        find_duplicate = TRUE;
         break;
       }
     }
@@ -424,11 +400,11 @@ int c_is_letter(const char c) {
 
 void c_trim(char s[]) {
 
-  const int copy_size = c_strlen(s) + 1;
+  const int copy_size = c_strlen(s) + STR_END_SYMBOL;
   char trimmed_copy[copy_size];
 
   int i = 0;
-  int j = c_strlen(s) - 1;
+  int j = c_strlen(s) - STR_END_SYMBOL;
 
   while (c_is_space(s[i]) || c_is_tab(s[i])) {
     ++i;
@@ -446,10 +422,5 @@ void c_trim(char s[]) {
 
   trimmed_copy[k] = '\0';
 
-  int l = 0;
-  for (; trimmed_copy[l] != '\0'; ++l) {
-    s[l] = trimmed_copy[l];
-  }
-
-  s[l] = '\0';
+  c_strcpy(s, trimmed_copy);
 }
