@@ -85,6 +85,43 @@ void test_c_is_digit(const char c, const int res) {
   printf("char : \"%c\" : c_is_digit passed\n", c);
 }
 
+void test_c_count_words(const char s[], const int res) {
+  assert(c_count_words(s) == res);
+  printf("string : \"%s\" : c_count_words passed\n", s);
+}
+
+void test_c_is_char_in_string(const char s[], const char c, const int res) {
+  assert(c_is_char_in_string(s, c) == res);
+  printf("string : \"%s\" : c_is_char_in_string passed\n", s);
+}
+
+void test_c_first_unique_char(const char s[], const int res) {
+  assert(c_first_unique_char(s) == res);
+  printf("string : \"%s\" : c_first_unique_char passed\n", s);
+}
+
+void test_c_is_space(const char c, const int res) {
+  assert(c_is_space(c) == res);
+  printf("char : \"%c\" : c_is_space passed\n", c);
+}
+
+void test_c_is_tab(const char c, const int res) {
+  assert(c_is_tab(c) == res);
+  printf("char : \"%c\" : c_is_tab passed\n", c);
+}
+
+void test_c_is_empty_string(const char s[], const int res) {
+  assert(c_is_empty_string(s) == res);
+  printf("string : \"%s\" : c_is_empty_string passed\n", s);
+}
+
+void test_c_change_char_to(char s[], const int pos, const char add,
+                           const char res[]) {
+  c_change_char_to(s, pos, 'a');
+  assert(strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_change_char_to passed\n", s);
+}
+
 void all_tests_c_strlen() {
   test_c_strlen("");
   test_c_strlen("Hello World");
@@ -237,9 +274,8 @@ void all_test_c_delete_duplicates() {
   char s5[] = "\t\t";
   test_c_delete_duplicates(s5, "\t");
 
-  // ???
-  // char s6[] = "   ";
-  // test_c_delete_duplicates(s6, " ");
+  char s6[] = "   ";
+  test_c_delete_duplicates(s6, " ");
 }
 
 void all_tests_c_strcat() {
@@ -296,6 +332,45 @@ void all_tests_c_is_digit() {
   test_c_is_digit('!', FALSE);
 }
 
+void all_tests_c_count_words() {
+  test_c_count_words("Hello World", 2);
+  test_c_count_words("Hello", 1);
+  test_c_count_words(" Hello ", 1);
+  test_c_count_words(" ", 0);
+}
+
+void all_tests_c_is_char_in_string() {
+  test_c_is_char_in_string("abc", 'a', TRUE);
+  test_c_is_char_in_string("abc", 'f', FALSE);
+  test_c_is_char_in_string("abc ", ' ', TRUE);
+  test_c_is_char_in_string("", 'a', FALSE);
+}
+
+void all_tests_c_first_unique_char() {
+  test_c_first_unique_char("aaa", -1);
+  test_c_first_unique_char("  a", 32);
+  test_c_first_unique_char("abc", 97);
+  test_c_first_unique_char("a", 97);
+}
+
+void all_tests_c_is_space() {
+  test_c_is_space(' ', TRUE);
+  test_c_is_space('a', FALSE);
+}
+
+void all_tests_c_is_tab() {
+  test_c_is_tab(' ', FALSE);
+  test_c_is_tab('\t', TRUE);
+}
+
+void all_tests_c_is_empty_string() {
+  test_c_is_empty_string("", TRUE);
+  test_c_is_empty_string(" ", FALSE);
+  test_c_is_empty_string("abc", FALSE);
+}
+
+void all_tests_c_change_char_to() {}
+
 int main(void) {
   printf("\nc_strlen tests started!\n");
   all_tests_c_strlen();
@@ -322,7 +397,7 @@ int main(void) {
   all_tests_c_is_string_of_digits();
 
   printf("\nc_delete_duplicates tests started!\n");
-  // all_test_c_delete_duplicates();
+  all_test_c_delete_duplicates();
 
   printf("\nc_strcat tests started!\n");
   all_tests_c_strcat();
@@ -339,6 +414,25 @@ int main(void) {
   printf("\nc_is_digit tests started!\n");
   all_tests_c_is_digit();
 
+  printf("\nc_count_words tests started!\n");
+  all_tests_c_count_words();
+
+  printf("\nc_is_char_in_string tests started!\n");
+  all_tests_c_is_char_in_string();
+
+  printf("\nc_first_unique_char tests started!\n");
+  all_tests_c_first_unique_char();
+
+  printf("\nc_is_space tests started!\n");
+  all_tests_c_is_space();
+
+  printf("\nc_is_tab tests started!\n");
+  all_tests_c_is_tab();
+
+  printf("\nc_is_empty_string tests started!\n");
+  all_tests_c_is_empty_string();
+
   printf("\nAll tests passed!\n");
+
   return 0;
 }
