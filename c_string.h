@@ -27,7 +27,11 @@ int _c_count_tabs(char s[]);
 
 void _c_init_char_arr(char s[], char init_by, const int arr_size);
 
-void _c_get_words_array(char **arr, char s[]); // !
+void _c_init_char_arr2d(char init_by, const int rows, const int cols,
+                        char (*arr_words)[cols]);
+
+void _c_get_arr_of_words(const int rows, const int cols,
+                         char (*arr_words)[cols], const char s[]);
 
 // 14
 int c_strlen(const char s[]);
@@ -57,6 +61,7 @@ void c_change_char_to(char s[], const int pos, const char add_char);
 void c_entab(char s[], const int space_for_tab);
 void c_detab(char s[], const int space_for_tab);
 // void c_strtok(char s[]);
+// void c_reverse_str_words(char s[]);
 
 void c_invert_symbols(char s[]);
 void c_delete_spaces(char s[]);
