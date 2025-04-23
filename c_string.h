@@ -14,6 +14,8 @@ static const int STR_END_SYMBOL = 1;
 
 static const int DIFFERENCE_LETTERS_SIZE = 32;
 
+static const char END_SYMBOL = '\0';
+
 enum _operation_type { PLUS = 1, MINUS = 2 };
 
 void _c_change_letter_size(char s[], int bottom_border, int upper_border,
@@ -30,8 +32,14 @@ void _c_init_char_arr(char s[], char init_by, const int arr_size);
 void _c_init_char_arr2d(char init_by, const int rows, const int cols,
                         char (*arr_words)[cols]);
 
-void _c_get_arr_of_words(const int rows, const int cols,
-                         char (*arr_words)[cols], const char s[]);
+int _c_get_size_arr2d(const int cols, char (*arr_words)[cols]);
+
+void _c_get_arr_of_words(const int cols, char (*arr_words)[cols],
+                         const char s[]);
+
+void _c_swap_char(char *c1, char *c2);
+
+void _c_insert_str_sort(char s[]);
 
 // 14
 int c_strlen(const char s[]);
@@ -61,7 +69,8 @@ void c_change_char_to(char s[], const int pos, const char add_char);
 void c_entab(char s[], const int space_for_tab);
 void c_detab(char s[], const int space_for_tab);
 // void c_strtok(char s[]);
-// void c_reverse_str_words(char s[]);
+void c_reverse_word_order(char s[], const char delim);
+void c_sort_chars(char s[]);
 
 void c_invert_symbols(char s[]);
 void c_delete_spaces(char s[]);
