@@ -1,6 +1,12 @@
 #include "c_string.h"
 // helping functions
 
+void _c_swap_char(char *c1, char *c2) {
+  char tmp_val = *c1;
+  *c1 = *c2;
+  *c2 = tmp_val;
+}
+
 void _c_change_letter_size(char s[], int bottom_border, int upper_border,
                            enum _operation_type operation) {
   for (int i = 0; s[i] != '\0'; ++i) {
@@ -58,8 +64,16 @@ void _c_init_char_arr2d(char init_by, const int rows, const int cols,
   }
 }
 
-void _c_get_arr_of_words(const int rows, const int cols,
-                         char (*arr_words)[cols], const char s[]) {
+int _c_get_size_arr2d(const int cols, char (*arr_words)[cols]) {
+  int result = 0;
+  for (int i = 0; arr_words[i][0] != '\0'; ++i) {
+    result++;
+  }
+  return result;
+}
+
+void _c_get_arr_of_words(const int cols, char (*arr_words)[cols],
+                         const char s[]) {
   // TODO Make dynamic array_of_words
   int in_word = FALSE;
   int words_index = 0;
@@ -81,6 +95,22 @@ void _c_get_arr_of_words(const int rows, const int cols,
 
   if (in_word) {
     arr_words[words_index][char_index] = '\0';
+  }
+}
+
+void _c_insert_str_sort(char s[]) {
+
+  if (c_is_empty_string(s)) {
+    return;
+  }
+
+  for (int j = 1; s[j] != '\0'; ++j) {
+    char key = s[j];
+    int i = j - 1;
+    for (; i >= 0 && s[i] > key; --i) {
+      s[i + 1] = s[i];
+    }
+    s[i + 1] = key;
   }
 }
 
@@ -178,7 +208,7 @@ int c_count_symbols(const char s[]) {
 }
 
 // TODO:Does not work properly
-void c_entab(char s[], const int space_for_tab) {}
+// void c_entab(char s[], const int space_for_tab) {}
 
 void c_detab(char s[], const int space_for_tab) {
 
@@ -224,22 +254,13 @@ void c_delete_punctuation(char s[]) {
   s[j] = '\0';
 }
 
-// Add version without second char array
 void c_reverse(char s[]) {
 
-  const int copy_size = c_strlen(s) + STR_END_SYMBOL;
-  const int str_last_position = c_strlen(s) - STR_END_SYMBOL;
+  int j = c_strlen(s) - STR_END_SYMBOL;
 
-  char reverse_copy[copy_size];
-  int j = 0;
-
-  for (int i = str_last_position; i >= 0; --i) {
-    reverse_copy[j++] = s[i];
+  for (int i = 0; i <= j; ++i, --j) {
+    _c_swap_char(s + i, s + j);
   }
-
-  reverse_copy[j] = '\0';
-
-  c_strcpy(s, reverse_copy);
 }
 
 void c_change_char_to(char s[], const int pos, const char add_char) {
@@ -269,6 +290,7 @@ int c_remove_digits(char s[]) {
   return num_digits_removed;
 }
 
+// Two bottom functions use char [][] instead of char **
 int c_count_words(const char s[]) {
 
   // TODO Make dynamic array_of_words
@@ -277,13 +299,33 @@ int c_count_words(const char s[]) {
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
 
   int result = 0;
-  _c_get_arr_of_words(length_string, length_string, arr_words, s);
+  _c_get_arr_of_words(length_string, arr_words, s);
 
   for (int i = 0; arr_words[i][0] != '\0'; ++i) {
     result++;
   }
 
   return result;
+}
+
+// Don't save order of spaces. Trim string
+// and add only 1 space after word.
+void c_reverse_word_order(char s[], const char delim) {
+  const int length_string = c_strlen(s);
+  char arr_words[length_string][length_string];
+  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
+  _c_get_arr_of_words(length_string, arr_words, s);
+
+  int num_words = _c_get_size_arr2d(length_string, arr_words);
+
+  int k = 0;
+  for (int i = num_words - 1; i >= 0; --i) {
+    for (int j = 0; arr_words[i][j] != '\0'; ++j) {
+      s[k++] = arr_words[i][j];
+    }
+    s[k++] = delim;
+  }
+  s[k] = '\0';
 }
 
 int c_is_empty_string(const char s[]) { return !c_strcmp(s, ""); }
@@ -357,6 +399,8 @@ int c_is_palindrom(const char s[]) {
   }
   return TRUE;
 }
+
+void c_sort_chars(char s[]) { _c_insert_str_sort(s); }
 
 // TODO:Simplify
 int c_first_unique_char(const char s[]) {
