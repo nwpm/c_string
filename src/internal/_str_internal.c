@@ -98,7 +98,34 @@ void _c_get_arr_of_words(const int cols, char (*arr_words)[cols],
   }
 }
 
-void _c_insert_str_sort(char s[]) {
+// TODO: replace by this _c_get_arr_of_words
+void _c_get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
+                               const char s[], const char delim) {
+  // TODO Make dynamic array_of_words
+  int in_word = FALSE;
+  int words_index = 0;
+  int char_index = 0;
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if ((s[i] == delim) && in_word) {
+      in_word = FALSE;
+      arr_words[words_index][char_index] = '\0';
+      words_index++;
+      char_index = 0;
+    } else if ((s[i] != delim) && !in_word) {
+      in_word = TRUE;
+      arr_words[words_index][char_index++] = s[i];
+    } else if ((s[i] != delim) && in_word) {
+      arr_words[words_index][char_index++] = s[i];
+    }
+  }
+
+  if (in_word) {
+    arr_words[words_index][char_index] = '\0';
+  }
+}
+
+void _c_insert_char_sort(char s[]) {
 
   if (c_is_empty_string(s)) {
     return;

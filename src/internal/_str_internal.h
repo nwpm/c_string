@@ -28,8 +28,10 @@ void _c_init_char_arr2d(char init_by, const int rows, const int cols,
                         char (*arr_words)[cols]);
 void _c_get_arr_of_words(const int cols, char (*arr_words)[cols],
                          const char s[]);
+void _c_get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
+                               const char s[], const char delim);
 void _c_swap_char(char *c1, char *c2);
-void _c_insert_str_sort(char s[]);
+void _c_insert_char_sort(char s[]);
 void _c_init_char_arr2d(char init_by, const int rows, const int cols,
                         char (*arr_words)[cols]);
 void _c_change_letter_size(char s[], int bottom_border, int upper_border,
