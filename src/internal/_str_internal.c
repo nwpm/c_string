@@ -20,13 +20,13 @@ void _c_change_letter_size(char s[], int bottom_border, int upper_border,
   }
 }
 
+// difference > 0 -> first
+// difference < 0 -> second
 int _c_compare_symbols(const char first[], const char second[],
                        int min_length) {
   for (int i = 0; i < min_length; ++i) {
-    // Difference > 0 -> first
-    // Difference < 0 -> second
     int difference = first[i] - second[i];
-    if (difference > 0 || difference < 0) {
+    if (difference) {
       return difference;
     }
   }
@@ -138,5 +138,11 @@ void _c_insert_char_sort(char s[]) {
       s[i + 1] = s[i];
     }
     s[i + 1] = key;
+  }
+}
+
+void _c_insert_n_spaces(char s[], const int num_spaces, int *insert_from) {
+  for (int k = num_spaces; k != 0; --k) {
+    s[(*insert_from)++] = ' ';
   }
 }

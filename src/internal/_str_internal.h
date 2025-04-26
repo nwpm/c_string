@@ -37,4 +37,6 @@ void _c_init_char_arr2d(char init_by, const int rows, const int cols,
 void _c_change_letter_size(char s[], int bottom_border, int upper_border,
                            enum _operation_type operation);
 
+void _c_insert_n_spaces(char s[], const int num_spaces, int *insert_from);
+
 #endif // !_STR_INTERNAL_H
