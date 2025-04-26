@@ -115,10 +115,17 @@ void test_c_is_empty_string(const char s[], const int res) {
   printf("string : \"%s\" : c_is_empty_string passed\n", s);
 }
 
-void test_c_change_char_to(char s[], const int pos, const char res[]) {
-  c_change_char_to(s, pos, 'a');
+void test_c_change_char_to(char s[], const char from, const char to,
+                           const char res[]) {
+  c_change_char_to(s, from, to);
   assert(strcmp(s, res) == 0);
   printf("string : \"%s\" : c_change_char_to passed\n", s);
+}
+
+void test_c_delete_spaces(char s[], const char res[]) {
+  c_delete_spaces(s);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_delete_spaces passed\n", s);
 }
 
 void all_tests_c_strlen() {
@@ -368,7 +375,31 @@ void all_tests_c_is_empty_string() {
   test_c_is_empty_string("abc", FALSE);
 }
 
-void all_tests_c_change_char_to() {}
+void all_tests_c_delete_spaces() {
+
+  char s[] = "abc abc";
+  test_c_delete_spaces(s, "abcabc");
+  char s1[] = " abc abc   ";
+  test_c_delete_spaces(s1, "abcabc");
+  char s2[] = " ";
+  test_c_delete_spaces(s2, "");
+  char s3[] = "abc     ";
+  test_c_delete_spaces(s3, "abc");
+  char s4[] = "     abc";
+  test_c_delete_spaces(s4, "abc");
+}
+
+void all_tests_c_change_char_to() {
+  char s[] = "abc";
+  test_c_change_char_to(s, 'a', '1', "1bc");
+  char s1[] = " abc";
+  test_c_change_char_to(s1, ' ', '1', "1abc");
+  char s2[] = "abc%";
+  test_c_change_char_to(s2, '%', '1', "abc1");
+}
+
+void _get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
+                             const char *s, const char delim);
 
 int main(void) {
   printf("\nc_strlen tests started!\n");
@@ -431,11 +462,13 @@ int main(void) {
   printf("\nc_is_empty_string tests started!\n");
   all_tests_c_is_empty_string();
 
-  printf("\nAll tests passed!\n");
+  printf("\nc_delete_spaces tests started!\n");
+  all_tests_c_delete_spaces();
 
-  char s[] = "cba gfe";
-  c_sort_chars(s);
-  printf("%s\n", s);
+  printf("\nc_change_char_to tests started!\n");
+  all_tests_c_change_char_to();
+
+  printf("\nAll tests passed!\n");
 
   return 0;
 }
