@@ -2,20 +2,20 @@
 #include "internal/_str_internal.h"
 
 int c_strlen(const char s[]) {
-  int chars = 0;
-  for (int i = 0; s[i] != '\0'; ++i) {
-    ++chars;
+  int i = 0;
+  while (s[i] != '\0') {
+    ++i;
   }
-  return chars;
+  return i;
 }
 
 void c_strcpy(char to[], const char from[]) {
-
   int i = 0;
   while ((to[i] = from[i]) != '\0')
     ++i;
 }
 
+// to string must have size >= to + from
 void c_strcat(char to[], char from[]) {
 
   int start_insert_from = c_strlen(to);
@@ -113,9 +113,7 @@ void c_detab(char s[], const int space_for_tab) {
   int j = 0;
   for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] == '\t') {
-      for (int k = space_for_tab; k != 0; --k) {
-        string_without_tabs[j++] = ' ';
-      }
+      _c_insert_n_spaces(string_without_tabs, space_for_tab, &j);
     } else {
       string_without_tabs[j++] = s[i];
     }
@@ -148,8 +146,13 @@ void c_reverse(char s[]) {
   }
 }
 
-void c_change_char_to(char s[], const int pos, const char add_char) {
-  s[pos] = add_char;
+void c_change_char_to(char s[], const char from_char, const char to_char) {
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (s[i] == from_char) {
+      s[i] = to_char;
+    }
+  }
 }
 
 int c_remove_digits(char s[]) {
@@ -199,7 +202,8 @@ void c_reverse_word_order(char s[], const char delim) {
   const int length_string = c_strlen(s);
   char arr_words[length_string][length_string];
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
-  _c_get_arr_of_words(length_string, arr_words, s);
+  //_c_get_arr_of_words(length_string, arr_words, s);
+  _c_get_words_arr_by_delim(length_string, arr_words, s, ' ');
 
   int num_words = _c_get_size_arr2d(length_string, arr_words);
 
@@ -285,7 +289,7 @@ int c_is_palindrom(const char s[]) {
   return TRUE;
 }
 
-void c_sort_chars(char s[]) { _c_insert_str_sort(s); }
+void c_sort_chars(char s[]) { _c_insert_char_sort(s); }
 
 // TODO:Simplify
 int c_first_unique_char(const char s[]) {
@@ -355,3 +359,39 @@ void c_trim(char s[]) {
 
   c_strcpy(s, trimmed_copy);
 }
+
+// Don't work. Use hash table for o(n)
+void c_delete_word_duplicate(char s[]) {
+  // TODO: 4 bottom lines in one function?
+  const int length_string = c_strlen(s);
+  char arr_words[length_string][length_string];
+  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
+  _c_get_arr_of_words(length_string, arr_words, s);
+
+  const int num_words = _c_get_size_arr2d(length_string, arr_words);
+
+  int find_duplicate = FALSE;
+  // TODO: replace num literals
+  for (int i = 0; i <= num_words - 2; ++i) {
+    for (int j = i + 1; j <= num_words - 1; ++j) {
+      if (c_strcmp(arr_words[i], arr_words[j]) == 0) {
+        find_duplicate = TRUE;
+        break;
+      }
+    }
+
+    // TODO: not effective
+    if (!find_duplicate) {
+      c_strcpy(s, arr_words[i]);
+    }
+    find_duplicate = FALSE;
+  }
+}
+
+/*void c_strtok(char s[], char **result, const char delim) {
+  const int length_string = c_strlen(s);
+  char arr_words[length_string][length_string];
+  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
+  _c_get_words_arr_by_delim(length_string, arr_words, s, delim);
+  // TODO: return result in char**
+}*/
