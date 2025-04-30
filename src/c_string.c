@@ -15,7 +15,7 @@ void c_strcpy(char to[], const char from[]) {
     ++i;
 }
 
-// to string must have size >= to + from
+// To string must have size >= to + from
 void c_strcat(char to[], char from[]) {
 
   int start_insert_from = c_strlen(to);
@@ -76,22 +76,6 @@ void c_delete_spaces(char s[]) {
   s[j] = '\0';
 }
 
-int c_count_symbols(const char s[]) {
-
-  const int ASCII_SYMBOLS_START = 33;
-  const int ASCII_SYMBOLS_END = 126;
-
-  int result = 0;
-
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if ((s[i] >= ASCII_SYMBOLS_START) && (s[i] <= ASCII_SYMBOLS_END)) {
-      ++result;
-    }
-  }
-
-  return result;
-}
-
 // TODO:Does not work properly
 // void c_entab(char s[], const int space_for_tab) {}
 
@@ -129,7 +113,7 @@ void c_delete_punctuation(char s[]) {
   int j = 0;
 
   for (int i = 0; s[i] != '\0'; ++i) {
-    if (s[i] != '!' && s[i] != '?' && s[i] != '.' && s[i] != ',') {
+    if (!c_is_punct_char(s[i])) {
       s[j++] = s[i];
     }
   }
@@ -181,7 +165,8 @@ int c_remove_digits(char s[]) {
 // Two bottom functions use char [][] instead of char **
 int c_count_words(const char s[]) {
 
-  // TODO Make dynamic array_of_words
+  // TODO: If we want make dynamic array_of_words
+  // must include <stdlib.h>
   const int length_string = c_strlen(s);
   char arr_words[length_string][length_string];
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
@@ -248,7 +233,7 @@ int c_is_char_in_string(const char s[], const char chr) {
   return !char_in_string;
 }
 
-int c_delete_duplicates(char s[]) {
+void c_delete_duplicates(char s[]) {
 
   const int cleaned_string_size = c_strlen(s) + STR_END_SYMBOL;
   char cleaned_string[cleaned_string_size];
@@ -265,8 +250,6 @@ int c_delete_duplicates(char s[]) {
   cleaned_string[j] = '\0';
 
   c_strcpy(s, cleaned_string);
-
-  return 0;
 }
 
 int c_is_palindrom(const char s[]) {
@@ -275,43 +258,41 @@ int c_is_palindrom(const char s[]) {
     return FALSE;
   }
 
-  const int copy_size = c_strlen(s) + STR_END_SYMBOL;
-  char copy_string[copy_size];
+  int j = c_strlen(s) - 1;
+  int i = 0;
 
-  c_strcpy(copy_string, s);
-  c_reverse(copy_string);
-
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (s[i] != copy_string[i]) {
+  while (i < j) {
+    if (s[i] != s[j]) {
       return FALSE;
+    } else {
+      i++;
+      j--;
     }
   }
+
   return TRUE;
 }
 
 void c_sort_chars(char s[]) { _c_insert_char_sort(s); }
 
-// TODO:Simplify
 int c_first_unique_char(const char s[]) {
 
-  if (c_strlen(s) == 1) {
-    return s[0];
-  }
+  const int copy_size = c_strlen(s) + 1;
+  char copy_string[copy_size];
+  copy_string[copy_size] = '\0';
 
-  const int end_symbol = c_strlen(s) - 2;
+  c_strcpy(copy_string, s);
+  c_delete_duplicates(copy_string);
 
-  for (int i = 0; i <= end_symbol; ++i) {
-    int j = i + 1;
-    int find_duplicate = FALSE;
-
-    for (; s[j] != '\0'; ++j) {
-      if (s[j] == s[i]) {
-        find_duplicate = TRUE;
-        break;
+  for (int i = 0; copy_string[i] != '\0'; ++i) {
+    int num_of_char = 0;
+    for (int j = 0; s[j] != '\0'; ++j) {
+      if (copy_string[i] == s[j]) {
+        num_of_char++;
       }
     }
-    if (!find_duplicate) {
-      return s[i];
+    if (num_of_char == 1) {
+      return copy_string[i];
     }
   }
 
@@ -320,7 +301,12 @@ int c_first_unique_char(const char s[]) {
 
 int c_is_digit(const char c) { return (c >= '0' && c <= '9') ? TRUE : FALSE; }
 
-int c_is_symbol(const char c) { return (c >= '!' && c <= '~') ? TRUE : FALSE; }
+int c_is_punct_char(const char c) {
+  return ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') ||
+          (c >= '[' && c <= '`') || (c >= '{' && c <= '~'))
+             ? TRUE
+             : FALSE;
+}
 
 int c_is_space(const char c) { return (c == ' ') ? TRUE : FALSE; }
 
@@ -334,6 +320,10 @@ int c_is_letter(const char c) {
 }
 
 void c_trim(char s[]) {
+
+  if (c_is_empty_string(s)) {
+    return;
+  }
 
   const int copy_size = c_strlen(s) + STR_END_SYMBOL;
   char trimmed_copy[copy_size];
@@ -351,7 +341,7 @@ void c_trim(char s[]) {
 
   int k = 0;
 
-  for (; i < j; ++i) {
+  for (; i <= j; ++i) {
     trimmed_copy[k++] = s[i];
   }
 
