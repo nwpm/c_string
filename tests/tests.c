@@ -36,11 +36,6 @@ void test_c_to_upper(char s1[], char s2[]) {
   printf("string \"%s\" : c_to_upper passed\n", s1);
 }
 
-void test_c_count_symbols(char s[], int res) {
-  assert(c_count_symbols(s) == res);
-  printf("string : \"%s\" has %d symbols : c_count_symbols passed\n", s, res);
-}
-
 void test_c_remove_digits(char s[], int res_num, char res_s[]) {
   assert(c_remove_digits(s) == res_num);
   assert(strcmp(s, res_s) == 0);
@@ -70,9 +65,9 @@ void test_c_is_palindrome(char s[], int res) {
   printf("string : \"%s\" : c_is_palindrom passed\n", s);
 }
 
-void test_c_is_symbol(const char c, const int res) {
-  assert(c_is_symbol(c) == res);
-  printf("char : \"%c\" : c_is_symbol passed\n", c);
+void test_c_is_punct_char(const char c, const int res) {
+  assert(c_is_punct_char(c) == res);
+  printf("char : \"%c\" : c_is_punct_char passed\n", c);
 }
 
 void test_c_is_letter(const char c, const int res) {
@@ -126,6 +121,36 @@ void test_c_delete_spaces(char s[], const char res[]) {
   c_delete_spaces(s);
   assert(c_strcmp(s, res) == 0);
   printf("string : \"%s\" : c_delete_spaces passed\n", s);
+}
+
+void test_c_invert_symbols(char s[], const char res[]) {
+  c_invert_symbols(s);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_invert_symbols passed\n", s);
+}
+
+void test_c_trim(char s[], const char res[]) {
+  c_trim(s);
+  assert(c_strcmp(s, res) == 0);
+  printf("string \"%s\" : c_trim passed\n", s);
+}
+
+void test_c_reverse(char s[], const char res[]) {
+  c_reverse(s);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_reverse passed\n", s);
+}
+
+void test_c_delete_punctuation(char *s, const char *res) {
+  c_delete_punctuation(s);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_delete_punctuation passed\n", s);
+}
+
+void test_c_sort_chars(char *s, const char *res) {
+  c_sort_chars(s);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_sort_chars passed\n", s);
 }
 
 void all_tests_c_strlen() {
@@ -216,23 +241,6 @@ void all_tests_c_to_upper() {
   test_c_to_upper(s6, "@");
 }
 
-void all_tests_c_count_symbols() {
-  char s1[] = "abc";
-  test_c_count_symbols(s1, 3);
-
-  char s2[] = "";
-  test_c_count_symbols(s2, 0);
-
-  char s3[] = "abc123";
-  test_c_count_symbols(s3, 6);
-
-  char s4[] = "abc  def";
-  test_c_count_symbols(s4, 6);
-
-  char s5[] = "\tabc  #// !";
-  test_c_count_symbols(s5, 7);
-}
-
 void all_tests_c_remove_digits() {
   char s1[] = "12345";
   test_c_remove_digits(s1, 5, "");
@@ -316,12 +324,11 @@ void all_tests_c_is_palindrom() {
   test_c_is_palindrome(s4, 1);
 }
 
-void all_tests_c_is_symbol() {
-  test_c_is_symbol('a', TRUE);
-  test_c_is_symbol('!', TRUE);
-  test_c_is_symbol(' ', FALSE);
-  test_c_is_symbol('\t', FALSE);
-  test_c_is_symbol('\n', FALSE);
+void all_tests_c_is_punct_char() {
+  test_c_is_punct_char('!', TRUE);
+  test_c_is_punct_char(' ', FALSE);
+  test_c_is_punct_char('\t', FALSE);
+  test_c_is_punct_char('\n', FALSE);
 }
 
 void all_tests_c_is_letter() {
@@ -354,9 +361,10 @@ void all_tests_c_is_char_in_string() {
 
 void all_tests_c_first_unique_char() {
   test_c_first_unique_char("aaa", -1);
-  test_c_first_unique_char("  a", 32);
+  test_c_first_unique_char("  a", 97);
   test_c_first_unique_char("abc", 97);
   test_c_first_unique_char("a", 97);
+  test_c_first_unique_char("", -1);
 }
 
 void all_tests_c_is_space() {
@@ -398,8 +406,64 @@ void all_tests_c_change_char_to() {
   test_c_change_char_to(s2, '%', '1', "abc1");
 }
 
-void _get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
-                             const char *s, const char delim);
+void all_tests_c_invert_symbols() {
+  char s[] = "abc";
+  test_c_invert_symbols(s, "ABC");
+  char s1[] = "ABC";
+  test_c_invert_symbols(s1, "abc");
+  char s2[] = "aBc";
+  test_c_invert_symbols(s2, "AbC");
+}
+
+void all_tests_c_trim() {
+  char s[] = "\tabc ";
+  test_c_trim(s, "abc");
+  char s1[] = "\t\tabc\t\t";
+  test_c_trim(s1, "abc");
+  char s2[] = "abc";
+  test_c_trim(s2, "abc");
+  char s3[] = "";
+  test_c_trim(s3, "");
+  char s4[] = " ";
+  test_c_trim(s4, "");
+}
+
+void all_tests_c_reverse() {
+  char s[] = "abc";
+  test_c_reverse(s, "cba");
+  char s1[] = " abc";
+  test_c_reverse(s1, "cba ");
+  char s2[] = "aba";
+  test_c_reverse(s2, "aba");
+  char s3[] = "";
+  test_c_reverse(s3, "");
+  char s4[] = " ";
+  test_c_reverse(s4, " ");
+}
+
+void all_tests_c_sort_chars() {
+  char s[] = "abc";
+  test_c_sort_chars(s, "abc");
+  char s1[] = "cba";
+  test_c_sort_chars(s1, "abc");
+  char s3[] = "";
+  test_c_sort_chars(s3, "");
+  char s4[] = " ";
+  test_c_sort_chars(s4, " ");
+}
+
+void all_tests_c_delete_punctuation() {
+  char s[] = "abc!";
+  test_c_delete_punctuation(s, "abc");
+  char s1[] = ".abc!%";
+  test_c_delete_punctuation(s1, "abc");
+  char s2[] = "!!!";
+  test_c_delete_punctuation(s2, "");
+  char s3[] = "";
+  test_c_delete_punctuation(s3, "");
+  char s4[] = " ";
+  test_c_delete_punctuation(s4, " ");
+}
 
 int main(void) {
   printf("\nc_strlen tests started!\n");
@@ -417,9 +481,6 @@ int main(void) {
   printf("\nc_to_upper tests started!\n");
   all_tests_c_to_upper();
 
-  printf("\nc_count_symbols tests started!\n");
-  all_tests_c_count_symbols();
-
   printf("\nc_remove_digits tests started!\n");
   all_tests_c_remove_digits();
 
@@ -435,8 +496,8 @@ int main(void) {
   printf("\nc_is_palindrome tests started!\n");
   all_tests_c_is_palindrom();
 
-  printf("\nc_is_symbols tests started!\n");
-  all_tests_c_is_symbol();
+  printf("\nc_is_punct_chars tests started!\n");
+  all_tests_c_is_punct_char();
 
   printf("\nc_is_letter tests started!\n");
   all_tests_c_is_letter();
@@ -467,6 +528,21 @@ int main(void) {
 
   printf("\nc_change_char_to tests started!\n");
   all_tests_c_change_char_to();
+
+  printf("\nc_invert_symbols tests started!\n");
+  all_tests_c_invert_symbols();
+
+  printf("\nc_trim tests started!\n");
+  all_tests_c_trim();
+
+  printf("\nc_reverse tests started!\n");
+  all_tests_c_reverse();
+
+  printf("\nc_delete_punctuation tests started!\n");
+  all_tests_c_delete_punctuation();
+
+  printf("\nc_sort_chars tests started!\n");
+  all_tests_c_sort_chars();
 
   printf("\nAll tests passed!\n");
 
