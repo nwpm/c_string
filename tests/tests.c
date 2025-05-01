@@ -153,6 +153,25 @@ void test_c_sort_chars(char *s, const char *res) {
   printf("string : \"%s\" : c_sort_chars passed\n", s);
 }
 
+void test_c_detab(char *s, const char *res, const int space_for_tab) {
+  c_detab(s, space_for_tab);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_detab passed\n", s);
+}
+
+void test_c_entab(char *s, const char *res, const int space_for_tab) {
+  c_entab(s, space_for_tab);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_entab passed\n", s);
+}
+
+void test_c_insert_substr_from(char *s, const char *substr, int *insert_from,
+                               const int res) {
+  int test_res = c_insert_substr_from(s, substr, insert_from);
+  assert(test_res == res);
+  printf("string : \"%s\" : c_insert_substr_from passed\n", s);
+}
+
 void all_tests_c_strlen() {
   test_c_strlen("");
   test_c_strlen("Hello World");
@@ -465,6 +484,43 @@ void all_tests_c_delete_punctuation() {
   test_c_delete_punctuation(s4, " ");
 }
 
+void all_tests_c_detab() {
+  char s[] = "abc";
+  test_c_detab(s, "abc", 5);
+  char s1[100] = {'\t', 'a', 'b', 'c'};
+  test_c_detab(s1, "    abc", 4);
+  char s2[] = "\t\t";
+  test_c_detab(s2, "", 0);
+  char s3[] = "";
+  test_c_detab(s3, "", 4);
+}
+
+void all_tests_c_entab() {
+  char s[] = "abc";
+  test_c_entab(s, "abc", 5);
+  char s1[] = "  abc";
+  test_c_entab(s1, "  abc", 5);
+  char s2[] = "    abc";
+  test_c_entab(s2, "\tabc", 4);
+  char s3[] = "     abc";
+  test_c_entab(s3, "\t abc", 4);
+}
+
+void all_tests_c_insert_substr_from() {
+  char s[] = "abc";
+  int pos = 0;
+  test_c_insert_substr_from(s, "defg", &pos, -1);
+  char s1[] = "  abc";
+  int pos1 = 0;
+  test_c_insert_substr_from(s1, "de", &pos1, 0);
+  char s2[] = "abcdef";
+  int pos2 = 1;
+  test_c_insert_substr_from(s2, "xxx", &pos2, 0);
+  char s3[] = "abc";
+  int pos3 = 1;
+  test_c_insert_substr_from(s3, "", &pos3, 0);
+}
+
 int main(void) {
   printf("\nc_strlen tests started!\n");
   all_tests_c_strlen();
@@ -543,6 +599,15 @@ int main(void) {
 
   printf("\nc_sort_chars tests started!\n");
   all_tests_c_sort_chars();
+
+  printf("\nc_detab tests started!\n");
+  all_tests_c_detab();
+
+  printf("\nc_entab tests started!\n");
+  all_tests_c_entab();
+
+  printf("\nc_insert_substr_from tests started!\n");
+  all_tests_c_insert_substr_from();
 
   printf("\nAll tests passed!\n");
 
