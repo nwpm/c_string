@@ -63,6 +63,24 @@ void c_invert_symbols(char s[]) {
   }
 }
 
+// TODO: documentation for return codes
+int c_insert_substr_from(char *to, const char *substr, int *insert_from) {
+
+  const int str_size = c_strlen(to) + STR_END_SYMBOL;
+  const int substr_size = c_strlen(substr);
+
+  if (*insert_from + substr_size > str_size) {
+    // Not enough space for substr
+    return -1;
+  }
+
+  for (int i = 0; substr[i] != '\0'; ++i) {
+    to[(*insert_from)++] = substr[i];
+  }
+
+  return 0;
+}
+
 void c_delete_spaces(char s[]) {
 
   int j = 0;
@@ -76,10 +94,44 @@ void c_delete_spaces(char s[]) {
   s[j] = '\0';
 }
 
-// TODO:Does not work properly
-// void c_entab(char s[], const int space_for_tab) {}
+void c_entab(char s[], const int space_for_tab) {
+  const int buffer_size = space_for_tab + STR_END_SYMBOL;
+  char buffer[buffer_size];
+  _c_init_char_arr(buffer, '\0', buffer_size);
 
+  int buff_i = 0;
+  int k = 0;
+  for (int i = 0; s[i] != '\0'; ++i) {
+    // Check - is buffer full
+    if (buffer[buffer_size - 2] != '\0') {
+      if (_c_is_string_of_spaces(buffer)) {
+        s[k++] = '\t';
+      } else {
+        c_insert_substr_from(s, buffer, &k);
+      }
+      // Clear buffer and index
+      _c_init_char_arr(buffer, '\0', buffer_size);
+      buff_i = 0;
+    }
+
+    buffer[buff_i++] = s[i];
+  }
+
+  if (!c_is_empty_string(buffer)) {
+    c_insert_substr_from(s, buffer, &k);
+  }
+
+  s[k] = '\0';
+}
+
+/*c_detab The main disadvantage is that we work only in the original buffer
+ * (string) and if its size is not enough to store the converted string, the
+ * function will not work.*/
 void c_detab(char s[], const int space_for_tab) {
+
+  if (c_is_empty_string(s)) {
+    return;
+  }
 
   // Find number of tabs
   int number_of_tabs = _c_count_tabs(s);
@@ -88,9 +140,13 @@ void c_detab(char s[], const int space_for_tab) {
     return;
   }
 
+  // Formula of size new string
+  // 1. Find number of chars without tabs
+  // 2. Calculate the number of spaces that will replace tabs
+  // 3. Result = (1) + (2) points
   const int original_string_size = c_strlen(s) + STR_END_SYMBOL;
-  const int size_new_string =
-      original_string_size + (number_of_tabs * space_for_tab);
+  const int size_new_string = (original_string_size - number_of_tabs) +
+                              (number_of_tabs * space_for_tab);
 
   char string_without_tabs[size_new_string];
 
@@ -202,12 +258,12 @@ void c_reverse_word_order(char s[], const char delim) {
   s[k] = '\0';
 }
 
-int c_is_empty_string(const char s[]) { return !c_strcmp(s, ""); }
+int c_is_empty_string(const char s[]) { return !c_strlen(s); }
 
 int c_is_string_of_digits(const char s[]) {
 
   if (c_is_empty_string(s)) {
-    return 0;
+    return FALSE;
   }
 
   int is_all_digits = TRUE;
