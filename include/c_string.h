@@ -31,14 +31,17 @@ void c_delete_punctuation(char s[]);
 void c_sort_chars(char s[]);
 void c_detab(char s[], const int space_for_tab);
 void c_entab(char s[], const int space_for_tab);
+void c_insert_substr_from(char *to, const char *substr, int *insert_from);
+void c_reverse_word_order(char s[], const char delim);
+void c_delete_word_duplicate(char *s);
+void c_strtok(char *s, const int cols, char (*result)[cols], const char delim);
+void c_sort_words(char *s);
 
 /////
 
-int c_insert_substr_from(char *to, const char *substr, int *insert_from);
-
-void c_strtok(char s[], char **result, const char delim);
-void c_reverse_word_order(char s[], const char delim);
-void c_sort_words(char s[]);
-void c_delete_word_duplicate(char s[]);
+int c_strstr(char *s);
+int c_num_substr(char *s, const char *substr);
+void c_atoi(char *s);
+void c_itoa(int num);
 
 #endif // !C_STRING_H
