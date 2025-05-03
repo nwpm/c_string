@@ -74,7 +74,6 @@ int _c_get_size_arr2d(const int cols, char (*arr_words)[cols]) {
 
 void _c_get_arr_of_words(const int cols, char (*arr_words)[cols],
                          const char s[]) {
-  // TODO Make dynamic array_of_words
   int in_word = FALSE;
   int words_index = 0;
   int char_index = 0;
@@ -93,6 +92,7 @@ void _c_get_arr_of_words(const int cols, char (*arr_words)[cols],
     }
   }
 
+  // Add '\0' if we stil in word
   if (in_word) {
     arr_words[words_index][char_index] = '\0';
   }
@@ -144,5 +144,39 @@ void _c_insert_char_sort(char s[]) {
 void _c_insert_n_spaces(char s[], const int num_spaces, int *insert_from) {
   for (int k = num_spaces; k != 0; --k) {
     s[(*insert_from)++] = ' ';
+  }
+}
+
+int _c_is_string_of_spaces(char *s) {
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (!c_is_space(s[i])) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+void _c_delete_duplicate_str_arr2d(const int rows, const int cols,
+                                   char (*arr_words)[cols]) {
+  for (int i = 0; i < rows - 1; ++i) {
+    for (int j = i + 1; j < rows; ++j) {
+      if (c_strcmp(arr_words[i], arr_words[j]) == 0) {
+        arr_words[j][0] = '\0';
+      }
+    }
+  }
+}
+
+void _sort_words_arr2d(const int rows, const int cols,
+                       char (*arr_words)[cols]) {
+  for (int i = 1; i < rows; ++i) {
+    char key[cols];
+    c_strcpy(key, arr_words[i]);
+    int j = i - 1;
+    while (j >= 0 && c_strcmp(arr_words[j], key) > 0) {
+      c_strcpy(arr_words[j + 1], arr_words[j]);
+      --j;
+    }
+    c_strcpy(arr_words[j + 1], key);
   }
 }
