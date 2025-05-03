@@ -39,4 +39,11 @@ void _c_change_letter_size(char s[], int bottom_border, int upper_border,
 
 void _c_insert_n_spaces(char s[], const int num_spaces, int *insert_from);
 
+int _c_is_string_of_spaces(char *s);
+
+void _c_delete_duplicate_str_arr2d(const int rows, const int cols,
+                                   char (*arr_words)[cols]);
+
+void _sort_words_arr2d(const int rows, const int cols, char (*arr_words)[cols]);
+
 #endif // !_STR_INTERNAL_H
