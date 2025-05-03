@@ -1,13 +1,13 @@
 #TODO
 
 ## Bugs
--[] c_delete_word_duplicate. Work incorrect
-
+-[*] c_delete_word_duplicate. Work incorrect
+-[] c_first_unique_char have bug
 
 ## Features
--[] c_strtok. Add the execution result to the array
+-[*] c_strtok. Add the execution result to the array
 -[] c_sort_words. Add implementation
--[] c_entab. Add implementation
+-[*] c_entab. Add implementation
 
 # Tests
 -[] Write test for c_invert_symbols
@@ -15,9 +15,10 @@
 -[] Write test for c_delete_punctuation
 -[] Write test for c_reverse
 -[*] Write test for c_trim
--[] Write test for c_detab
+-[*] Write test for c_detab
 -[] Write test for c_reverse_word_order
 -[] Write test for c_sort_chars
+-[] Tests for c_insert_substr_from
 
 
 ## Refactoring
@@ -31,4 +32,43 @@
 -[*] Optimize c_strlen, c_strcmp, c_detab, 
      c_change_char_to work for all string // 26.04.2025
 -[*] Opimize c_is_palindrome, c_first_unique_char, delete c_count_symbols, refactor c_is_symbol, c_delete_punctuation, tests for c_trim, c_reverse, c_delete_punctuation, c_sort_chars // 30.04.2025
+
+-[*] tests.c() 
+      - added tests for c_detab
+      - added tests for c_entab
+     c_string.c
+      - comments for c_detab
+      - definition of c_insert_substr_from
+      - definition of c_detab
+     c_string.h
+      - declaration of c_insert_substr_from
+
+// 01.05.2025
+
+-[*] c_string.c  
+      -Change c_insert_substr_from. 'to' buffer must have enough space for 'substr'
+      -c_reverse_word_order now don't add delim in the end
+      -c_delete_word_duplicate added realization
+      -c_strtok added realization
+      -c_sort_words added realization
+     tests.c
+      -c_insert_substr_from
+      -c_reverse_word_order
+     c_string.h
+      -added declarations for c_strstr
+      - c_num_substr
+      - c_atoi
+      - c_itoa
+// 03.05.2025
+     
+
+
+
+
+
+
+
+
+
+
 
