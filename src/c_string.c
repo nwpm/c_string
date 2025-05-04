@@ -65,10 +65,12 @@ void c_invert_symbols(char s[]) {
 
 // Required: The `to` buffer must have enough space for the entire `substr`,
 // starting at position *insert_from, including the terminating '\0'
-void c_insert_substr_from(char *to, const char *substr, int *insert_from) {
+void c_insert_str_from(char *to, const char *substr, const int insert_from) {
+
+  int copy_insert_from = insert_from;
 
   for (int i = 0; substr[i] != '\0'; ++i) {
-    to[(*insert_from)++] = substr[i];
+    to[copy_insert_from++] = substr[i];
   }
 }
 
@@ -98,7 +100,7 @@ void c_entab(char s[], const int space_for_tab) {
       if (_c_is_string_of_spaces(buffer)) {
         s[k++] = '\t';
       } else {
-        c_insert_substr_from(s, buffer, &k);
+        _c_insert_str_from(s, buffer, &k);
       }
       // Clear buffer and index
       _c_init_char_arr(buffer, '\0', buffer_size);
@@ -109,7 +111,7 @@ void c_entab(char s[], const int space_for_tab) {
   }
 
   if (!c_is_empty_string(buffer)) {
-    c_insert_substr_from(s, buffer, &k);
+    _c_insert_str_from(s, buffer, &k);
   }
 
   s[k] = '\0';
@@ -448,4 +450,114 @@ void c_sort_words(char *s) {
   }
 
   s[k] = '\0';
+}
+
+int c_strstr(const char *s, const char *substr) {
+  const int SUBSTR_LEN = c_strlen(substr);
+  const int STR_LEN = c_strlen(s);
+  const int BUFF_SIZE = SUBSTR_LEN + STR_END_SYMBOL;
+  int k = 0;
+  char buff[BUFF_SIZE];
+  _c_init_char_arr(buff, '\0', BUFF_SIZE);
+
+  for (int i = 0; i <= STR_LEN - SUBSTR_LEN; ++i) {
+    for (int j = i; j < i + SUBSTR_LEN; ++j) {
+      buff[k++] = s[j];
+    }
+
+    if (c_strcmp(buff, substr) == 0) {
+      return i;
+    }
+    k = 0;
+  }
+
+  return -1;
+}
+
+int c_num_substr(const char *s, const char *substr) {
+  const int SUBSTR_LEN = c_strlen(substr);
+  const int STR_LEN = c_strlen(s);
+  const int FAIL_RESULT_STR = -1;
+
+  int res = 0;
+
+  for (int i = 0; i <= STR_LEN - SUBSTR_LEN;) {
+    if (c_strstr(s + i, substr) != FAIL_RESULT_STR) {
+      ++res;
+      i += SUBSTR_LEN;
+    } else {
+      ++i;
+    }
+  }
+
+  return res;
+}
+
+// Size substr_new must be same as substr_old
+void c_str_replace_first(char *s, const char *substr_old,
+                         const char *substr_new) {
+  const int FAIL_RESULT_STR = -1;
+  const int STRSTR_RES = c_strstr(s, substr_old);
+
+  if (STRSTR_RES != FAIL_RESULT_STR) {
+    c_insert_str_from(s, substr_new, STRSTR_RES);
+  }
+}
+
+// Size substr_new must be same as substr_old
+void c_str_replace_all(char *s, const char *substr_old,
+                       const char *substr_new) {
+  const int SUBSTR_LEN = c_strlen(substr_old);
+  const int STR_LEN = c_strlen(s);
+
+  for (int i = 0; i < STR_LEN; i += SUBSTR_LEN) {
+    c_str_replace_first(s + i, substr_old, substr_new);
+  }
+}
+
+// Size substr_new must be same as substr_old
+void c_str_replace_n(char *s, const char *substr_old, const char *substr_new,
+                     const int n) {
+  const int SUBSTR_LEN = c_strlen(substr_old);
+  int k = 0;
+  for (int i = 0; i < n; ++i) {
+    c_str_replace_first(s + k, substr_old, substr_new);
+    k += SUBSTR_LEN;
+  }
+}
+
+int c_is_anagrams(const char *s1, const char *s2) {
+  const int s1_len = c_strlen(s1);
+  const int s2_len = c_strlen(s2);
+
+  if (s1_len == s2_len) {
+
+    const int str_size = s1_len;
+    char s1_copy[str_size + STR_END_SYMBOL];
+    char s2_copy[str_size + STR_END_SYMBOL];
+
+    s1_copy[str_size] = '\0';
+    s2_copy[str_size] = '\0';
+
+    c_strcpy(s1_copy, s1);
+    c_strcpy(s2_copy, s2);
+
+    c_to_lower(s1_copy);
+    c_to_lower(s2_copy);
+
+    for (int i = 0; s1_copy[i] != '\0'; ++i) {
+      if (!c_is_char_in_string(s2_copy, s1_copy[i])) {
+        return FALSE;
+      }
+    }
+  }
+
+  return TRUE;
+}
+
+int c_atoi(const char *s) {
+  int res = 0;
+  for (int i = 0; s[i] != '\0'; ++i) {
+  }
+  return 1;
 }
