@@ -46,4 +46,6 @@ void _c_delete_duplicate_str_arr2d(const int rows, const int cols,
 
 void _sort_words_arr2d(const int rows, const int cols, char (*arr_words)[cols]);
 
+void _c_insert_str_from(char *s, const char *str, int *insert_from);
+
 #endif // !_STR_INTERNAL_H
