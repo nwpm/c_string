@@ -180,3 +180,10 @@ void _sort_words_arr2d(const int rows, const int cols,
     c_strcpy(arr_words[j + 1], key);
   }
 }
+
+void _c_insert_str_from(char *s, const char *substr, int *insert_from) {
+
+  for (int i = 0; substr[i] != '\0'; ++i) {
+    s[(*insert_from)++] = substr[i];
+  }
+}
