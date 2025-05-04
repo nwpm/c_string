@@ -61,6 +61,18 @@
       - c_itoa
 // 03.05.2025
      
+-[*] c_string.c
+      -added realizations for c_strstr, c_num_substr, c_str_replace_first,
+       c_str_replace_all , c_str_replace_n, c_is_anagrams
+     c_string.h
+      -added declarations for c_strstr
+      - c_str_replace_first, all , n
+      - c_is_anagrams
+     _str_internal.h 
+      -added declaration for _c_insert_str_from
+     _str_internal.c 
+      -added definition for _c_insert_str_from
+// 04.05.2025
 
 
 
