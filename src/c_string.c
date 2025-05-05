@@ -555,9 +555,43 @@ int c_is_anagrams(const char *s1, const char *s2) {
   return TRUE;
 }
 
+// TODO:
+// -separete function for copy and init string
+// -give the result taking into account the sign in the string
 int c_atoi(const char *s) {
+
+  const int str_size = c_strlen(s);
+  char copy_str[str_size + STR_END_SYMBOL];
+  copy_str[str_size] = '\0';
+  c_strcpy(copy_str, s);
+  c_reverse(copy_str);
+
   int res = 0;
-  for (int i = 0; s[i] != '\0'; ++i) {
+  int exp_ten = 1;
+
+  for (int i = 0; copy_str[i] != '\0'; ++i) {
+    if (c_is_digit(copy_str[i])) {
+      res += (copy_str[i] - '0') * exp_ten;
+      exp_ten *= 10;
+    }
   }
-  return 1;
+
+  return res;
+}
+
+// Required: s must have enough size for num
+void c_itoa(const int num, char *s) {
+
+  int copy_num = num;
+  int delim = 10;
+  int i = 0;
+
+  do {
+    int tmp = copy_num % delim;
+    s[i] = tmp + '0';
+    ++i;
+
+  } while (copy_num /= delim);
+
+  c_reverse(s);
 }
