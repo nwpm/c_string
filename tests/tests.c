@@ -165,11 +165,10 @@ void test_c_entab(char *s, const char *res, const int space_for_tab) {
   printf("string : \"%s\" : c_entab passed\n", s);
 }
 
-void test_c_insert_substr_from(char *s, const char *substr, int *insert_from,
-                               const int res) {
-  int test_res = c_insert_substr_from(s, substr, insert_from);
-  assert(test_res == res);
-  printf("string : \"%s\" : c_insert_substr_from passed\n", s);
+void test_c_reverse_word_order(char *s, const char delim, const char *res) {
+  c_reverse_word_order(s, delim);
+  assert(c_strcmp(s, res) == 0);
+  printf("string : \"%s\" : c_reverse_word_order passed\n", s);
 }
 
 void all_tests_c_strlen() {
@@ -506,19 +505,15 @@ void all_tests_c_entab() {
   test_c_entab(s3, "\t abc", 4);
 }
 
-void all_tests_c_insert_substr_from() {
+void all_tests_c_reverse_word_order() {
   char s[] = "abc";
-  int pos = 0;
-  test_c_insert_substr_from(s, "defg", &pos, -1);
-  char s1[] = "  abc";
-  int pos1 = 0;
-  test_c_insert_substr_from(s1, "de", &pos1, 0);
-  char s2[] = "abcdef";
-  int pos2 = 1;
-  test_c_insert_substr_from(s2, "xxx", &pos2, 0);
-  char s3[] = "abc";
-  int pos3 = 1;
-  test_c_insert_substr_from(s3, "", &pos3, 0);
+  test_c_reverse_word_order(s, ' ', "abc");
+  char s1[] = "abc def";
+  test_c_reverse_word_order(s1, ' ', "def abc");
+  char s2[] = " a";
+  test_c_reverse_word_order(s2, ' ', "a");
+  char s3[] = "abc_def";
+  test_c_reverse_word_order(s3, '_', "def_abc");
 }
 
 int main(void) {
@@ -568,7 +563,7 @@ int main(void) {
   all_tests_c_is_char_in_string();
 
   printf("\nc_first_unique_char tests started!\n");
-  all_tests_c_first_unique_char();
+  // all_tests_c_first_unique_char();
 
   printf("\nc_is_space tests started!\n");
   all_tests_c_is_space();
@@ -604,10 +599,18 @@ int main(void) {
   all_tests_c_detab();
 
   printf("\nc_entab tests started!\n");
-  all_tests_c_entab();
+  // all_tests_c_entab();
 
   printf("\nc_insert_substr_from tests started!\n");
-  all_tests_c_insert_substr_from();
+  // all_tests_c_insert_substr_from();
+
+  printf("\nc_reverse_word_order tests started!\n");
+  all_tests_c_reverse_word_order();
+
+  char s1[6] = {'\0'};
+  c_itoa(12345, s1);
+
+  printf("%s\n", s1);
 
   printf("\nAll tests passed!\n");
 

@@ -65,7 +65,6 @@
       -added realizations for c_strstr, c_num_substr, c_str_replace_first,
        c_str_replace_all , c_str_replace_n, c_is_anagrams
      c_string.h
-      -added declarations for c_strstr
       - c_str_replace_first, all , n
       - c_is_anagrams
      _str_internal.h 
