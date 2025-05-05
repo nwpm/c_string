@@ -11,6 +11,8 @@ int c_is_char_in_string(const char s[], const char chr);
 int c_first_unique_char(const char s[]);
 int c_strstr(const char *s, const char *substr);
 int c_num_substr(const char *s, const char *substr);
+int c_atoi(const char *s);
+int c_is_anagrams(const char *s1, const char *s2);
 
 int c_is_punct_char(const char c);
 int c_is_letter(const char c);
@@ -43,11 +45,6 @@ void c_str_replace_first(char *s, const char *substr_old,
 void c_str_replace_all(char *s, const char *substr_old, const char *substr_new);
 void c_str_replace_n(char *s, const char *substr_old, const char *substr_new,
                      const int n);
-int c_is_anagrams(const char *s1, const char *s2);
-
-/////
-
-int c_atoi(const char *s);
-void c_itoa(int num);
+void c_itoa(const int num, char *s);
 
 #endif // !C_STRING_H
