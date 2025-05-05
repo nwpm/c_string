@@ -74,6 +74,11 @@
       -added definition for _c_insert_str_from
 // 04.05.2025
 
+-[*] c_string.c
+      -added realizations for c_atoi, c_itoa
+// 05.05.2025
+
+-[*] started 2 new, separate branches for memory and optimizations
 
 
 
