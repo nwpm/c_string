@@ -1,25 +1,27 @@
 #ifndef C_STRING_H
 #define C_STRING_H
 
-int c_strlen(const char s[]);
-int c_strcmp(const char first[], const char second[]);
-int c_remove_digits(char s[]);
-int c_is_string_of_digits(const char s[]);
-int c_is_palindrom(const char s[]);
-int c_count_words(const char s[]);
-int c_is_char_in_string(const char s[], const char chr);
-int c_first_unique_char(const char s[]);
+#include "../src/internal/_c_common.h"
+
+int c_strlen(const char *s);
+int c_strcmp(const char *first, const char *second);
+int c_remove_digits(char *s);
+int c_count_words(const char *s);
+int c_first_unique_char(const char *s);
 int c_strstr(const char *s, const char *substr);
 int c_num_substr(const char *s, const char *substr);
 int c_atoi(const char *s);
 int c_is_anagrams(const char *s1, const char *s2);
 
+qboolean c_is_palindrom(const char *s);
+qboolean c_is_string_of_digits(const char *s);
 int c_is_punct_char(const char c);
 int c_is_letter(const char c);
 int c_is_digit(const char c);
 int c_is_space(const char c);
 int c_is_tab(const char c);
 int c_is_empty_string(const char s[]);
+qboolean c_is_char_in_string(const char *s, const char chr);
 
 void c_delete_duplicates(char s[]);
 void c_delete_spaces(char s[]);
