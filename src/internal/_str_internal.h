@@ -1,31 +1,19 @@
 #ifndef _STR_INTERNAL_H
 #define _STR_INTERNAL_H
 
-static const int LOWER_LETTER_START = 97;
-static const int LOWER_LETTER_END = 122;
+#include "_c_common.h"
 
-static const int UPPER_LETTER_START = 65;
-static const int UPPER_LETTER_END = 90;
-
-static const int TRUE = 1;
-static const int FALSE = 0;
-
-static const int STR_END_SYMBOL = 1;
-
-static const int DIFFERENCE_LETTERS_SIZE = 32;
-
-static const char END_SYMBOL = '\0';
-
+// TODO: enum in _c_common.h?
 enum _operation_type { PLUS = 1, MINUS = 2 };
 
-int _c_compare_symbols(const char first[], const char second[], int min_length);
 int _c_count_tabs(char s[]);
-int _c_get_size_arr2d(const int cols, char (*arr_words)[cols]);
+int _c_get_size_arr2d(const int rows, const int cols, char (*arr_words)[cols]);
 
 void _c_delete_from_str(char s[], int expression_res);
 void _c_init_char_arr(char s[], char init_by, const int arr_size);
 void _c_init_char_arr2d(char init_by, const int rows, const int cols,
                         char (*arr_words)[cols]);
+// TODO: set new name of function
 void _c_get_arr_of_words(const int cols, char (*arr_words)[cols],
                          const char s[]);
 void _c_get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
