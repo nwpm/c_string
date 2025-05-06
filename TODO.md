@@ -80,7 +80,18 @@
 
 -[*] started 2 new, separate branches for memory and optimizations
 
-
+-[*] _str_internal.h 
+     -remove compare_symbols
+     -change parametrs for _get_size_arr2d
+     _str_internal.c
+     -remove compare_symbols
+     -new parametr for _get_size_arr2d - rows
+     c_string.c
+     -refactor c_strlen, c_strcmp, c_remove_digits, c_is_string_of_digits, c_count_words
+      c_char_in_string, c_first_unique_char, c_strstr, c_num_substr
+     -added new typedef qboolean and added his for c_is_palindrome, c_is_string_of_digits
+     _c_common.h
+     -separate file for const and typedef
 
 
 
