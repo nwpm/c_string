@@ -20,19 +20,6 @@ void _c_change_letter_size(char s[], int bottom_border, int upper_border,
   }
 }
 
-// difference > 0 -> first
-// difference < 0 -> second
-int _c_compare_symbols(const char first[], const char second[],
-                       int min_length) {
-  for (int i = 0; i < min_length; ++i) {
-    int difference = first[i] - second[i];
-    if (difference) {
-      return difference;
-    }
-  }
-  return 0;
-}
-
 int _c_count_tabs(char s[]) {
 
   int number_of_tabs = 0;
@@ -64,9 +51,9 @@ void _c_init_char_arr2d(char init_by, const int rows, const int cols,
   }
 }
 
-int _c_get_size_arr2d(const int cols, char (*arr_words)[cols]) {
+int _c_get_size_arr2d(const int rows, const int cols, char (*arr_words)[cols]) {
   int result = 0;
-  for (int i = 0; arr_words[i][0] != '\0'; ++i) {
+  for (int i = 0; i < rows && arr_words[i][0] != '\0'; ++i) {
     result++;
   }
   return result;
