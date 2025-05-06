@@ -1,7 +1,8 @@
 #include "../include/c_string.h" // better way to include?
+#include "internal/_c_common.h"
 #include "internal/_str_internal.h"
 
-int c_strlen(const char s[]) {
+int c_strlen(const char *s) {
   int i = 0;
   while (s[i] != '\0') {
     ++i;
@@ -37,19 +38,12 @@ void c_to_upper(char s[]) {
   _c_change_letter_size(s, LOWER_LETTER_START, LOWER_LETTER_END, MINUS);
 }
 
-int c_strcmp(const char first[], const char second[]) {
-
-  const int size_first = (c_strlen(first) + STR_END_SYMBOL);
-  const int size_second = (c_strlen(second) + STR_END_SYMBOL);
-
-  if (size_first == size_second) {
-    return _c_compare_symbols(first, second, size_first);
+int c_strcmp(const char *first, const char *second) {
+  while (*first && (*first == *second)) {
+    ++first;
+    ++second;
   }
-
-  const int shorter_size =
-      (size_first >= size_second) ? size_first : size_second;
-
-  return _c_compare_symbols(first, second, shorter_size);
+  return *first - *second;
 }
 
 void c_invert_symbols(char s[]) {
@@ -88,7 +82,7 @@ void c_delete_spaces(char s[]) {
 }
 
 void c_entab(char s[], const int space_for_tab) {
-  const int buffer_size = space_for_tab + STR_END_SYMBOL;
+  const int buffer_size = space_for_tab + SIZE_END_SYMBOL;
   char buffer[buffer_size];
   _c_init_char_arr(buffer, '\0', buffer_size);
 
@@ -137,7 +131,7 @@ void c_detab(char s[], const int space_for_tab) {
   // 1. Find number of chars without tabs
   // 2. Calculate the number of spaces that will replace tabs
   // 3. Result = (1) + (2) points
-  const int original_string_size = c_strlen(s) + STR_END_SYMBOL;
+  const int original_string_size = c_strlen(s) + SIZE_END_SYMBOL;
   const int size_new_string = (original_string_size - number_of_tabs) +
                               (number_of_tabs * space_for_tab);
 
@@ -172,7 +166,7 @@ void c_delete_punctuation(char s[]) {
 
 void c_reverse(char s[]) {
 
-  int j = c_strlen(s) - STR_END_SYMBOL;
+  int j = c_strlen(s) - SIZE_END_SYMBOL;
 
   for (int i = 0; i <= j; ++i, --j) {
     _c_swap_char(s + i, s + j);
@@ -188,46 +182,34 @@ void c_change_char_to(char s[], const char from_char, const char to_char) {
   }
 }
 
-int c_remove_digits(char s[]) {
+int c_remove_digits(char *s) {
 
-  int j = 0;
   int num_digits_removed = 0;
-  const int copy_string_size = c_strlen(s) + STR_END_SYMBOL;
 
-  char string_without_nums[copy_string_size];
-
+  int k = 0;
   for (int i = 0; s[i] != '\0'; ++i) {
-    if (!(s[i] >= '0' && s[i] <= '9')) {
-      string_without_nums[j++] = s[i];
+    if (c_is_digit(s[i])) {
+      ++num_digits_removed;
     } else {
-      num_digits_removed++;
+      s[k++] = s[i];
     }
   }
-
-  string_without_nums[j] = '\0';
-
-  c_strcpy(s, string_without_nums);
+  s[k] = '\0';
 
   return num_digits_removed;
 }
 
-// Two bottom functions use char [][] instead of char **
-int c_count_words(const char s[]) {
+// use-stdlib-memory Two bottom functions use char [][] instead of char **
+int c_count_words(const char *s) {
 
   // TODO: If we want make dynamic array_of_words
   // must include <stdlib.h>
   const int length_string = c_strlen(s);
   char arr_words[length_string][length_string];
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
-
-  int result = 0;
   _c_get_arr_of_words(length_string, arr_words, s);
 
-  for (int i = 0; arr_words[i][0] != '\0'; ++i) {
-    result++;
-  }
-
-  return result;
+  return _c_get_size_arr2d(length_string, length_string, arr_words);
 }
 
 // Don't save order of spaces. Trim string
@@ -238,7 +220,7 @@ void c_reverse_word_order(char s[], const char delim) {
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
   _c_get_words_arr_by_delim(length_string, arr_words, s, delim);
 
-  int num_words = _c_get_size_arr2d(length_string, arr_words);
+  int num_words = _c_get_size_arr2d(length_string, length_string, arr_words);
 
   int k = 0;
   for (int i = num_words - 1; i >= 0; --i) {
@@ -256,38 +238,37 @@ void c_reverse_word_order(char s[], const char delim) {
 
 int c_is_empty_string(const char s[]) { return !c_strlen(s); }
 
-int c_is_string_of_digits(const char s[]) {
+qboolean c_is_string_of_digits(const char *s) {
 
   if (c_is_empty_string(s)) {
     return FALSE;
   }
 
-  int is_all_digits = TRUE;
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (!((s[i] >= '0') && (s[i] <= '9'))) {
-      return !is_all_digits;
+  while (*s) {
+    if (!c_is_digit(*s)) {
+      return FALSE;
     }
+    ++s;
   }
 
-  return is_all_digits;
+  return TRUE;
 }
 
-int c_is_char_in_string(const char s[], const char chr) {
+qboolean c_is_char_in_string(const char *s, const char chr) {
 
-  int char_in_string = TRUE;
-
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (s[i] == chr) {
-      return char_in_string;
+  while (*s) {
+    if (*s == chr) {
+      return TRUE;
     }
+    ++s;
   }
 
-  return !char_in_string;
+  return FALSE;
 }
 
 void c_delete_duplicates(char s[]) {
 
-  const int cleaned_string_size = c_strlen(s) + STR_END_SYMBOL;
+  const int cleaned_string_size = c_strlen(s) + SIZE_END_SYMBOL;
   char cleaned_string[cleaned_string_size];
   _c_init_char_arr(cleaned_string, '\0', cleaned_string_size);
 
@@ -304,21 +285,21 @@ void c_delete_duplicates(char s[]) {
   c_strcpy(s, cleaned_string);
 }
 
-int c_is_palindrom(const char s[]) {
+qboolean c_is_palindrom(const char *s) {
 
   if (c_is_empty_string(s)) {
     return FALSE;
   }
 
-  int j = c_strlen(s) - 1;
-  int i = 0;
+  int end_index = c_strlen(s) - 1;
+  int start_index = 0;
 
-  while (i < j) {
-    if (s[i] != s[j]) {
+  while (start_index < end_index) {
+    if (s[start_index] != s[end_index]) {
       return FALSE;
     } else {
-      i++;
-      j--;
+      start_index++;
+      end_index--;
     }
   }
 
@@ -327,24 +308,18 @@ int c_is_palindrom(const char s[]) {
 
 void c_sort_chars(char s[]) { _c_insert_char_sort(s); }
 
-int c_first_unique_char(const char s[]) {
+int c_first_unique_char(const char *s) {
 
-  const int copy_size = c_strlen(s) + 1;
-  char copy_string[copy_size];
-  copy_string[copy_size] = '\0';
+  char count[256] = {0};
 
-  c_strcpy(copy_string, s);
-  c_delete_duplicates(copy_string);
+  for (int i = 0; s[i] != '\0'; ++i) {
+    unsigned char c = (unsigned char)s[i];
+    count[c]++;
+  }
 
-  for (int i = 0; copy_string[i] != '\0'; ++i) {
-    int num_of_char = 0;
-    for (int j = 0; s[j] != '\0'; ++j) {
-      if (copy_string[i] == s[j]) {
-        num_of_char++;
-      }
-    }
-    if (num_of_char == 1) {
-      return copy_string[i];
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (count[(unsigned char)s[i]] == 1) {
+      return i;
     }
   }
 
@@ -377,11 +352,11 @@ void c_trim(char s[]) {
     return;
   }
 
-  const int copy_size = c_strlen(s) + STR_END_SYMBOL;
+  const int copy_size = c_strlen(s) + SIZE_END_SYMBOL;
   char trimmed_copy[copy_size];
 
   int i = 0;
-  int j = c_strlen(s) - STR_END_SYMBOL;
+  int j = c_strlen(s) - SIZE_END_SYMBOL;
 
   while (c_is_space(s[i]) || c_is_tab(s[i])) {
     ++i;
@@ -436,7 +411,7 @@ void c_sort_words(char *s) {
   char arr_words[length_string][length_string];
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
   _c_get_arr_of_words(length_string, arr_words, s);
-  int num_words = _c_get_size_arr2d(length_string, arr_words);
+  int num_words = _c_get_size_arr2d(length_string, length_string, arr_words);
   _sort_words_arr2d(num_words, length_string, arr_words);
 
   int k = 0;
@@ -455,7 +430,7 @@ void c_sort_words(char *s) {
 int c_strstr(const char *s, const char *substr) {
   const int SUBSTR_LEN = c_strlen(substr);
   const int STR_LEN = c_strlen(s);
-  const int BUFF_SIZE = SUBSTR_LEN + STR_END_SYMBOL;
+  const int BUFF_SIZE = SUBSTR_LEN + SIZE_END_SYMBOL;
   int k = 0;
   char buff[BUFF_SIZE];
   _c_init_char_arr(buff, '\0', BUFF_SIZE);
@@ -533,8 +508,8 @@ int c_is_anagrams(const char *s1, const char *s2) {
   if (s1_len == s2_len) {
 
     const int str_size = s1_len;
-    char s1_copy[str_size + STR_END_SYMBOL];
-    char s2_copy[str_size + STR_END_SYMBOL];
+    char s1_copy[str_size + SIZE_END_SYMBOL];
+    char s2_copy[str_size + SIZE_END_SYMBOL];
 
     s1_copy[str_size] = '\0';
     s2_copy[str_size] = '\0';
@@ -561,7 +536,7 @@ int c_is_anagrams(const char *s1, const char *s2) {
 int c_atoi(const char *s) {
 
   const int str_size = c_strlen(s);
-  char copy_str[str_size + STR_END_SYMBOL];
+  char copy_str[str_size + SIZE_END_SYMBOL];
   copy_str[str_size] = '\0';
   c_strcpy(copy_str, s);
   c_reverse(copy_str);
