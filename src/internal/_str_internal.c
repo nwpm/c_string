@@ -1,23 +1,11 @@
 #include "_str_internal.h"
 #include "../../include/c_string.h"
+#include "_c_common.h"
 
 void _c_swap_char(char *c1, char *c2) {
   char tmp_val = *c1;
   *c1 = *c2;
   *c2 = tmp_val;
-}
-
-void _c_change_letter_size(char s[], int bottom_border, int upper_border,
-                           enum _operation_type operation) {
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (((s[i] >= bottom_border) && (s[i] <= upper_border)) &&
-        (operation == PLUS)) {
-      s[i] += DIFFERENCE_LETTERS_SIZE;
-    } else if (((s[i] >= bottom_border) && (s[i] <= upper_border)) &&
-               (operation == MINUS)) {
-      s[i] -= DIFFERENCE_LETTERS_SIZE;
-    }
-  }
 }
 
 int _c_count_tabs(char s[]) {
@@ -112,13 +100,13 @@ void _c_get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
   }
 }
 
-void _c_insert_char_sort(char s[]) {
+void _c_sort_str_chars(char *s) {
 
   if (c_is_empty_string(s)) {
     return;
   }
 
-  for (int j = 1; s[j] != '\0'; ++j) {
+  for (int j = 1; s[j] != END_SYMBOL; ++j) {
     char key = s[j];
     int i = j - 1;
     for (; i >= 0 && s[i] > key; --i) {
