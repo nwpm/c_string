@@ -92,9 +92,19 @@
      -added new typedef qboolean and added his for c_is_palindrome, c_is_string_of_digits
      _c_common.h
      -separate file for const and typedef
+//06.05.2025
 
-
-
+-[*] c_stirng.h
+     - added qboolean res type for c_is_palindrome, c_is_string_of_digits, c_is_punct_char,
+     c_is_letter, c_is_digit, c_is_space, c_is_tab, c_is_empty_string, c_is_char_in_string, c_is_anagrams
+     c_string.c 
+     - reafctor c_atoi, c_isstring_of_digits, c_is_cahr_in_string, c_is_anagrams, c_delete_duplicates, c_invert_symbols, c_trim
+     _str_internal.h
+     - delete function _change_letter_size
+     - rename _c_insert_char_sort to _c_sort_str_chars
+     _str_internal.c
+     - delete function _change_letter_size
+//07.05.2025
 
 
 
