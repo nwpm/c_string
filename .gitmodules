@@ -1,0 +1,3 @@
+[submodule "tests/libs/unity"]
+	path = tests/libs/unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
