@@ -25,12 +25,14 @@ WARNINGS_LEVEL = -Wall -Wextra -Wpedantic
 DONT_OPTIMIZE = -O0
 MAX_OPTIMIZE = -O3
 # TODO: one var for flags
-DEBUG_CFLAGS = -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR)
+DEBUG_CFLAGS = -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR) -I$(UNITY_LIB_SRC)
 RELEASE_CFLAGS = $(MAX_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART)
+
+all : $(UNITY_BIN)/libunity.a $(DEBUG_BIN)/d_c_string.a $(DEBUG_TESTS_BIN)
 
 d_tests : $(DEBUG_TESTS_BIN)
 
-$(DEBUG_TESTS_BIN) : $(DEBUG_TESTS_OBJ) $(DEBUG_BIN)/d_c_string.a
+$(DEBUG_TESTS_BIN) : $(DEBUG_TESTS_OBJ) $(DEBUG_BIN)/d_c_string.a $(DEBUG_BIN)/libunity.a
 	$(CC) $(DEBUG_CFLAGS) $^ -o $@
 
 $(DEBUG_TESTS_OBJ) : $(TESTS_SRC) | $(DEBUG_OBJS)
@@ -55,6 +57,7 @@ unity_lib : $(UNITY_BIN)/libunity.a
 $(UNITY_BIN)/libunity.a : $(UNITY_BIN)
 	cd $(UNITY_BIN) && cmake ..
 	cd $(UNITY_BIN) && make
+	mv $(UNITY_BIN)/libunity.a $(DEBUG_BIN)/libunity.a
 
 $(UNITY_BIN) :
 	mkdir -p $@
