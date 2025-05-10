@@ -2,7 +2,14 @@
 #include "internal/_c_common.h"
 #include "internal/_str_internal.h"
 
+#define NULL 0
+
 int c_strlen(const char *s) {
+
+  if (s == NULL) {
+    return -1;
+  }
+
   int i = 0;
   while (s[i] != '\0') {
     ++i;
@@ -204,6 +211,10 @@ void c_change_char_all(char *s, const char from_char, const char to_char) {
 
 int c_remove_digits(char *s) {
 
+  if (s == NULL) {
+    return -1;
+  }
+
   int num_digits_removed = 0;
 
   int k = 0;
@@ -221,6 +232,10 @@ int c_remove_digits(char *s) {
 
 // use-stdlib-memory Two bottom functions use char [][] instead of char **
 int c_count_words(const char *s) {
+
+  if (s == NULL) {
+    return -1;
+  }
 
   // TODO: If we want make dynamic array_of_words
   // must include <stdlib.h>
@@ -330,6 +345,10 @@ void c_sort_chars(char *s) { _c_sort_str_chars(s); }
 
 int c_first_unique_char(const char *s) {
 
+  if (s == NULL) {
+    return -1;
+  }
+
   char count[256] = {0};
 
   for (int i = 0; s[i] != '\0'; ++i) {
@@ -343,7 +362,7 @@ int c_first_unique_char(const char *s) {
     }
   }
 
-  return -1;
+  return -2;
 }
 
 qboolean c_is_digit(const char c) {
