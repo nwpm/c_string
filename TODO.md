@@ -1,7 +1,7 @@
 #TODO
 
 # Bugs
--[] c_first_unique_char have bug
+-[] c_first_unique_char fix with stdlib stack-overflow problem
 
 # Features
 
@@ -9,7 +9,7 @@
 
 
 # Refactoring
--[] different flags for each "part". libunity, libcstring and tests
+-[*] different flags for each "part". libunity, libcstring and tests
 
 
 # Done
@@ -98,6 +98,17 @@
      unity lib.
 // 09.05.2025
 
+-[*] Makefile
+     - different flags for parts compilation
+     c_string.c
+     - correct work c_strlen with null parametr
+     tests.c
+     - c_strlen cases : all 
+     - c_strcmp cases : all
+     - c_remove_digits : all
+     - c_count_words : all
+     - c_first_unique_char : all
+// 10.05.2025
 
 
 
