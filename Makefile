@@ -24,8 +24,11 @@ STANDART = -std=c99
 WARNINGS_LEVEL = -Wall -Wextra -Wpedantic
 DONT_OPTIMIZE = -O0
 MAX_OPTIMIZE = -O3
-# TODO: one var for flags
-DEBUG_CFLAGS = -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR) -I$(UNITY_LIB_SRC)
+DEBUG_CFLAGS_ALL = -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR) -I$(UNITY_LIB_SRC)
+DEBUG_CFLAGS_CSTIRNG = -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR)
+DEBUG_CFLAGS_TESTS = -fsanitize=address -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR) -I$(UNITY_LIB_SRC)
+
+
 RELEASE_CFLAGS = $(MAX_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART)
 
 all : $(UNITY_BIN)/libunity.a $(DEBUG_BIN)/d_c_string.a $(DEBUG_TESTS_BIN)
@@ -33,10 +36,10 @@ all : $(UNITY_BIN)/libunity.a $(DEBUG_BIN)/d_c_string.a $(DEBUG_TESTS_BIN)
 d_tests : $(DEBUG_TESTS_BIN)
 
 $(DEBUG_TESTS_BIN) : $(DEBUG_TESTS_OBJ) $(DEBUG_BIN)/d_c_string.a $(DEBUG_BIN)/libunity.a
-	$(CC) $(DEBUG_CFLAGS) $^ -o $@
+	$(CC) $(DEBUG_CFLAGS_TESTS) $^ -o $@
 
 $(DEBUG_TESTS_OBJ) : $(TESTS_SRC) | $(DEBUG_OBJS)
-	$(CC) $(DEBUG_CFLAGS) -c $< -o $@
+	$(CC) $(DEBUG_CFLAGS_TESTS) -c $< -o $@
 
 d_lib : $(DEBUG_BIN)/d_c_string.a
 
@@ -44,10 +47,10 @@ $(DEBUG_BIN)/d_c_string.a : $(ALL_DEBUG_OBJS)
 	ar rcs $@ $^
 
 $(STR_DEBUG_OBJ) : $(SRC_DIR)/c_string.c | $(DEBUG_OBJS)
-	$(CC) $(DEBUG_CFLAGS) -c $< -o $@
+	$(CC) $(DEBUG_CFLAGS_CSTIRNG) -c $< -o $@
 
 $(INTERNAL_DEBUG_OBJ) : $(INTERNAL_DIR)/_str_internal.c | $(DEBUG_OBJS)
-	$(CC) $(DEBUG_CFLAGS) -c $< -o $@ 
+	$(CC) $(DEBUG_CFLAGS_CSTIRNG) -c $< -o $@ 
 
 $(DEBUG_OBJS) :
 	mkdir -p $@
