@@ -14,10 +14,10 @@ int c_atoi(const char *s);
 
 qboolean c_is_palindrom(const char *s);
 qboolean c_is_string_of_digits(const char *s);
-qboolean c_is_punct_char(const char c);
-qboolean c_is_letter(const char c);
-qboolean c_is_digit(const char c);
-qboolean c_is_space(const char c);
+qboolean c_is_punct_char(const unsigned char c);
+qboolean c_is_letter(const unsigned char c);
+qboolean c_is_digit(const unsigned char c);
+qboolean c_is_space(const unsigned char c);
 qboolean c_is_tab(const char c);
 qboolean c_is_empty_string(const char *s);
 qboolean c_is_char_in_string(const char *s, const char chr);
