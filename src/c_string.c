@@ -322,20 +322,25 @@ void c_delete_duplicates(char *s) {
 
 qboolean c_is_palindrom(const char *s) {
 
-  if (c_is_empty_string(s)) {
+  if (s == NULL || c_is_empty_string(s)) {
     return FALSE;
   }
 
-  int end_index = c_strlen(s) - 1;
+  const int len_str = c_strlen(s);
+
+  if (len_str == 1) {
+    return TRUE;
+  }
+
+  int end_index = len_str - 1;
   int start_index = 0;
 
   while (start_index < end_index) {
-    if (s[start_index] != s[end_index]) {
+    if (c_letter_to_lower(s[start_index]) != c_letter_to_lower(s[end_index])) {
       return FALSE;
-    } else {
-      start_index++;
-      end_index--;
     }
+    start_index++;
+    end_index--;
   }
 
   return TRUE;
@@ -365,22 +370,22 @@ int c_first_unique_char(const char *s) {
   return -2;
 }
 
-qboolean c_is_digit(const char c) {
+qboolean c_is_digit(const unsigned char c) {
   return (c >= '0' && c <= '9') ? TRUE : FALSE;
 }
 
-qboolean c_is_punct_char(const char c) {
+qboolean c_is_punct_char(const unsigned char c) {
   return ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') ||
           (c >= '[' && c <= '`') || (c >= '{' && c <= '~'))
              ? TRUE
              : FALSE;
 }
 
-qboolean c_is_space(const char c) { return (c == ' ') ? TRUE : FALSE; }
+qboolean c_is_space(const unsigned char c) { return (c == ' ') ? TRUE : FALSE; }
 
 qboolean c_is_tab(const char c) { return (c == '\t') ? TRUE : FALSE; }
 
-qboolean c_is_letter(const char c) {
+qboolean c_is_letter(const unsigned char c) {
   return ((c >= LOWER_LETTER_START && c <= LOWER_LETTER_END) ||
           (c >= UPPER_LETTER_START && c <= UPPER_LETTER_END))
              ? TRUE
@@ -465,44 +470,54 @@ void c_sort_words(char *s) {
 }
 
 int c_strstr(const char *s, const char *substr) {
-  const int SUBSTR_LEN = c_strlen(substr);
-  const int STR_LEN = c_strlen(s);
-  const int BUFF_SIZE = SUBSTR_LEN + SIZE_END_SYMBOL;
-  int k = 0;
-  char buff[BUFF_SIZE];
-  _c_init_char_arr(buff, '\0', BUFF_SIZE);
 
-  for (int i = 0; i <= STR_LEN - SUBSTR_LEN; ++i) {
-    for (int j = i; j < i + SUBSTR_LEN; ++j) {
-      buff[k++] = s[j];
-    }
-
-    if (c_strcmp(buff, substr) == 0) {
-      return i;
-    }
-    k = 0;
+  if (s == NULL || substr == NULL) {
+    return -1;
   }
 
+  if (c_is_empty_string(s) || c_is_empty_string(substr)) {
+    return -1;
+  }
+
+  int str_len = c_strlen(s);
+  int substr_len = c_strlen(substr);
+
+  for (int i = 0; i <= str_len - substr_len; ++i) {
+    int j = 0;
+    while (j < substr_len && s[i + j] == substr[j]) {
+      ++j;
+    }
+
+    if (j == substr_len) {
+      return i;
+    }
+  }
   return -1;
 }
 
 int c_num_substr(const char *s, const char *substr) {
-  const int SUBSTR_LEN = c_strlen(substr);
-  const int STR_LEN = c_strlen(s);
-  const int FAIL_RESULT_STR = -1;
 
-  int res = 0;
-
-  for (int i = 0; i <= STR_LEN - SUBSTR_LEN;) {
-    if (c_strstr(s + i, substr) != FAIL_RESULT_STR) {
-      ++res;
-      i += SUBSTR_LEN;
-    } else {
-      ++i;
-    }
+  if (s == NULL || substr == NULL) {
+    return -1;
   }
 
-  return res;
+  if (c_is_empty_string(s) || c_is_empty_string(substr)) {
+    return 0;
+  }
+
+  int count = 0;
+  int i = 0;
+
+  while (s[i] != '\0') {
+    int match_pos = c_strstr(s + i, substr);
+    if (match_pos < 0) {
+      break;
+    }
+    count++;
+    i += match_pos + 1;
+  }
+
+  return count;
 }
 
 // Size substr_new must be same as substr_old
@@ -576,30 +591,24 @@ qboolean c_is_anagrams(const char *s1, const char *s2) {
 
 int c_atoi(const char *s) {
 
-  // Create copy string
-  const int str_size = c_strlen(s);
-  char copy_str[str_size + SIZE_END_SYMBOL];
-  copy_str[str_size] = END_SYMBOL;
-  // Init copy by original string and reverse
-  c_strcpy(copy_str, s);
-  c_reverse(copy_str);
-
-  int res = 0;
-  int exp_ten = 1;
-
-  // Iterate for reverse copy
-  // If find digit add  digit * 10^n
-  // Take into account minus
-  for (int i = 0; copy_str[i] != '\0'; ++i) {
-    if (c_is_digit(copy_str[i])) {
-      res += (copy_str[i] - '0') * exp_ten;
-      exp_ten *= 10;
-    } else if (copy_str[i] == '-') {
-      res *= -1;
-    }
+  if (c_is_empty_string(s)) {
+    return 0;
   }
 
-  return res;
+  int res = 0;
+  int i = 0;
+  qboolean is_negative = FALSE;
+
+  if (s[i] == '-') {
+    i++;
+    is_negative = TRUE;
+  }
+
+  for (; s[i] != '\0' && c_is_digit(s[i]); ++i) {
+    res = (res * 10) + (s[i] - '0');
+  }
+
+  return is_negative ? -res : res;
 }
 
 // Required: s must have enough size for num
