@@ -50,40 +50,51 @@ void test_c_strlen_string_with_end_symbol(void) {
 }
 
 // c_strlen stress tests
-void test_c_strlen_with_generated_string(size_t size) {
+char *genarate_one_char_str(size_t size, const char c) {
   char *str = malloc(size + 1);
 
   TEST_ASSERT_NOT_NULL(str);
 
-  memset(str, 'a', size);
+  memset(str, c, size);
   str[size] = '\0';
 
-  TEST_ASSERT_EQUAL_INT((int)size, c_strlen(str));
-  free(str);
+  return str;
 }
 
 void test_c_strlen_string_size_1b(void) {
-  test_c_strlen_with_generated_string(1);
+  char *str = genarate_one_char_str(1, 'a');
+  TEST_ASSERT_EQUAL_INT(1, c_strlen(str));
+  free(str);
 }
 
 void test_c_strlen_string_size_1kb(void) {
-  test_c_strlen_with_generated_string(KB(1));
+  char *str = genarate_one_char_str(KB(1), 'a');
+  TEST_ASSERT_EQUAL_INT(KB(1), c_strlen(str));
+  free(str);
 }
 
 void test_c_strlen_string_size_4kb(void) {
-  test_c_strlen_with_generated_string(KB(4));
+  char *str = genarate_one_char_str(KB(4), 'a');
+  TEST_ASSERT_EQUAL_INT(KB(4), c_strlen(str));
+  free(str);
 }
 
 void test_c_strlen_string_size_1mb(void) {
-  test_c_strlen_with_generated_string(MB(1));
+  char *str = genarate_one_char_str(MB(1), 'a');
+  TEST_ASSERT_EQUAL_INT(MB(1), c_strlen(str));
+  free(str);
 }
 
 void test_c_strlen_string_size_10mb(void) {
-  test_c_strlen_with_generated_string(MB(10));
+  char *str = genarate_one_char_str(MB(10), 'a');
+  TEST_ASSERT_EQUAL_INT(MB(10), c_strlen(str));
+  free(str);
 }
 
 void test_c_strlen_string_size_50mb(void) {
-  test_c_strlen_with_generated_string(MB(50));
+  char *str = genarate_one_char_str(MB(50), 'a');
+  TEST_ASSERT_EQUAL_INT(MB(50), c_strlen(str));
+  free(str);
 }
 
 // --------------------
@@ -395,6 +406,293 @@ void test_c_first_unique_char_in_the_end_10mb(void) {
 
 //
 
+// ----------c_strstr----------
+
+// c_strstr valid unput data
+void test_c_strstr_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(1, c_strstr("abcdef", "bcd"));
+}
+
+void test_c_strstr_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(0, c_strstr("Abcdef", "Abc"));
+}
+
+void test_c_strstr_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(3, c_strstr("Abcd@f", "d@f"));
+}
+
+// c_strstr edge cases
+
+void test_c_strstr_find_in_empty_str(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_strstr("", "abc"));
+}
+
+void test_c_strstr_find_empty_substr(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_strstr("abc", ""));
+}
+
+void test_c_strstr_find_empty_in_empty(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_strstr("", ""));
+}
+
+// c_strstr negative tests
+
+void test_c_strstr_str_null(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_strstr(NULL, "abc"));
+}
+
+void test_c_strstr_substr_null(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_strstr("abc", NULL));
+}
+
+void test_c_strstr_both_null(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_strstr(NULL, NULL));
+}
+
+// c_strstr stress tests
+
+void test_c_strstr_str_1b(void) {
+  char *str = genarate_one_char_str(1, 'a');
+  TEST_ASSERT_EQUAL_INT(0, c_strstr(str, "a"));
+  free(str);
+}
+
+void test_c_strstr_str_1kb(void) {
+  char *str = genarate_one_char_str(KB(1), 'a');
+  size_t last_index = KB(1) - 1;
+  str[last_index] = 'b';
+  TEST_ASSERT_EQUAL_INT(last_index, c_strstr(str, "b"));
+  free(str);
+}
+
+void test_c_strstr_str_1mb(void) {
+  char *str = genarate_one_char_str(MB(1), 'a');
+  size_t last_index = MB(1) - 1;
+  str[last_index] = 'b';
+  TEST_ASSERT_EQUAL_INT(last_index, c_strstr(str, "b"));
+  free(str);
+}
+
+void test_c_strstr_str_10mb(void) {
+  char *str = genarate_one_char_str(MB(10), 'a');
+  size_t last_index = MB(10) - 1;
+  str[last_index] = 'b';
+  TEST_ASSERT_EQUAL_INT(last_index, c_strstr(str, "b"));
+  free(str);
+}
+
+// ----------------------------
+
+// ----------c_num_substr----------
+
+// c_num_substr valid input data
+
+void test_c_num_substr_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(1, c_num_substr("aaaaaaab", "ab"));
+}
+
+void test_c_num_substr_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(1, c_num_substr("abc", "abc"));
+}
+
+void test_c_num_substr_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(0, c_num_substr("abc", "def"));
+}
+
+void test_c_num_substr_valid_data_4(void) {
+  TEST_ASSERT_EQUAL_INT(2, c_num_substr("aaaabcaaabc", "bc"));
+}
+
+// c_num_substr edge cases
+
+void test_c_num_substr_substr_empty(void) {
+  TEST_ASSERT_EQUAL_INT(0, c_num_substr("abc", ""));
+}
+
+void test_c_num_substr_str_empty(void) {
+  TEST_ASSERT_EQUAL_INT(0, c_num_substr("", "abc"));
+}
+
+void test_c_num_substr_both_empty(void) {
+  TEST_ASSERT_EQUAL_INT(0, c_num_substr("", ""));
+}
+
+// c_num_substr negative tests
+
+void test_c_num_substr_str_null(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_num_substr(NULL, "abc"));
+}
+
+void test_c_num_substr_substr_null(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_num_substr("abc", NULL));
+}
+
+// c_num_substr stress tests
+
+// --------------------------------
+
+// ----------c_atoi----------
+
+// c_atoi valid input data
+
+void test_c_atoi_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(123456, c_atoi("123456"));
+}
+
+void test_c_atoi_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(-123456, c_atoi("-123456"));
+}
+
+void test_c_atoi_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(-456, c_atoi("-0000000456"));
+}
+
+void test_c_atoi_valid_data_4(void) {
+  TEST_ASSERT_EQUAL_INT(123, c_atoi("0000000123"));
+}
+
+// c_atoi edge cases
+
+void test_c_atoi_not_digit_in_str(void) {
+  TEST_ASSERT_EQUAL_INT(12, c_atoi("12b3456"));
+}
+
+void test_c_atoi_not_digit_in_negative_str(void) {
+  TEST_ASSERT_EQUAL_INT(-12, c_atoi("-12b3456"));
+}
+
+void test_c_atoi_start_with_not_digit(void) {
+  TEST_ASSERT_EQUAL_INT(0, c_atoi("m12b3456"));
+}
+
+void test_c_atoi_start_with_not_digit_negative(void) {
+  TEST_ASSERT_EQUAL_INT(0, c_atoi("-m12b3456"));
+}
+
+void test_c_atoi_empty_str(void) { TEST_ASSERT_EQUAL_INT(0, c_atoi("")); }
+
+// c_atoi nefative tests
+
+// --------------------------
+
+// ----------c_is_palindrome----------
+
+// c_is_palindrome valid input data
+
+void test_c_is_palindrome_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_palindrom("aabbaa"));
+}
+
+void test_c_is_palindrome_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_palindrom("a"));
+}
+
+void test_c_is_palindrome_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_palindrom("abc"));
+}
+
+// c_is_palindrom edge cases
+
+void test_c_is_palindrome_empty_str(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_palindrom(""));
+}
+
+// -----------------------------------
+
+// ----------c_is_string_of_digits----------
+
+// c_is_string_of_digits valid input data
+
+void test_c_is_string_of_digits_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_string_of_digits("123456"));
+}
+
+void test_c_is_string_of_digits_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_string_of_digits("12b"));
+}
+
+void test_c_is_string_of_digits_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_string_of_digits("abc"));
+}
+
+// c_is_string_of_digits edge cases
+
+void test_c_is_string_of_digits_empty_string(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_string_of_digits(""));
+}
+
+// -----------------------------------------
+
+// ----------c_is_punct_char----------
+
+// c_is_punct_char valid input data
+
+void test_c_is_punct_char_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_punct_char('&'));
+}
+
+void test_c_is_punct_char_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_punct_char('b'));
+}
+
+void test_c_is_punct_char_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_punct_char('\0'));
+}
+
+void test_c_is_punct_char_valid_data_4(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_punct_char(33));
+}
+
+void test_c_is_punct_char_valid_data_5(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_punct_char(12));
+}
+
+// -----------------------------------
+
+// ----------c_is_letter----------
+
+// c_is_letter valid input data
+
+void test_c_is_letter_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_letter('b'));
+}
+
+void test_c_is_letter_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_letter('1'));
+}
+
+void test_c_is_letter_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_letter('@'));
+}
+
+void test_c_is_letter_valid_data_4(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_letter(24));
+}
+
+// -------------------------------
+
+// ----------c_is_digit----------
+
+// c_is_digit valid input data
+
+void test_c_is_digit_valid_data(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_digit('3'));
+}
+
+void test_c_is_digit_valid_data_2(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_digit('a'));
+}
+
+void test_c_is_digit_valid_data_3(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_digit('@'));
+}
+
+void test_c_is_digit_valid_data_4(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_digit(97));
+}
+
+// ------------------------------
+
 int main(void) {
 
   UNITY_BEGIN();
@@ -498,6 +796,98 @@ int main(void) {
   RUN_TEST(test_c_first_unique_char_in_the_end_1mb);
   RUN_TEST(test_c_first_unique_char_in_the_end_10mb);
   printf("----------C_FIRST_UNIQUE_CHAR TESTS ENDED----------\n");
+
+  printf("\n----------C_STRSTR TESTS STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_strstr_valid_data);
+  RUN_TEST(test_c_strstr_valid_data_2);
+  RUN_TEST(test_c_strstr_valid_data_3);
+  TEST_EDGE_CASES;
+  RUN_TEST(test_c_strstr_find_in_empty_str);
+  RUN_TEST(test_c_strstr_find_empty_substr);
+  RUN_TEST(test_c_strstr_find_empty_in_empty);
+  NEGATIVE_TESTS;
+  RUN_TEST(test_c_strstr_substr_null);
+  RUN_TEST(test_c_strstr_str_null);
+  RUN_TEST(test_c_strstr_both_null);
+  STRESS_TESTS;
+  RUN_TEST(test_c_strstr_str_1b);
+  RUN_TEST(test_c_strstr_str_1kb);
+  RUN_TEST(test_c_strstr_str_1mb);
+  RUN_TEST(test_c_strstr_str_10mb);
+  printf("----------C_STRSTR TESTS ENDED----------\n");
+
+  printf("\n----------C_NUM_SUBSTR STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_num_substr_valid_data);
+  RUN_TEST(test_c_num_substr_valid_data_2);
+  RUN_TEST(test_c_num_substr_valid_data_3);
+  RUN_TEST(test_c_num_substr_valid_data_4);
+  TEST_EDGE_CASES;
+  RUN_TEST(test_c_num_substr_str_empty);
+  RUN_TEST(test_c_num_substr_substr_empty);
+  RUN_TEST(test_c_num_substr_both_empty);
+  NEGATIVE_TESTS;
+  RUN_TEST(test_c_num_substr_substr_null);
+  RUN_TEST(test_c_num_substr_str_null);
+  printf("----------C_NUM_SUBSTR ENDED----------\n");
+
+  printf("\n----------C_ATOI STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_atoi_valid_data);
+  RUN_TEST(test_c_atoi_valid_data_2);
+  RUN_TEST(test_c_atoi_valid_data_3);
+  RUN_TEST(test_c_atoi_valid_data_4);
+  TEST_EDGE_CASES;
+  RUN_TEST(test_c_atoi_not_digit_in_str);
+  RUN_TEST(test_c_atoi_not_digit_in_negative_str);
+  RUN_TEST(test_c_atoi_start_with_not_digit);
+  RUN_TEST(test_c_atoi_start_with_not_digit_negative);
+  RUN_TEST(test_c_atoi_empty_str);
+  printf("----------C_ATOI ENDED----------\n");
+
+  printf("\n----------C_IS_PALINDROM STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_is_palindrome_valid_data);
+  RUN_TEST(test_c_is_palindrome_valid_data_2);
+  RUN_TEST(test_c_is_palindrome_valid_data_3);
+  TEST_EDGE_CASES;
+  RUN_TEST(test_c_is_palindrome_empty_str);
+  printf("----------C_IS_PALINDROM ENDED----------\n");
+
+  printf("\n----------C_IS_STRING_OF_DIGITS STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_is_string_of_digits_valid_data);
+  RUN_TEST(test_c_is_string_of_digits_valid_data_2);
+  RUN_TEST(test_c_is_string_of_digits_valid_data_3);
+  TEST_EDGE_CASES;
+  RUN_TEST(test_c_is_string_of_digits_empty_string);
+  printf("----------C_IS_STRING_OF_DIGITS ENDED----------\n");
+
+  printf("\n----------C_IS_PUNCT_CHAR STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_is_punct_char_valid_data);
+  RUN_TEST(test_c_is_punct_char_valid_data_2);
+  RUN_TEST(test_c_is_punct_char_valid_data_3);
+  RUN_TEST(test_c_is_punct_char_valid_data_4);
+  RUN_TEST(test_c_is_punct_char_valid_data_5);
+  printf("----------C_IS_PUNCT_CHAR ENDED----------\n");
+
+  printf("\n----------C_IS_LETTER STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_is_letter_valid_data);
+  RUN_TEST(test_c_is_letter_valid_data_2);
+  RUN_TEST(test_c_is_letter_valid_data_3);
+  RUN_TEST(test_c_is_letter_valid_data_4);
+  printf("----------C_IS_LETTER ENDED----------\n");
+
+  printf("\n----------C_IS_DIGIT STARTED----------\n");
+  TEST_VALID_INPUT_DATA;
+  RUN_TEST(test_c_is_digit_valid_data);
+  RUN_TEST(test_c_is_digit_valid_data_2);
+  RUN_TEST(test_c_is_digit_valid_data_3);
+  RUN_TEST(test_c_is_digit_valid_data_4);
+  printf("----------C_IS_DIGIT ENDED----------\n");
 
   return UNITY_END();
 }
