@@ -110,6 +110,13 @@
      - c_first_unique_char : all
 // 10.05.2025
 
-
+-[*] tests.c
+     - added tests for c_strstr, c_num_substr, c_atoi, c_is_palindrom, 
+     c_is_string_of_digits, c_is_punct_char, c_is_letter, c_is_digit
+     c_string.h 
+     - set parametrs to unsigned char in c_is_punct_char, c_is_letter, c_is_digit, c_is_space
+     c_string.c
+     - refactor functions c_strstr, c_atoi, c_is_palindrom
+// 12.05.2025
 
 
