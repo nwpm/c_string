@@ -3,8 +3,6 @@
 
 #include "_c_common.h"
 
-// TODO: enum in _c_common.h?
-
 int _c_count_tabs(char s[]);
 int _c_get_size_arr2d(const int rows, const int cols, char (*arr_words)[cols]);
 
