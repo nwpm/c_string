@@ -11,6 +11,7 @@ int c_first_unique_char(const char *s);
 int c_strstr(const char *s, const char *substr);
 int c_num_substr(const char *s, const char *substr);
 int c_atoi(const char *s);
+int c_delete_spaces(char *s);
 
 qboolean c_is_palindrom(const char *s);
 qboolean c_is_string_of_digits(const char *s);
@@ -18,27 +19,26 @@ qboolean c_is_punct_char(const unsigned char c);
 qboolean c_is_letter(const unsigned char c);
 qboolean c_is_digit(const unsigned char c);
 qboolean c_is_space(const unsigned char c);
-qboolean c_is_tab(const char c);
 qboolean c_is_empty_string(const char *s);
-qboolean c_is_char_in_string(const char *s, const char chr);
+qboolean c_is_char_in_string(const char *s, const unsigned char c);
 qboolean c_is_anagrams(const char *s1, const char *s2);
-qboolean c_is_upper_letter(const char c);
-qboolean c_is_lower_letter(const char c);
+qboolean c_is_upper_letter(const unsigned char c);
+qboolean c_is_lower_letter(const unsigned char c);
 
-char c_letter_to_lower(char c);
-char c_letter_to_upper(char c);
+char c_letter_to_lower(unsigned char c);
+char c_letter_to_upper(unsigned char c);
 
-void c_delete_duplicates(char *s);
-void c_delete_spaces(char *s);
-void c_strcpy(char *to, const char *from);
 void c_str_to_lower(char *s);
 void c_str_to_upper(char *s);
-void c_strcat(char *to, char *from);
-void c_change_char_all(char *s, const char from_char, const char to_char);
 void c_invert_symbols(char *s);
-void c_trim(char *s);
 void c_reverse(char *s);
 void c_delete_punctuation(char *s);
+
+void c_delete_duplicates(char *s);
+void c_strcpy(char *to, const char *from);
+void c_strcat(char *to, char *from);
+void c_change_char_all(char *s, const char from_char, const char to_char);
+void c_trim(char *s);
 void c_sort_chars(char *s);
 void c_detab(char *s, const int space_for_tab);
 void c_entab(char *s, const int space_for_tab);
