@@ -3,6 +3,7 @@
 #include "internal/_str_internal.h"
 
 #define NULL 0
+#define ASCII_SIZE 256
 
 int c_strlen(const char *s) {
 
@@ -39,13 +40,23 @@ void c_strcat(char *to, char *from) {
 }
 
 void c_str_to_lower(char *s) {
-  for (int i = 0; s[i] != END_SYMBOL; ++i) {
+
+  if (s == NULL) {
+    return;
+  }
+
+  for (int i = 0; s[i] != '\0'; ++i) {
     s[i] = c_is_upper_letter(s[i]) ? c_letter_to_lower(s[i]) : s[i];
   }
 }
 
 void c_str_to_upper(char *s) {
-  for (int i = 0; s[i] != END_SYMBOL; ++i) {
+
+  if (s == NULL) {
+    return;
+  }
+
+  for (int i = 0; s[i] != '\0'; ++i) {
     s[i] = c_is_lower_letter(s[i]) ? c_letter_to_upper(s[i]) : s[i];
   }
 }
@@ -58,25 +69,42 @@ int c_strcmp(const char *first, const char *second) {
   return *first - *second;
 }
 
-qboolean c_is_lower_letter(const char c) {
+qboolean c_is_lower_letter(const unsigned char c) {
   return (c >= LOWER_LETTER_START && c <= LOWER_LETTER_END) ? TRUE : FALSE;
 }
 
-qboolean c_is_upper_letter(const char c) {
+qboolean c_is_upper_letter(const unsigned char c) {
   return (c >= UPPER_LETTER_START && c <= UPPER_LETTER_END) ? TRUE : FALSE;
 }
 
-char c_letter_to_lower(char c) { return c += DIFFERENCE_LETTERS_SIZE; }
+char c_letter_to_lower(unsigned char c) {
+  if (c_is_upper_letter(c)) {
+    return c += DIFFERENCE_LETTERS_SIZE;
+  }
+  return c;
+}
 
-char c_letter_to_upper(char c) { return c -= DIFFERENCE_LETTERS_SIZE; }
+char c_letter_to_upper(unsigned char c) {
+  if (c_is_lower_letter(c)) {
+    return c -= DIFFERENCE_LETTERS_SIZE;
+  }
+  return c;
+}
 
 void c_invert_symbols(char *s) {
 
-  for (int i = 0; s[i] != END_SYMBOL; ++i) {
-    if (c_is_upper_letter(s[i])) {
-      s[i] = c_letter_to_lower(s[i]);
-    } else if (c_is_lower_letter(s[i])) {
-      s[i] = c_letter_to_upper(s[i]);
+  if (s == NULL) {
+    return;
+  }
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+
+    unsigned char c = s[i];
+
+    if (c_is_upper_letter(c)) {
+      s[i] = c_letter_to_lower(c);
+    } else if (c_is_lower_letter(c)) {
+      s[i] = c_letter_to_upper(c);
     }
   }
 }
@@ -92,17 +120,26 @@ void c_insert_str_from(char *to, const char *substr, const int insert_from) {
   }
 }
 
-void c_delete_spaces(char *s) {
+int c_delete_spaces(char *s) {
 
-  int j = 0;
+  if (s == NULL) {
+    return -1;
+  }
 
-  for (int i = 0; s[i] != END_SYMBOL; ++i) {
+  int removed = 0;
+  int write_pos = 0;
+
+  for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] != ' ') {
-      s[j++] = s[i];
+      s[write_pos++] = s[i];
+    } else {
+      removed++;
     }
   }
 
-  s[j] = END_SYMBOL;
+  s[write_pos] = '\0';
+
+  return removed;
 }
 
 // c_entab remove n spaces and set their to /t
@@ -179,20 +216,24 @@ void c_detab(char *s, const int space_for_tab) {
 
 void c_delete_punctuation(char *s) {
 
-  int j = 0;
+  int write_pos = 0;
 
-  for (int i = 0; s[i] != END_SYMBOL; ++i) {
+  for (int i = 0; s[i] != '\0'; ++i) {
     if (!c_is_punct_char(s[i])) {
-      s[j++] = s[i];
+      s[write_pos++] = s[i];
     }
   }
 
-  s[j] = END_SYMBOL;
+  s[write_pos] = '\0';
 }
 
 void c_reverse(char *s) {
 
-  int end_index = c_strlen(s) - SIZE_END_SYMBOL;
+  if (s == NULL) {
+    return;
+  }
+
+  int end_index = c_strlen(s) - 1;
 
   for (int start_index = 0; start_index <= end_index;
        ++start_index, --end_index) {
@@ -271,11 +312,18 @@ void c_reverse_word_order(char *s, const char delim) {
   s[k] = '\0';
 }
 
-qboolean c_is_empty_string(const char s[]) { return !c_strlen(s); }
+qboolean c_is_empty_string(const char *s) {
+
+  if (s == NULL) {
+    return FALSE;
+  }
+
+  return !c_strlen(s);
+}
 
 qboolean c_is_string_of_digits(const char *s) {
 
-  if (c_is_empty_string(s)) {
+  if (s == NULL || c_is_empty_string(s)) {
     return FALSE;
   }
 
@@ -289,10 +337,14 @@ qboolean c_is_string_of_digits(const char *s) {
   return TRUE;
 }
 
-qboolean c_is_char_in_string(const char *s, const char chr) {
+qboolean c_is_char_in_string(const char *s, const unsigned char c) {
+
+  if (s == NULL) {
+    return FALSE;
+  }
 
   while (*s) {
-    if (*s == chr) {
+    if (*s == c) {
       return TRUE;
     }
     ++s;
@@ -354,7 +406,7 @@ int c_first_unique_char(const char *s) {
     return -1;
   }
 
-  char count[256] = {0};
+  char count[ASCII_SIZE] = {0};
 
   for (int i = 0; s[i] != '\0'; ++i) {
     unsigned char c = (unsigned char)s[i];
@@ -370,20 +422,17 @@ int c_first_unique_char(const char *s) {
   return -2;
 }
 
-qboolean c_is_digit(const unsigned char c) {
-  return (c >= '0' && c <= '9') ? TRUE : FALSE;
-}
+qboolean c_is_digit(const unsigned char c) { return (c >= '0' && c <= '9'); }
 
 qboolean c_is_punct_char(const unsigned char c) {
   return ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') ||
-          (c >= '[' && c <= '`') || (c >= '{' && c <= '~'))
-             ? TRUE
-             : FALSE;
+          (c >= '[' && c <= '`') || (c >= '{' && c <= '~'));
 }
 
-qboolean c_is_space(const unsigned char c) { return (c == ' ') ? TRUE : FALSE; }
-
-qboolean c_is_tab(const char c) { return (c == '\t') ? TRUE : FALSE; }
+qboolean c_is_space(const unsigned char c) {
+  return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' ||
+         c == '\f';
+}
 
 qboolean c_is_letter(const unsigned char c) {
   return ((c >= LOWER_LETTER_START && c <= LOWER_LETTER_END) ||
@@ -403,11 +452,11 @@ void c_trim(char *s) {
   int start_index = 0;
   int end_index = c_strlen(s) - SIZE_END_SYMBOL;
 
-  while (c_is_space(s[start_index]) || c_is_tab(s[start_index])) {
+  while (c_is_space(s[start_index]) || c_is_space(s[start_index])) {
     ++start_index;
   }
 
-  while (c_is_space(s[end_index]) || c_is_tab(s[end_index])) {
+  while (c_is_space(s[end_index]) || c_is_space(s[end_index])) {
     --end_index;
   }
 
@@ -554,35 +603,33 @@ void c_str_replace_n(char *s, const char *substr_old, const char *substr_new,
 }
 
 qboolean c_is_anagrams(const char *s1, const char *s2) {
+
+  if (s1 == NULL || s2 == NULL) {
+    return FALSE;
+  }
+
   const int s1_len = c_strlen(s1);
   const int s2_len = c_strlen(s2);
-  qboolean is_same_len =
-      ((s1_len != s2_len) || (c_is_empty_string(s1) && c_is_empty_string(s2))
-           ? FALSE
-           : TRUE);
 
-  if (!is_same_len) {
+  if (s1_len != s2_len || s1_len == 0) {
     return FALSE;
-  } else {
+  }
 
-    // Create copy of strings for
-    // a register-independent function
-    char s1_copy[s1_len + SIZE_END_SYMBOL];
-    char s2_copy[s2_len + SIZE_END_SYMBOL];
+  int count[ASCII_SIZE] = {0};
 
-    s1_copy[s1_len] = END_SYMBOL;
-    s2_copy[s2_len] = END_SYMBOL;
+  for (int i = 0; s1[i] != '\0'; ++i) {
+    unsigned char c = c_letter_to_lower(s1[i]);
+    count[c]++;
+  }
 
-    c_strcpy(s1_copy, s1);
-    c_strcpy(s2_copy, s2);
+  for (int i = 0; s2[i] != '\0'; ++i) {
+    unsigned char c = c_letter_to_lower(s2[i]);
+    count[c]--;
+  }
 
-    c_str_to_lower(s1_copy);
-    c_str_to_lower(s2_copy);
-
-    for (int i = 0; s1_copy[i] != END_SYMBOL; ++i) {
-      if (!c_is_char_in_string(s2_copy, s1_copy[i])) {
-        return FALSE;
-      }
+  for (int i = 0; i < ASCII_SIZE; ++i) {
+    if (count[i] != 0) {
+      return FALSE;
     }
   }
 
@@ -591,9 +638,12 @@ qboolean c_is_anagrams(const char *s1, const char *s2) {
 
 int c_atoi(const char *s) {
 
-  if (c_is_empty_string(s)) {
+  // c_atoi don't process NULL and empty str
+  /*
+  if (s == NULL || c_is_empty_string(s)) {
     return 0;
   }
+  */
 
   int res = 0;
   int i = 0;
