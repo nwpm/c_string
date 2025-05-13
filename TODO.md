@@ -120,3 +120,10 @@
 // 12.05.2025
 
 
+-[*] tests.c
+     - rework all current tests.
+     c_string.c
+     - refactor c_delete_spaces, c_str_to_lower, c_str_to_upper, c_is_space, c_is_anagrams, c_invert_symbols.
+     delete c_is_tab
+// 13.05.2025
+
