@@ -127,3 +127,26 @@
      delete c_is_tab
 // 13.05.2025
 
+-[*] tests.c
+     - added tests for c_is_space, c_is_empty_string, c_index_of_char,
+     c_is_anagrams, c_is_upper_letter, c_is_lower_letter, c_letter_to_lower, c_letter_to_upper, c_delete_spaces, c_str_to_lower, c_str_to_upper, c_invert_symbols, c_reverse, c_delete_punctuation, c_change_char_all, c_delete_duplicate,
+c_strcpy.
+     c_string.c
+     - c_is_char_in_string now c_index_of_char, c_delete_punctuation now return number of removed chars, c_delete_duplicates refactor, c_strcpy return ptr to "to" string,
+     c_string.h
+     - c_is_char_in_string change to c_index_of_char, c_delete_punctuation return value int now. c_strcpy, c_str_to_lower, c_str_to_upper, c_invert_symbols,c_reverse, c_change_char_all, c_delete_duplicates, c_sort_chars return value char*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
