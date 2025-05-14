@@ -100,13 +100,13 @@ void _c_get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
   }
 }
 
-void _c_sort_str_chars(char *s) {
+char *_c_sort_str_chars(char *s) {
 
-  if (c_is_empty_string(s)) {
-    return;
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
   }
 
-  for (int j = 1; s[j] != END_SYMBOL; ++j) {
+  for (int j = 1; s[j] != '\0'; ++j) {
     char key = s[j];
     int i = j - 1;
     for (; i >= 0 && s[i] > key; --i) {
@@ -114,6 +114,8 @@ void _c_sort_str_chars(char *s) {
     }
     s[i + 1] = key;
   }
+
+  return s;
 }
 
 void _c_insert_n_spaces(char s[], const int num_spaces, int *insert_from) {
