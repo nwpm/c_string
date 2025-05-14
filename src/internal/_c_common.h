@@ -1,6 +1,9 @@
 #ifndef _C_COMMON_H
 #define _C_COMMON_H
 
+#define NULL 0
+#define ASCII_SIZE 256
+
 typedef int qboolean;
 
 static const int LOWER_LETTER_START = 97;
