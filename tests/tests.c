@@ -561,52 +561,68 @@ void test_c_is_digit_when_input_is_int_code_of_letter(void) {
 
 // c_is_space valid input data
 
-void test_c_is_space_valid_data(void) {
+void test_c_is_space_when_input_is_space(void) {
   TEST_ASSERT_EQUAL_INT(TRUE, c_is_space(' '));
 }
 
-void test_c_is_space_valid_data_2(void) {
+void test_c_is_space_when_input_is_letter(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_space('b'));
 }
 
-void test_c_is_space_valid_data_3(void) {
-  TEST_ASSERT_EQUAL_INT(FALSE, c_is_digit(87));
+void test_c_is_space_when_input_int_code_letter(void) {
+  TEST_ASSERT_EQUAL_INT(FALSE, c_is_space(87));
 }
 
 // ------------------------------
 
+// ----------c_is_empty_string----------
+
 // c_is_empty_string valid input data
 
-void test_c_is_empty_string_valid_data(void) {
+void test_c_is_empty_string_when_input_is_empty_string(void) {
   TEST_ASSERT_EQUAL_INT(TRUE, c_is_empty_string(""));
 }
 
-void test_c_is_empty_string_valid_data_2(void) {
+void test_c_is_empty_string_when_input_is_string(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_empty_string("string"));
+}
+
+void test_c_is_empty_string_when_input_string_with_2_end_symbols(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_empty_string("\0"));
 }
 
 // c_is_empty_string negative tests
 
-void test_c_is_empty_string_null(void) {
+void test_c_is_empty_string_when_null(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_empty_string(NULL));
 }
 
 //------------------------------------
 
+// ----------c_is_char_in_string----------
+
 // c_is_char_in_string valid input data
 
-void test_c_is_char_in_string_valid_data(void) {
-  TEST_ASSERT_EQUAL_INT(TRUE, c_is_char_in_string("abc", 'c'));
+void test_c_index_of_char_when_char_in_string(void) {
+  TEST_ASSERT_EQUAL_INT(2, c_index_of_char("abc", 'c'));
 }
 
-void test_c_is_char_in_string_valid_data_2(void) {
-  TEST_ASSERT_EQUAL_INT(FALSE, c_is_char_in_string("string", 'h'));
+void test_c_index_of_char_when_char_is_not_in_string(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_index_of_char("string", 'h'));
+}
+
+void test_c_index_of_char_when_look_for_end_symbol_in_the_middle(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_index_of_char("ab\0cd", '\0'));
+}
+
+void test_c_index_of_char_when_look_end_symbol(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_index_of_char("abc", '\0'));
 }
 
 // c_is_empty_string negative tests
 
-void test_c_is_char_in_string_null(void) {
-  TEST_ASSERT_EQUAL_INT(FALSE, c_is_char_in_string(NULL, 'o'));
+void test_c_index_of_char_when_string_is_null(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_index_of_char(NULL, 'o'));
 }
 
 //------------------------------------
@@ -615,35 +631,41 @@ void test_c_is_char_in_string_null(void) {
 
 // c_is_anagrams valid input data
 
-void test_c_is_anagrams_valid_data(void) {
-  TEST_ASSERT_EQUAL_INT(TRUE, c_is_anagrams("Abc", "cBa"));
+void test_c_is_anagrams_when_input_strings_are_anagrams(void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_anagrams("abc", "cba"));
 }
 
-void test_c_is_anagrams_valid_data_2(void) {
+void test_c_is_anagrams_when_input_strings_are_anagrams_with_uppercases(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_anagrams("AAc", "acc"));
 }
 
-void test_c_is_anagrams_valid_data_3(void) {
-  TEST_ASSERT_EQUAL_INT(TRUE, c_is_anagrams("a", "A"));
+void test_c_is_anagrams_when_input_strings_are_single_letter_and_anagrams(
+    void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_anagrams("a", "a"));
+}
+
+void test_c_is_anagrams_when_input_strs_are_single_letter_and_anagrams_with_uppercase(
+    void) {
+  TEST_ASSERT_EQUAL_INT(TRUE, c_is_anagrams("A", "a"));
 }
 
 // c_is_anagrams edge cases
 
-void test_c_is_anagrams_empty_string(void) {
+void test_c_is_anagrams_when_first_string_is_empty(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_anagrams("", "cBa"));
 }
 
-void test_c_is_anagrams_empty_second_string(void) {
+void test_c_is_anagrams_when_second_string_is_empty(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_anagrams("abv", ""));
 }
 
 // c_is_anagrams nagative tests
 
-void test_c_is_anagrams_null(void) {
+void test_c_is_anagrams_when_first_string_null(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_anagrams(NULL, "cBa"));
 }
 
-void test_c_is_anagrams_null_second_str(void) {
+void test_c_is_anagrams_when_second_string_null(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_anagrams("abv", NULL));
 }
 
@@ -653,15 +675,15 @@ void test_c_is_anagrams_null_second_str(void) {
 
 // c_is_upper_letter valid input data
 
-void test_c_is_upper_letter_valid_data(void) {
+void test_c_is_upper_letter_when_input_is_upper_letter(void) {
   TEST_ASSERT_EQUAL_INT(TRUE, c_is_upper_letter('A'));
 }
 
-void test_c_is_upper_letter_valid_data_2(void) {
+void test_c_is_upper_letter_when_input_is_lower_letter(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_upper_letter('a'));
 }
 
-void test_c_is_upper_letter_valid_data_3(void) {
+void test_c_is_upper_letter_when_input_is_punct_char(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_upper_letter('@'));
 }
 
@@ -671,15 +693,15 @@ void test_c_is_upper_letter_valid_data_3(void) {
 
 // c_is_lower_letter valid input data
 
-void test_c_is_lower_letter_valid_data(void) {
+void test_c_is_lower_letter_when_input_is_lower_letter(void) {
   TEST_ASSERT_EQUAL_INT(TRUE, c_is_lower_letter('a'));
 }
 
-void test_c_is_lower_letter_valid_data_2(void) {
+void test_c_is_lower_letter_when_input_is_upper_letter(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_lower_letter('A'));
 }
 
-void test_c_is_lower_letter_valid_data_3(void) {
+void test_c_is_lower_letter_when_input_is_punct_char(void) {
   TEST_ASSERT_EQUAL_INT(FALSE, c_is_lower_letter('@'));
 }
 
@@ -689,16 +711,16 @@ void test_c_is_lower_letter_valid_data_3(void) {
 
 // c_letter_to_lower valid input data
 
-void test_c_letter_to_lower_valid_data(void) {
+void test_c_letter_to_lower_when_input_is_upper_letter(void) {
   TEST_ASSERT_EQUAL_INT('a', c_letter_to_lower('A'));
 }
 
-void test_c_letter_to_lower_valid_data_2(void) {
+void test_c_letter_to_lower_when_input_is_lower_letter(void) {
   TEST_ASSERT_EQUAL_INT('b', c_letter_to_lower('b'));
 }
 
-void test_c_letter_to_lower_valid_data_3(void) {
-  TEST_ASSERT_EQUAL_INT('@', c_letter_to_lower('@'));
+void test_c_letter_to_lower_when_input_is_punct_char(void) {
+  TEST_ASSERT_EQUAL_INT('!', c_letter_to_lower('!'));
 }
 
 // -------------------------------------
@@ -707,16 +729,16 @@ void test_c_letter_to_lower_valid_data_3(void) {
 
 // c_letter_to_upper valid input data
 
-void test_c_letter_to_upper_valid_data(void) {
+void test_c_letter_to_upper_when_input_is_lower_letter(void) {
   TEST_ASSERT_EQUAL_INT('A', c_letter_to_upper('a'));
 }
 
-void test_c_letter_to_upper_valid_data_2(void) {
+void test_c_letter_to_upper_when_input_is_upper_letter(void) {
   TEST_ASSERT_EQUAL_INT('A', c_letter_to_upper('A'));
 }
 
-void test_c_letter_to_upper_valid_data_3(void) {
-  TEST_ASSERT_EQUAL_INT('!', c_letter_to_upper('!'));
+void test_c_letter_to_upper_when_input_is_punct_char(void) {
+  TEST_ASSERT_EQUAL_INT('#', c_letter_to_upper('#'));
 }
 
 // -------------------------------------
@@ -725,29 +747,35 @@ void test_c_letter_to_upper_valid_data_3(void) {
 
 // c_str_to_lower valid input data
 
-void test_c_str_to_lower_valid_data(void) {
-  char str[] = "ABcD";
+void test_c_str_to_lower_when_input_string_uppercase(void) {
+  char str[] = "ABCD";
   c_str_to_lower(str);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(str, "abcd"));
+  TEST_ASSERT_EQUAL_STRING("abcd", str);
 }
 
-void test_c_str_to_lower_valid_data_2(void) {
+void test_c_str_to_lower_when_input_string_lowercase(void) {
   char str[] = "abcd";
   c_str_to_lower(str);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(str, "abcd"));
+  TEST_ASSERT_EQUAL_STRING("abcd", str);
+}
+
+void test_c_str_to_lower_when_string_has_lowercase_and_uppercase(void) {
+  char str[] = "aBcD";
+  c_str_to_lower(str);
+  TEST_ASSERT_EQUAL_STRING("abcd", str);
 }
 
 // c_str_to_lower edge cases
 
-void test_c_str_to_lower_empty(void) {
+void test_c_str_to_lower_when_string_empty(void) {
   char str[] = "";
   c_str_to_lower(str);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(str, ""));
+  TEST_ASSERT_EQUAL_STRING("", str);
 }
 
 // c_str_to_lower negative tests
 
-void test_c_str_to_lower_null(void) {
+void test_c_str_to_lower_when_string_null(void) {
   c_str_to_lower(NULL);
   TEST_PASS();
 }
@@ -758,29 +786,35 @@ void test_c_str_to_lower_null(void) {
 
 // c_str_to_upper valid input data
 
-void test_c_str_to_upper_valid_data(void) {
-  char str[] = "ABcd";
+void test_c_str_to_upper_when_input_string_lowercase(void) {
+  char str[] = "abcd";
   c_str_to_upper(str);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(str, "ABCD"));
+  TEST_ASSERT_EQUAL_STRING("ABCD", str);
 }
 
-void test_c_str_to_upper_valid_data_2(void) {
+void test_c_str_to_upper_when_input_string_uppercase(void) {
   char str[] = "ABCD";
   c_str_to_upper(str);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(str, "ABCD"));
+  TEST_ASSERT_EQUAL_STRING("ABCD", str);
+}
+
+void test_c_str_to_upper_when_input_string_has_uppercase_and_lowercase(void) {
+  char str[] = "aBcD";
+  c_str_to_upper(str);
+  TEST_ASSERT_EQUAL_STRING("ABCD", str);
 }
 
 // c_str_to_upper edge cases
 
-void test_c_str_to_upper_empty(void) {
+void test_c_str_to_upper_when_string_empty(void) {
   char str[] = "";
   c_str_to_upper(str);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(str, ""));
+  TEST_ASSERT_EQUAL_STRING("", str);
 }
 
 // c_str_to_upper negative tests
 
-void test_c_str_to_upper_null(void) {
+void test_c_str_to_upper_when_string_null(void) {
   c_str_to_upper(NULL);
   TEST_PASS();
 }
@@ -791,23 +825,26 @@ void test_c_str_to_upper_null(void) {
 
 // c_delete_spaces valid input data
 
-void test_c_delete_spaces_valid_data(void) {
-  TEST_ASSERT_EQUAL_INT(5, c_delete_spaces(" abc  abc def "));
+void test_c_delete_spaces_when_input_string_has_spaces(void) {
+  char s[] = " abc  abc def ";
+  TEST_ASSERT_EQUAL_INT(5, c_delete_spaces(s));
 }
 
-void test_c_delete_spaces_valid_data_2(void) {
-  TEST_ASSERT_EQUAL_INT(0, c_delete_spaces("abc"));
+void test_c_delete_spaces_when_input_string_has_no_spaces(void) {
+  char s[] = "abc";
+  TEST_ASSERT_EQUAL_INT(0, c_delete_spaces(s));
 }
 
 // c_delete_spaces edge cases
 
-void test_c_delete_spaces_empty(void) {
-  TEST_ASSERT_EQUAL_INT(0, c_delete_spaces(""));
+void test_c_delete_spaces_when_string_empty(void) {
+  char s[] = "";
+  TEST_ASSERT_EQUAL_INT(0, c_delete_spaces(s));
 }
 
 // c_str_to_lower negative tests
 
-void test_c_delete_spaces_null(void) {
+void test_c_delete_spaces_when_string_null(void) {
   TEST_ASSERT_EQUAL_INT(-1, c_delete_spaces(NULL));
 }
 
@@ -817,29 +854,41 @@ void test_c_delete_spaces_null(void) {
 
 // c_invert_symbols valid input data
 
-void test_c_invert_symbols_valid_data(void) {
-  char s[] = "String";
+void test_c_invert_symbols_when_string_has_only_lowercase(void) {
+  char s[] = "string";
   c_invert_symbols(s);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(s, "sTRING"));
+  TEST_ASSERT_EQUAL_STRING("STRING", s);
 }
 
-void test_c_invert_symbols_valid_data_2(void) {
-  char s[] = "sTRinG!";
+void test_c_invert_symbols_when_string_has_only_uppercase(void) {
+  char s[] = "STRING";
   c_invert_symbols(s);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(s, "StrINg!"));
+  TEST_ASSERT_EQUAL_STRING("string", s);
+}
+
+void test_c_invert_symbols_when_string_has_upper_and_lowercases(void) {
+  char s[] = "StRiNG";
+  c_invert_symbols(s);
+  TEST_ASSERT_EQUAL_STRING("sTrIng", s);
+}
+
+void test_c_invert_symbols_when_string_has_punct_chars(void) {
+  char s[] = "String!#";
+  c_invert_symbols(s);
+  TEST_ASSERT_EQUAL_STRING("sTRING!#", s);
 }
 
 // c_delete_spaces edge cases
 
-void test_c_invert_symbols_empty(void) {
+void test_c_invert_symbols_when_string_empty(void) {
   char s[] = "";
   c_invert_symbols(s);
-  TEST_ASSERT_EQUAL_INT(0, c_strcmp(s, ""));
+  TEST_ASSERT_EQUAL_STRING("", s);
 }
 
 // c_delete_spaces negative tests
 
-void test_c_invert_symbols_null(void) {
+void test_c_invert_symbols_when_string_null(void) {
   c_delete_spaces(NULL);
   TEST_PASS();
 }
@@ -850,21 +899,33 @@ void test_c_invert_symbols_null(void) {
 
 // c_reverse valid input data
 
-void test_c_reverse_valid_data(void) {
+void test_c_reverse_when_string_single_lowercase_word(void) {
   char s[] = "string";
   c_reverse(s);
   TEST_ASSERT_EQUAL_STRING("gnirts", s);
 }
 
-void test_c_reverse_valid_data_2(void) {
-  char s[] = "Abcde";
+void test_c_reverse_when_string_single_uppercase_word(void) {
+  char s[] = "STRING";
   c_reverse(s);
-  TEST_ASSERT_EQUAL_STRING("edcbA", s);
+  TEST_ASSERT_EQUAL_STRING("GNIRTS", s);
+}
+
+void test_c_reverse_when_string_single_lower_and_uppercase_word(void) {
+  char s[] = "AbCd";
+  c_reverse(s);
+  TEST_ASSERT_EQUAL_STRING("dCbA", s);
+}
+
+void test_c_reverse_when_string_is_sentence(void) {
+  char s[] = "Hello World!";
+  c_reverse(s);
+  TEST_ASSERT_EQUAL_STRING("!dlroW olleH", s);
 }
 
 // c_reverse edge cases
 
-void test_c_reverse_empty(void) {
+void test_c_reverse_when_string_is_empty(void) {
   char s[] = "";
   c_reverse(s);
   TEST_ASSERT_EQUAL_STRING("", s);
@@ -872,7 +933,7 @@ void test_c_reverse_empty(void) {
 
 // c_reverse negative tests
 
-void test_c_reverse_null(void) {
+void test_c_reverse_when_string_null(void) {
   c_reverse(NULL);
   TEST_PASS();
 }
@@ -881,9 +942,165 @@ void test_c_reverse_null(void) {
 
 // ----------c_delete_punctuation----------
 
-void test_c_delete_punctuation_valid_data(void) { char s[] = ""; }
+void test_c_delete_punctuation_when_string_has_punct_chars(void) {
+  char s[] = "ab c!#";
+  c_delete_punctuation(s);
+  TEST_ASSERT_EQUAL_STRING("ab c", s);
+}
+
+void test_c_delete_punctuation_when_string_has_no_punct_chars(void) {
+  char s[] = "abc";
+  c_delete_punctuation(s);
+  TEST_ASSERT_EQUAL_STRING("abc", s);
+}
+
+// c_delete_punctuation edge cases
+
+void test_c_delete_punctuation_when_string_empty(void) {
+  char s[] = "";
+  c_delete_punctuation(s);
+  TEST_ASSERT_EQUAL_STRING("", s);
+}
+
+// c_delete_punctuation nagative tests
+
+void test_c_delete_punctuation_when_string_null(void) {
+  TEST_ASSERT_EQUAL_INT(-1, c_delete_punctuation(NULL));
+}
 
 // ----------------------------------------
+
+// ----------c_change_char_all----------
+
+// c_change_char_all valid input data
+
+void test_c_change_char_all_when_change_letter_to_letter(void) {
+  char s[] = "baacdefaa";
+  c_change_char_all(s, 'a', 'm');
+  TEST_ASSERT_EQUAL_STRING("bmmcdefmm", s);
+}
+
+void test_c_change_char_all_when_change_punct_char_to_letter(void) {
+  char s[] = "__ac_ef__";
+  c_change_char_all(s, '_', 'v');
+  TEST_ASSERT_EQUAL_STRING("vvacvefvv", s);
+}
+
+void test_c_change_char_all_when_from_char_do_not_in_string(void) {
+  char s[] = "ae";
+  c_change_char_all(s, 'm', 'v');
+  TEST_ASSERT_EQUAL_STRING("ae", s);
+}
+
+// c_change_char_all edge cases
+
+void test_c_change_char_all_when_string_empty(void) {
+  char s[] = "";
+  c_change_char_all(s, 'a', 'b');
+  TEST_ASSERT_EQUAL_STRING("", s);
+}
+
+void test_c_change_char_all_when_from_char_is_end_symbol(void) {
+  char s[] = "acrf";
+  c_change_char_all(s, '\0', 'm');
+  TEST_ASSERT_EQUAL_STRING("acrf", s);
+}
+
+// c_change_char_all negative tests
+
+void test_c_change_char_all_when_string_null(void) {
+  c_change_char_all(NULL, 'a', 'b');
+  TEST_PASS();
+}
+
+// -------------------------------------
+
+// ---------c_delete_duplicates--------
+
+// c_delete_duplicates valid input data
+
+void test_c_delete_duplicates_when_string_has_duplicates(void) {
+  char s[] = "aabbccdd";
+  c_delete_duplicates(s);
+  TEST_ASSERT_EQUAL_STRING("abcd", s);
+}
+
+void test_c_delete_duplicates_when_string_has_no_duplicates(void) {
+  char s[] = "ab cd";
+  c_delete_duplicates(s);
+  TEST_ASSERT_EQUAL_STRING("ab cd", s);
+}
+
+// c_delete_duplicates edge cases
+
+void test_c_delete_duplicates_when_string_empty(void) {
+  char s[] = "";
+  c_delete_duplicates(s);
+  TEST_ASSERT_EQUAL_STRING("", s);
+}
+
+// c_delete_duplicates negative test
+
+void test_c_delete_duplicates_when_string_null(void) {
+  c_delete_duplicates(NULL);
+  TEST_PASS();
+}
+
+// ------------------------------------
+
+// ----------c_strcpy----------
+
+void test_c_strcpy_when_copy_from_correct_string(void) {
+  char buff[10] = {'\0'};
+  TEST_ASSERT_EQUAL_STRING("hello", c_strcpy(buff, "hello"));
+}
+
+void test_c_strcpy_when_from_empty_string(void) {
+  char buff[1] = {'A'};
+  TEST_ASSERT_EQUAL_STRING("", c_strcpy(buff, ""));
+}
+
+void test_c_strcpy_when_dest_and_from_equal(void) {
+  char buff[] = "string";
+  TEST_ASSERT_EQUAL_STRING("string", c_strcpy(buff, "string"));
+}
+
+void test_c_strcpy_when_dest_string_null(void) {
+  TEST_ASSERT_NULL(c_strcpy(NULL, "string"));
+}
+
+void test_c_strcpy_when_from_string_null(void) {
+  TEST_ASSERT_EQUAL_STRING("string", c_strcpy("string", NULL));
+}
+
+// ----------------------------
+
+// ----------c_sort_chars----------
+
+void test_c_sort_chars_when_letters_in_reverse_alphabetical_order(void) {
+  char s[] = "fedcba";
+  c_sort_chars(s);
+  TEST_ASSERT_EQUAL_STRING("abcdef", s);
+}
+
+void test_c_sort_chars_when_letters_already_in_alphabetical_order(void) {
+  char s[] = "abcdef";
+  c_sort_chars(s);
+  TEST_ASSERT_EQUAL_STRING("abcdef", s);
+}
+
+void test_c_sort_chars_when_string_empty(void) {
+  char s[] = "";
+  c_sort_chars(s);
+  TEST_ASSERT_EQUAL_STRING("", s);
+}
+
+void test_c_sort_chars_when_string_null(void) {
+  c_sort_chars(NULL);
+  TEST_PASS();
+}
+
+// --------------------------------
 
 int main(void) {
 
@@ -1029,7 +1246,144 @@ int main(void) {
   RUN_TEST(test_c_is_digit_when_input_is_int_code_of_letter);
   TEST_BLOCK_END_HEADER("c_is_digit");
 
+  TEST_BLOCK_START_HEADER("c_is_space");
+  RUN_TEST(test_c_is_space_when_input_is_space);
+  RUN_TEST(test_c_is_space_when_input_is_letter);
+  RUN_TEST(test_c_is_space_when_input_int_code_letter);
+  TEST_BLOCK_END_HEADER("c_is_space");
+
+  TEST_BLOCK_START_HEADER("c_is_empty_string");
+  RUN_TEST(test_c_is_empty_string_when_input_is_empty_string);
+  RUN_TEST(test_c_is_empty_string_when_input_is_string);
+  RUN_TEST(test_c_is_empty_string_when_input_string_with_2_end_symbols);
+  RUN_TEST(test_c_is_empty_string_when_null);
+  TEST_BLOCK_END_HEADER("c_is_empty_string");
+
+  TEST_BLOCK_START_HEADER("c_index_of_char");
+  RUN_TEST(test_c_index_of_char_when_char_in_string);
+  RUN_TEST(test_c_index_of_char_when_char_is_not_in_string);
+  RUN_TEST(test_c_index_of_char_when_look_for_end_symbol_in_the_middle);
+  RUN_TEST(test_c_index_of_char_when_look_end_symbol);
+  RUN_TEST(test_c_index_of_char_when_string_is_null);
+  TEST_BLOCK_END_HEADER("c_index_of_char");
+
+  TEST_BLOCK_START_HEADER("c_is_anagrams");
+  RUN_TEST(test_c_is_anagrams_when_input_strings_are_anagrams);
+  RUN_TEST(test_c_is_anagrams_when_input_strings_are_anagrams_with_uppercases);
+  RUN_TEST(
+      test_c_is_anagrams_when_input_strings_are_single_letter_and_anagrams);
+  RUN_TEST(
+      test_c_is_anagrams_when_input_strs_are_single_letter_and_anagrams_with_uppercase);
+  RUN_TEST(test_c_is_anagrams_when_first_string_is_empty);
+  RUN_TEST(test_c_is_anagrams_when_second_string_is_empty);
+  RUN_TEST(test_c_is_anagrams_when_first_string_null);
+  RUN_TEST(test_c_is_anagrams_when_second_string_null);
+  TEST_BLOCK_END_HEADER("c_is_anagrams");
+
+  TEST_BLOCK_START_HEADER("c_is_upper_letter");
+  RUN_TEST(test_c_is_upper_letter_when_input_is_upper_letter);
+  RUN_TEST(test_c_is_upper_letter_when_input_is_lower_letter);
+  RUN_TEST(test_c_is_upper_letter_when_input_is_punct_char);
+  TEST_BLOCK_END_HEADER("c_is_upper_letter");
+
+  TEST_BLOCK_START_HEADER("c_is_lower_letter");
+  RUN_TEST(test_c_is_lower_letter_when_input_is_lower_letter);
+  RUN_TEST(test_c_is_lower_letter_when_input_is_upper_letter);
+  RUN_TEST(test_c_is_lower_letter_when_input_is_punct_char);
+  TEST_BLOCK_END_HEADER("c_is_lower_letter");
+
+  TEST_BLOCK_START_HEADER("c_letter_to_lower");
+  RUN_TEST(test_c_letter_to_lower_when_input_is_upper_letter);
+  RUN_TEST(test_c_letter_to_lower_when_input_is_lower_letter);
+  RUN_TEST(test_c_letter_to_lower_when_input_is_punct_char);
+  TEST_BLOCK_END_HEADER("c_letter_to_lower");
+
+  TEST_BLOCK_START_HEADER("c_letter_to_upper");
+  RUN_TEST(test_c_letter_to_upper_when_input_is_upper_letter);
+  RUN_TEST(test_c_letter_to_upper_when_input_is_lower_letter);
+  RUN_TEST(test_c_letter_to_upper_when_input_is_punct_char);
+  TEST_BLOCK_END_HEADER("c_lette_to_upper");
+
+  TEST_BLOCK_START_HEADER("c_delete_spaces");
+  RUN_TEST(test_c_delete_spaces_when_input_string_has_spaces);
+  RUN_TEST(test_c_delete_spaces_when_input_string_has_no_spaces);
+  RUN_TEST(test_c_delete_spaces_when_string_empty);
+  RUN_TEST(test_c_delete_spaces_when_string_null);
+  TEST_BLOCK_END_HEADER("c_delete_spaces");
+
+  TEST_BLOCK_START_HEADER("c_str_to_lower");
+  RUN_TEST(test_c_str_to_lower_when_input_string_uppercase);
+  RUN_TEST(test_c_str_to_lower_when_input_string_lowercase);
+  RUN_TEST(test_c_str_to_lower_when_string_has_lowercase_and_uppercase);
+  RUN_TEST(test_c_str_to_lower_when_string_empty);
+  RUN_TEST(test_c_str_to_lower_when_string_null);
+  TEST_BLOCK_END_HEADER("c_str_to_lower");
+
+  TEST_BLOCK_START_HEADER("c_str_to_upper");
+  RUN_TEST(test_c_str_to_upper_when_input_string_uppercase);
+  RUN_TEST(test_c_str_to_upper_when_input_string_lowercase);
+  RUN_TEST(test_c_str_to_upper_when_input_string_has_uppercase_and_lowercase);
+  RUN_TEST(test_c_str_to_upper_when_string_empty);
+  RUN_TEST(test_c_str_to_upper_when_string_null);
+  TEST_BLOCK_END_HEADER("c_str_to_upper");
+
+  TEST_BLOCK_START_HEADER("c_invert_symbols");
+  RUN_TEST(test_c_invert_symbols_when_string_has_only_lowercase);
+  RUN_TEST(test_c_invert_symbols_when_string_has_only_uppercase);
+  RUN_TEST(test_c_str_to_upper_when_input_string_has_uppercase_and_lowercase);
+  RUN_TEST(test_c_invert_symbols_when_string_has_punct_chars);
+  RUN_TEST(test_c_invert_symbols_when_string_empty);
+  RUN_TEST(test_c_invert_symbols_when_string_null);
+  TEST_BLOCK_END_HEADER("c_invert_symbols");
+
+  TEST_BLOCK_START_HEADER("c_reverse");
+  RUN_TEST(test_c_reverse_when_string_single_lowercase_word);
+  RUN_TEST(test_c_reverse_when_string_single_uppercase_word);
+  RUN_TEST(test_c_reverse_when_string_single_lower_and_uppercase_word);
+  RUN_TEST(test_c_reverse_when_string_is_sentence);
+  RUN_TEST(test_c_reverse_when_string_is_empty);
+  RUN_TEST(test_c_reverse_when_string_null);
+  TEST_BLOCK_END_HEADER("c_reverse");
+
+  TEST_BLOCK_START_HEADER("c_delete_punctuation");
+  RUN_TEST(test_c_delete_punctuation_when_string_has_punct_chars);
+  RUN_TEST(test_c_delete_punctuation_when_string_has_no_punct_chars);
+  RUN_TEST(test_c_delete_punctuation_when_string_empty);
+  RUN_TEST(test_c_delete_punctuation_when_string_null);
+  TEST_BLOCK_END_HEADER("c_delete_punctuation");
+
+  TEST_BLOCK_START_HEADER("c_change_char_all");
+  RUN_TEST(test_c_change_char_all_when_change_letter_to_letter);
+  RUN_TEST(test_c_change_char_all_when_change_punct_char_to_letter);
+  RUN_TEST(test_c_change_char_all_when_from_char_do_not_in_string);
+  RUN_TEST(test_c_change_char_all_when_from_char_is_end_symbol);
+  RUN_TEST(test_c_change_char_all_when_string_empty);
+  RUN_TEST(test_c_change_char_all_when_string_null);
+  TEST_BLOCK_END_HEADER("c_change_char_all");
+
+  TEST_BLOCK_START_HEADER("c_delete_duplicates");
+  RUN_TEST(test_c_delete_duplicates_when_string_has_duplicates);
+  RUN_TEST(test_c_delete_duplicates_when_string_has_no_duplicates);
+  RUN_TEST(test_c_delete_duplicates_when_string_empty);
+  RUN_TEST(test_c_delete_duplicates_when_string_null);
+  TEST_BLOCK_END_HEADER("c_delete_duplicates");
+
+  TEST_BLOCK_START_HEADER("c_strcpy");
+  RUN_TEST(test_c_strcpy_when_copy_from_correct_string);
+  RUN_TEST(test_c_strcpy_when_dest_and_from_equal);
+  RUN_TEST(test_c_strcpy_when_from_empty_string);
+  RUN_TEST(test_c_strcpy_when_dest_string_null);
+  RUN_TEST(test_c_strcpy_when_from_string_null);
+  TEST_BLOCK_END_HEADER("c_strcpy");
+
+  TEST_BLOCK_START_HEADER("c_sort_chars");
+  RUN_TEST(test_c_sort_chars_when_letters_in_reverse_alphabetical_order);
+  RUN_TEST(test_c_sort_chars_when_letters_already_in_alphabetical_order);
+  RUN_TEST(test_c_sort_chars_when_string_empty);
+  RUN_TEST(test_c_sort_chars_when_string_null);
+  TEST_BLOCK_END_HEADER("c_sort_chars");
+
   UnityEnd();
 
-  return UNITY_END();
+  return 0;
 }
