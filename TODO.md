@@ -136,8 +136,14 @@ c_strcpy.
      c_string.h
      - c_is_char_in_string change to c_index_of_char, c_delete_punctuation return value int now. c_strcpy, c_str_to_lower, c_str_to_upper, c_invert_symbols,c_reverse, c_change_char_all, c_delete_duplicates, c_sort_chars return value char*
 
+// 14.05.2025
 
-
+-[*] c_string.h
+     - c_strcat, return type char*, added param dest_buff_size, c_detab added param buff_size, c_entab added param buff_size, rename c_insert_from to c_overwrite_from
+     c_string.c
+     - refactor c_strcat, c_detab, c_entab, c_overwrite_from
+     tests.c
+     - added tests for c_strcat, c_detab, c_entab, c_overwrite_from
 
 
 
