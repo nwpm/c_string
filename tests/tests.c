@@ -1102,6 +1102,181 @@ void test_c_sort_chars_when_string_null(void) {
 
 // --------------------------------
 
+// ----------c_strcat----------
+
+// c_strcat valid input data
+
+void test_c_strcat_when_dest_size_enough_for_cat(void) {
+  char s[9] = {'a', 'b', 'c', '\0'};
+  TEST_ASSERT_EQUAL_STRING("abcdef", c_strcat(s, "def", 9));
+}
+
+void test_c_strcat_when_from_len_plus_dest_len_equal_dest_size(void) {
+  char s[8] = {'a', 'b', 'c', '\0'};
+  TEST_ASSERT_EQUAL_STRING("abcdefg", c_strcat(s, "defg", 8));
+}
+
+void test_c_strcat_when_from_string_empty(void) {
+  char s[] = "abc";
+  TEST_ASSERT_EQUAL_STRING("abc", c_strcat(s, "", 4));
+}
+
+void test_c_strcat_when_dest_string_empty(void) {
+  char s[] = "";
+  TEST_ASSERT_EQUAL_STRING("", c_strcat(s, "abc", 1));
+}
+
+void test_c_strcat_when_dest_string_null(void) {
+  TEST_ASSERT_NULL(c_strcat(NULL, "abc", 5));
+}
+
+void test_c_strcat_when_from_string_null(void) {
+  char s[] = "abc";
+  TEST_ASSERT_NULL(c_strcat(s, NULL, 4));
+}
+
+// ----------------------------
+
+// ----------c_trim----------
+
+void test_c_trim_when_string_has_start_and_end_spaces(void) {
+  char s[] = "   abc   ";
+  TEST_ASSERT_EQUAL_STRING("abc", c_trim(s));
+}
+
+void test_c_trim_when_string_has_start_and_end_tabs(void) {
+  char s[] = "\tabc\t\t";
+  TEST_ASSERT_EQUAL_STRING("abc", c_trim(s));
+}
+
+void test_c_trim_when_string_has_start_end_and_middle_space(void) {
+  char s[] = "  a bc   ";
+  TEST_ASSERT_EQUAL_STRING("a bc", c_trim(s));
+}
+
+void test_c_trim_when_string_has_start_end_and_middle_tabs(void) {
+  char s[] = "\tab\tc\t\t";
+  TEST_ASSERT_EQUAL_STRING("ab\tc", c_trim(s));
+}
+
+void test_c_trim_when_string_empty(void) {
+  char s[] = "";
+  TEST_ASSERT_EQUAL_STRING("", c_trim(s));
+}
+
+void test_c_trim_when_string_null(void) {
+  char s[] = "\tabc\t\t";
+  TEST_ASSERT_EQUAL_STRING("abc", c_trim(s));
+}
+
+// --------------------------
+
+// ----------c_detab----------
+
+// c_detab valid input data
+
+void test_c_detab_when_string_has_tabs_and_size_enough_for_spaces(void) {
+  char s[10] = {'\t', 'a', 'b', '\t', '\0'};
+  TEST_ASSERT_EQUAL_STRING("  ab  ", c_detab(s, 2, 10));
+}
+
+void test_c_detab_when_string_size_not_enough(void) {
+  char s[10] = {'\t', 'a', 'a', '\t', '\0'};
+  TEST_ASSERT_EQUAL_STRING(s, c_detab(s, 5, 10));
+}
+
+void test_c_detab_when_detab_string_len_equal_buff_size(void) {
+  char s[10] = {'\t', 'a', 'a', '\t', '\0'};
+  TEST_ASSERT_EQUAL_STRING(s, c_detab(s, 4, 10));
+}
+
+void test_c_detab_when_detab_string_size_equal_buff_size(void) {
+  char s[11] = {'\t', 'a', 'a', '\t', '\0'};
+  TEST_ASSERT_EQUAL_STRING("    aa    ", c_detab(s, 4, 11));
+}
+
+void test_c_detab_when_string_empty(void) {
+  char s[] = "";
+  TEST_ASSERT_EQUAL_STRING("", c_detab(s, 5, 1));
+}
+
+void test_c_detab_when_string_null(void) {
+  TEST_ASSERT_NULL(c_detab(NULL, 5, 10));
+}
+
+// ---------------------------
+
+// ----------c_entab----------
+
+void test_c_entab_when_set_two_tabs(void) {
+  char s[] = "    a    ";
+  TEST_ASSERT_EQUAL_STRING("\ta\t", c_entab(s, 4, 10));
+}
+
+void test_c_entab_when_set_one_tab_in_begin(void) {
+  char s[] = "    a";
+  TEST_ASSERT_EQUAL_STRING("\ta", c_entab(s, 4, 6));
+}
+
+void test_c_entab_when_set_one_tab_in_end(void) {
+  char s[] = "a    ";
+  TEST_ASSERT_EQUAL_STRING("a\t", c_entab(s, 4, 6));
+}
+
+void test_c_entab_when_not_enough_spaces(void) {
+  char s[] = "a  ";
+  TEST_ASSERT_EQUAL_STRING("a  ", c_entab(s, 4, 4));
+}
+
+void test_c_entab_when_string_empty(void) {
+  char s[] = "";
+  TEST_ASSERT_EQUAL_STRING("", c_entab(s, 4, 10));
+}
+
+void test_c_entab_when_string_null(void) {
+  TEST_ASSERT_NULL(c_entab(NULL, 5, 5));
+}
+
+// ---------------------------
+
+// ----------c_overwrite_from-----------
+
+void test_c_overwrite_from_when_string_has_enough_space_for_substr(void) {
+  char s[] = "string";
+  TEST_ASSERT_EQUAL_STRING("swwwwg", c_overwrite_from(s, "wwww", 1, 7));
+}
+
+void test_c_overwrite_from_when_string_has_no_space_for_substr(void) {
+  char s[] = "string";
+  TEST_ASSERT_EQUAL_STRING("string", c_overwrite_from(s, "oooong", 3, 7));
+}
+
+void test_c_overwrite_from_when_insert_substr_in_end_of_str(void) {
+  char s[] = "string";
+  TEST_ASSERT_EQUAL_STRING("strivv", c_overwrite_from(s, "vv", 4, 7));
+}
+
+void test_c_overwrite_from_when_substr_empty(void) {
+  char s[] = "string";
+  TEST_ASSERT_EQUAL_STRING("string", c_overwrite_from(s, "", 0, 7));
+}
+
+void test_c_overwrite_from_when_string_empty(void) {
+  char s[] = "";
+  TEST_ASSERT_EQUAL_STRING("", c_overwrite_from(s, "aaa", 0, 7));
+}
+
+void test_c_overwrite_from_when_substr_null(void) {
+  char s[] = "string";
+  TEST_ASSERT_EQUAL_STRING("string", c_overwrite_from(s, NULL, 1, 10));
+}
+
+void test_c_overwrite_from_when_string_null(void) {
+  TEST_ASSERT_NULL(c_overwrite_from(NULL, "str", 1, 10));
+}
+
+// -------------------------------------
+
 int main(void) {
 
   UnityBegin("c_string.c");
@@ -1382,6 +1557,51 @@ int main(void) {
   RUN_TEST(test_c_sort_chars_when_string_empty);
   RUN_TEST(test_c_sort_chars_when_string_null);
   TEST_BLOCK_END_HEADER("c_sort_chars");
+
+  TEST_BLOCK_START_HEADER("c_strcat");
+  RUN_TEST(test_c_strcat_when_dest_size_enough_for_cat);
+  RUN_TEST(test_c_strcat_when_from_len_plus_dest_len_equal_dest_size);
+  RUN_TEST(test_c_strcat_when_from_string_empty);
+  RUN_TEST(test_c_strcat_when_dest_string_empty);
+  RUN_TEST(test_c_strcat_when_from_string_null);
+  RUN_TEST(test_c_strcat_when_dest_string_null);
+  TEST_BLOCK_END_HEADER("c_strcat");
+
+  TEST_BLOCK_START_HEADER("c_trim");
+  RUN_TEST(test_c_trim_when_string_has_start_and_end_spaces);
+  RUN_TEST(test_c_trim_when_string_has_start_and_end_tabs);
+  RUN_TEST(test_c_trim_when_string_has_start_end_and_middle_space);
+  RUN_TEST(test_c_trim_when_string_has_start_end_and_middle_tabs);
+  RUN_TEST(test_c_trim_when_string_empty);
+  RUN_TEST(test_c_trim_when_string_null);
+  TEST_BLOCK_END_HEADER("c_trim");
+
+  TEST_BLOCK_START_HEADER("c_detab");
+  RUN_TEST(test_c_detab_when_string_has_tabs_and_size_enough_for_spaces);
+  RUN_TEST(test_c_detab_when_string_size_not_enough);
+  RUN_TEST(test_c_detab_when_detab_string_len_equal_buff_size);
+  RUN_TEST(test_c_detab_when_detab_string_size_equal_buff_size);
+  RUN_TEST(test_c_detab_when_string_empty);
+  RUN_TEST(test_c_detab_when_string_null);
+  TEST_BLOCK_END_HEADER("c_detab");
+
+  TEST_BLOCK_START_HEADER("c_entab");
+  RUN_TEST(test_c_entab_when_set_two_tabs);
+  RUN_TEST(test_c_entab_when_set_one_tab_in_begin);
+  RUN_TEST(test_c_entab_when_set_one_tab_in_end);
+  RUN_TEST(test_c_entab_when_string_empty);
+  RUN_TEST(test_c_entab_when_string_null);
+  TEST_BLOCK_END_HEADER("c_entab");
+
+  TEST_BLOCK_START_HEADER("c_overwrite_from");
+  RUN_TEST(test_c_overwrite_from_when_string_has_enough_space_for_substr);
+  RUN_TEST(test_c_overwrite_from_when_string_has_no_space_for_substr);
+  RUN_TEST(test_c_overwrite_from_when_insert_substr_in_end_of_str);
+  RUN_TEST(test_c_overwrite_from_when_substr_empty);
+  RUN_TEST(test_c_overwrite_from_when_string_empty);
+  RUN_TEST(test_c_overwrite_from_when_string_null);
+  RUN_TEST(test_c_overwrite_from_when_substr_null);
+  TEST_BLOCK_END_HEADER("c_overwrite_from");
 
   UnityEnd();
 
