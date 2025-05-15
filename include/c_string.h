@@ -38,12 +38,13 @@ char *c_change_char_all(char *s, const unsigned char from_char,
                         const unsigned char to_char);
 char *c_delete_duplicates(char *s);
 char *c_sort_chars(char *s);
+char *c_strcat(char *dest, const char *from, const int dest_buff_size);
+char *c_trim(char *s);
+char *c_detab(char *s, const int space_for_tab, const int buff_size);
+char *c_entab(char *s, const int space_for_tab, const int buff_size);
+char *c_overwrite_from(char *dest, const char *substr, const int insert_from,
+                       const int buff_size);
 
-void c_strcat(char *to, char *from);
-void c_trim(char *s);
-void c_detab(char *s, const int space_for_tab);
-void c_entab(char *s, const int space_for_tab);
-void c_insert_str_from(char *to, const char *substr, const int insert_from);
 void c_reverse_word_order(char *s, const char delim);
 void c_delete_word_duplicate(char *s);
 void c_strtok(char *s, const int cols, char (*result)[cols], const char delim);
