@@ -8,7 +8,7 @@ void _c_swap_char(char *c1, char *c2) {
   *c2 = tmp_val;
 }
 
-int _c_count_tabs(char s[]) {
+int _c_count_tabs(char *s) {
 
   int number_of_tabs = 0;
 
@@ -21,7 +21,7 @@ int _c_count_tabs(char s[]) {
   return number_of_tabs;
 }
 
-void _c_init_char_arr(char s[], char init_by, const int arr_size) {
+void _c_init_char_arr(char *s, char init_by, const int arr_size) {
 
   s[arr_size] = '\0';
 
@@ -118,7 +118,7 @@ char *_c_sort_str_chars(char *s) {
   return s;
 }
 
-void _c_insert_n_spaces(char s[], const int num_spaces, int *insert_from) {
+void _c_insert_n_spaces(char *s, const int num_spaces, int *insert_from) {
   for (int k = num_spaces; k != 0; --k) {
     s[(*insert_from)++] = ' ';
   }
