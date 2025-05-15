@@ -15,7 +15,7 @@ int c_strlen(const char *s) {
   return i;
 }
 
-// TODO: add check from "to" buffer size
+// TODO: add safe version
 char *c_strcpy(char *dest, const char *from) {
 
   if (dest == NULL || from == NULL || dest == from) {
@@ -31,17 +31,28 @@ char *c_strcpy(char *dest, const char *from) {
 }
 
 // Required: "to" string must have size >= to + from
-void c_strcat(char *to, char *from) {
+char *c_strcat(char *dest, const char *from, const int dest_buff_size) {
 
-  int start_insert_from = c_strlen(to);
-
-  int i = start_insert_from;
-  int result_string_size = start_insert_from + c_strlen(from);
-  for (int j = 0; i < result_string_size; ++i) {
-    to[i] = from[j++];
+  if (dest == NULL || from == NULL) {
+    return NULL;
   }
 
-  to[i] = END_SYMBOL;
+  const int from_len = c_strlen(from);
+  const int dest_len = c_strlen(dest);
+
+  if (from_len + dest_len >= dest_buff_size) {
+    return dest;
+  }
+
+  int start_index = dest_len;
+  int end_index = start_index + from_len;
+  for (int j = 0; start_index < end_index; ++start_index) {
+    dest[start_index] = from[j++];
+  }
+
+  dest[start_index] = '\0';
+
+  return dest;
 }
 
 char *c_str_to_lower(char *s) {
@@ -122,13 +133,27 @@ char *c_invert_symbols(char *s) {
 
 // Required: The `to` buffer must have enough space for the entire `substr`,
 // starting at position insert_from, including the terminating '\0'
-void c_insert_str_from(char *to, const char *substr, const int insert_from) {
+char *c_overwrite_from(char *dest, const char *substr, const int insert_from,
+                       const int buff_size) {
 
-  int copy_insert_from = insert_from;
-
-  for (int i = 0; substr[i] != END_SYMBOL; ++i) {
-    to[copy_insert_from++] = substr[i];
+  if (dest == NULL || substr == NULL || c_is_empty_string(dest) ||
+      c_is_empty_string(substr)) {
+    return dest;
   }
+
+  const int substr_len = c_strlen(substr);
+
+  if (insert_from + substr_len >= buff_size) {
+    return dest;
+  }
+
+  int insert_index = insert_from;
+
+  for (int i = 0; substr[i] != '\0'; ++i) {
+    dest[insert_index++] = substr[i];
+  }
+
+  return dest;
 }
 
 int c_delete_spaces(char *s) {
@@ -154,75 +179,88 @@ int c_delete_spaces(char *s) {
 }
 
 // c_entab remove n spaces and set their to /t
-void c_entab(char *s, const int space_for_tab) {
-  const int buffer_size = space_for_tab + SIZE_END_SYMBOL;
-  char buffer[buffer_size];
-  _c_init_char_arr(buffer, END_SYMBOL, buffer_size);
+char *c_entab(char *s, const int space_for_tab, const int buff_size) {
 
-  int buff_i = 0;
-  int k = 0;
-  for (int i = 0; s[i] != END_SYMBOL; ++i) {
-    // Check - is buffer full
-    if (buffer[buffer_size - 2] != END_SYMBOL) {
-      if (_c_is_string_of_spaces(buffer)) {
-        s[k++] = '\t';
-      } else {
-        _c_insert_str_from(s, buffer, &k);
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
+  }
+
+  // TODO: remove VLA on stack make alloc array
+  char result_string[buff_size];
+
+  const int str_len = c_strlen(s);
+  int write_index = 0;
+
+  for (int i = 0; s[i] != '\0';) {
+    qboolean is_space_block = TRUE;
+    for (int j = 0; j < space_for_tab && j + i < str_len; ++j) {
+      if (s[i + j] != ' ') {
+        is_space_block = FALSE;
+        break;
       }
-      // Clear buffer and index
-      _c_init_char_arr(buffer, END_SYMBOL, buffer_size);
-      buff_i = 0;
     }
 
-    buffer[buff_i++] = s[i];
+    if (is_space_block) {
+      result_string[write_index++] = '\t';
+      i += space_for_tab;
+    } else {
+      result_string[write_index++] = s[i++];
+    }
   }
 
-  if (!c_is_empty_string(buffer)) {
-    _c_insert_str_from(s, buffer, &k);
-  }
+  result_string[write_index] = '\0';
 
-  s[k] = END_SYMBOL;
+  c_strcpy(s, result_string);
+
+  return s;
 }
 
 // c_detab remove /t and insert n spaces
 // c_detab The main disadvantage is that we work only in the original buffer
 // (string) and if its size is not enough to store the converted string, the
 // function will not work.
-void c_detab(char *s, const int space_for_tab) {
+char *c_detab(char *s, const int space_for_tab, const int buff_size) {
 
-  if (c_is_empty_string(s)) {
-    return;
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
   }
 
   // Find number of tabs
   int number_of_tabs = _c_count_tabs(s);
 
   if (number_of_tabs == 0) {
-    return;
+    return s;
   }
 
   // Formula of size new string
   // 1. Find number of chars without tabs
   // 2. Calculate the number of spaces that will replace tabs
   // 3. Result = (1) + (2)
-  const int original_string_size = c_strlen(s) + SIZE_END_SYMBOL;
-  const int size_new_string = (original_string_size - number_of_tabs) +
-                              (number_of_tabs * space_for_tab);
+  const int str_len = c_strlen(s);
+  const int len_new_string =
+      (str_len - number_of_tabs) + (number_of_tabs * space_for_tab);
 
-  char string_without_tabs[size_new_string];
+  if (len_new_string >= buff_size) {
+    return s;
+  }
 
-  int j = 0;
-  for (int i = 0; s[i] != END_SYMBOL; ++i) {
+  // TODO: remove VLA on stack
+  char string_without_tabs[len_new_string + 1];
+
+  int write_index = 0;
+  for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] == '\t') {
-      _c_insert_n_spaces(string_without_tabs, space_for_tab, &j);
+      _c_insert_n_spaces(string_without_tabs, space_for_tab, &write_index);
     } else {
-      string_without_tabs[j++] = s[i];
+      string_without_tabs[write_index++] = s[i];
     }
   }
 
-  string_without_tabs[j] = END_SYMBOL;
+  string_without_tabs[write_index] = '\0';
 
   c_strcpy(s, string_without_tabs);
+
+  return s;
 }
 
 int c_delete_punctuation(char *s) {
@@ -474,31 +512,38 @@ qboolean c_is_letter(const unsigned char c) {
              : FALSE;
 }
 
-void c_trim(char *s) {
+char *c_trim(char *s) {
 
-  if (c_is_empty_string(s)) {
-    return;
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
   }
 
-  // Start index begin with first letter
-  // End index start with last letter
+  // Start index begin with first not space char
+  // End index start with last not space char
   int start_index = 0;
-  int end_index = c_strlen(s) - SIZE_END_SYMBOL;
+  int end_index = c_strlen(s) - 1;
 
-  while (c_is_space(s[start_index]) || c_is_space(s[start_index])) {
+  while (c_is_space(s[start_index])) {
     ++start_index;
   }
 
-  while (c_is_space(s[end_index]) || c_is_space(s[end_index])) {
+  while (end_index >= start_index && c_is_space(s[end_index])) {
     --end_index;
   }
 
-  int k = 0;
-  for (; start_index <= end_index; ++start_index) {
-    s[k++] = s[start_index];
+  if (start_index > end_index) {
+    s[0] = '\0';
+    return s;
   }
 
-  s[k] = END_SYMBOL;
+  int write_index = 0;
+  for (; start_index <= end_index; ++start_index) {
+    s[write_index++] = s[start_index];
+  }
+
+  s[write_index] = '\0';
+
+  return s;
 }
 
 // TODO:Simplify
@@ -609,7 +654,8 @@ void c_str_replace_first(char *s, const char *substr_old,
   const int STRSTR_RES = c_strstr(s, substr_old);
 
   if (STRSTR_RES != FAIL_RESULT_STR) {
-    c_insert_str_from(s, substr_new, STRSTR_RES);
+    // 1 is dummy must fix parametrs
+    c_overwrite_from(s, substr_new, STRSTR_RES, 1);
   }
 }
 
