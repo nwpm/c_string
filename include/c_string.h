@@ -6,7 +6,6 @@
 int c_strlen(const char *s);
 int c_strcmp(const char *first, const char *second);
 int c_remove_digits(char *s);
-int c_count_words(const char *s);
 int c_first_unique_char(const char *s);
 int c_strstr(const char *s, const char *substr);
 int c_num_substr(const char *s, const char *substr);
@@ -44,16 +43,18 @@ char *c_detab(char *s, const int space_for_tab, const int buff_size);
 char *c_entab(char *s, const int space_for_tab, const int buff_size);
 char *c_overwrite_from(char *dest, const char *substr, const int insert_from,
                        const int buff_size);
+char *c_itoa(const int num, char *s);
 
+// for correct work of these functions need alloc std functions
+int c_count_words(const char *s);
+void c_str_overwrite_first(char *s, const char *substr_old,
+                           const char *substr_new, const int buff_size);
 void c_reverse_word_order(char *s, const char delim);
 void c_delete_word_duplicate(char *s);
 void c_strtok(char *s, const int cols, char (*result)[cols], const char delim);
 void c_sort_words(char *s);
-void c_str_replace_first(char *s, const char *substr_old,
-                         const char *substr_new);
 void c_str_replace_all(char *s, const char *substr_old, const char *substr_new);
 void c_str_replace_n(char *s, const char *substr_old, const char *substr_new,
                      const int n);
-void c_itoa(const int num, char *s);
 
 #endif // !C_STRING_H
