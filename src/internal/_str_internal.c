@@ -8,7 +8,7 @@ void _c_swap_char(char *c1, char *c2) {
   *c2 = tmp_val;
 }
 
-int _c_count_tabs(char *s) {
+int _c_count_tabs(const char *s) {
 
   int number_of_tabs = 0;
 
@@ -19,6 +19,21 @@ int _c_count_tabs(char *s) {
   }
 
   return number_of_tabs;
+}
+
+int _c_len_2d_array(char **array) {
+
+  if (array == NULL) {
+    return -1;
+  }
+
+  int count = 0;
+  while (array != NULL) {
+    count++;
+    array++;
+  }
+
+  return count;
 }
 
 void _c_init_char_arr(char *s, char init_by, const int arr_size) {
@@ -100,24 +115,6 @@ void _c_get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
   }
 }
 
-char *_c_sort_str_chars(char *s) {
-
-  if (s == NULL || c_is_empty_string(s)) {
-    return s;
-  }
-
-  for (int j = 1; s[j] != '\0'; ++j) {
-    char key = s[j];
-    int i = j - 1;
-    for (; i >= 0 && s[i] > key; --i) {
-      s[i + 1] = s[i];
-    }
-    s[i + 1] = key;
-  }
-
-  return s;
-}
-
 void _c_insert_n_spaces(char *s, const int num_spaces, int *insert_from) {
   for (int k = num_spaces; k != 0; --k) {
     s[(*insert_from)++] = ' ';
@@ -141,20 +138,6 @@ void _c_delete_duplicate_str_arr2d(const int rows, const int cols,
         arr_words[j][0] = '\0';
       }
     }
-  }
-}
-
-void _sort_words_arr2d(const int rows, const int cols,
-                       char (*arr_words)[cols]) {
-  for (int i = 1; i < rows; ++i) {
-    char key[cols];
-    c_strcpy(key, arr_words[i]);
-    int j = i - 1;
-    while (j >= 0 && c_strcmp(arr_words[j], key) > 0) {
-      c_strcpy(arr_words[j + 1], arr_words[j]);
-      --j;
-    }
-    c_strcpy(arr_words[j + 1], key);
   }
 }
 
