@@ -1277,6 +1277,29 @@ void test_c_overwrite_from_when_string_null(void) {
 
 // -------------------------------------
 
+// ----------c_itoa----------
+
+void test_c_itoa_when_input_positive_number(void) {
+  char s[10] = {'\0'};
+  TEST_ASSERT_EQUAL_STRING("123456", c_itoa(123456, s));
+}
+
+void test_c_itoa_when_input_negative_number(void) {
+  char s[10] = {'\0'};
+  TEST_ASSERT_EQUAL_STRING("-123456", c_itoa(-123456, s));
+}
+
+void test_c_itoa_when_input_zero(void) {
+  char s[10] = {'\0'};
+  TEST_ASSERT_EQUAL_STRING("0", c_itoa(0, s));
+}
+
+void test_c_itoa_when_string_null(void) {
+  TEST_ASSERT_NULL(c_itoa(1234, NULL));
+}
+
+// --------------------------
+
 int main(void) {
 
   UnityBegin("c_string.c");
@@ -1602,6 +1625,13 @@ int main(void) {
   RUN_TEST(test_c_overwrite_from_when_string_null);
   RUN_TEST(test_c_overwrite_from_when_substr_null);
   TEST_BLOCK_END_HEADER("c_overwrite_from");
+
+  TEST_BLOCK_START_HEADER("c_itoa");
+  RUN_TEST(test_c_itoa_when_input_positive_number);
+  RUN_TEST(test_c_itoa_when_input_negative_number);
+  RUN_TEST(test_c_itoa_when_input_zero);
+  RUN_TEST(test_c_itoa_when_string_null);
+  TEST_BLOCK_END_HEADER("c_itoa");
 
   UnityEnd();
 
