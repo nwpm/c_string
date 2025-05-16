@@ -1,6 +1,20 @@
 #include "../include/c_string.h" // better way to include?
 #include "internal/_c_common.h"
 #include "internal/_str_internal.h"
+#include <stdlib.h>
+
+void c_free_2d_array(char **array, int size) {
+
+  if (array == NULL) {
+    return;
+  }
+
+  for (int i = 0; i < size; ++i) {
+    free(array[i]);
+  }
+
+  free(array);
+}
 
 int c_strlen(const char *s) {
 
@@ -15,7 +29,6 @@ int c_strlen(const char *s) {
   return i;
 }
 
-// TODO: add safe version
 char *c_strcpy(char *dest, const char *from) {
 
   if (dest == NULL || from == NULL || dest == from) {
@@ -30,7 +43,30 @@ char *c_strcpy(char *dest, const char *from) {
   return dest;
 }
 
-// Required: "to" string must have size >= to + from
+// Return poiter to the new allocated string
+char *c_strcpy_safe(char *dest, const char *from, const int dest_buff_size) {
+
+  if (dest == NULL || from == NULL || dest == from || dest_buff_size <= 0) {
+    return dest;
+  }
+
+  const int from_len = c_strlen(from);
+
+  if (from_len >= dest_buff_size - 1) {
+    return NULL;
+  }
+
+  int write_pos = 0;
+  for (int i = 0; from[i] != '\0'; ++i) {
+    dest[write_pos++] = from[i];
+  }
+
+  dest[write_pos] = '\0';
+
+  return dest;
+}
+
+// Required: "dest" string must have size >= to + from
 char *c_strcat(char *dest, const char *from, const int dest_buff_size) {
 
   if (dest == NULL || from == NULL) {
@@ -40,7 +76,7 @@ char *c_strcat(char *dest, const char *from, const int dest_buff_size) {
   const int from_len = c_strlen(from);
   const int dest_len = c_strlen(dest);
 
-  if (from_len + dest_len >= dest_buff_size) {
+  if (from_len + dest_len >= dest_buff_size - 1) {
     return dest;
   }
 
@@ -53,6 +89,37 @@ char *c_strcat(char *dest, const char *from, const int dest_buff_size) {
   dest[start_index] = '\0';
 
   return dest;
+}
+
+// Always return pointer to the new string
+char *c_strcat_safe(const char *dest, const char *from,
+                    const int dest_buff_size) {
+
+  if (dest == NULL || from == NULL || dest == from || dest_buff_size <= 0) {
+    return NULL;
+  }
+
+  const int from_len = c_strlen(from);
+  const int dest_len = c_strlen(dest);
+  const int result_len = from_len + dest_len;
+
+  char *new_string = calloc(result_len + 1, sizeof(char));
+
+  if (new_string == NULL) {
+    return NULL;
+  }
+
+  int write_pos = 0;
+
+  for (int i = 0; dest[i] != '\0'; ++i) {
+    new_string[write_pos++] = dest[i];
+  }
+
+  for (int i = 0; from[i] != '\0'; ++i) {
+    new_string[write_pos++] = from[i];
+  }
+
+  return new_string;
 }
 
 char *c_str_to_lower(char *s) {
@@ -131,8 +198,6 @@ char *c_invert_symbols(char *s) {
   return s;
 }
 
-// Required: The `to` buffer must have enough space for the entire `substr`,
-// starting at position insert_from, including the terminating '\0'
 char *c_overwrite_from(char *dest, const char *substr, const int insert_from,
                        const int buff_size) {
 
@@ -154,6 +219,48 @@ char *c_overwrite_from(char *dest, const char *substr, const int insert_from,
   }
 
   return dest;
+}
+
+// free()
+char *c_insert_from(const char *dest, const char *substr, int insert_from) {
+
+  if (dest == NULL || substr == NULL || insert_from < 0) {
+    return NULL;
+  }
+
+  const int dest_len = c_strlen(dest);
+  const int substr_len = c_strlen(substr);
+
+  if (insert_from > dest_len) {
+    return NULL;
+  }
+
+  const int result_len = dest_len + substr_len;
+
+  char *new_string = calloc(result_len + 1, sizeof(char));
+
+  if (new_string == NULL) {
+    return NULL;
+  }
+
+  int write_pos = 0;
+  int dest_index = 0;
+
+  for (; dest_index < insert_from; ++dest_index) {
+    new_string[write_pos++] = dest[dest_index];
+  }
+
+  for (int i = 0; substr[i] != '\0'; ++i) {
+    new_string[write_pos++] = substr[i];
+  }
+
+  for (; dest[dest_index] != '\0'; ++dest_index) {
+    new_string[write_pos++] = dest[dest_index];
+  }
+
+  new_string[write_pos] = '\0';
+
+  return new_string;
 }
 
 int c_delete_spaces(char *s) {
@@ -179,14 +286,19 @@ int c_delete_spaces(char *s) {
 }
 
 // c_entab remove n spaces and set their to /t
-char *c_entab(char *s, const int space_for_tab, const int buff_size) {
+// Return poiner to allocated result string
+// client must call free()
+char *c_entab(const char *s, const int space_for_tab, const int buff_size) {
 
   if (s == NULL || c_is_empty_string(s)) {
-    return s;
+    return NULL;
   }
 
-  // TODO: remove VLA on stack make alloc array
-  char result_string[buff_size];
+  char *new_string = calloc(buff_size, sizeof(char));
+
+  if (new_string == NULL) {
+    return NULL;
+  }
 
   const int str_len = c_strlen(s);
   int write_index = 0;
@@ -201,35 +313,31 @@ char *c_entab(char *s, const int space_for_tab, const int buff_size) {
     }
 
     if (is_space_block) {
-      result_string[write_index++] = '\t';
+      new_string[write_index++] = '\t';
       i += space_for_tab;
     } else {
-      result_string[write_index++] = s[i++];
+      new_string[write_index++] = s[i++];
     }
   }
 
-  result_string[write_index] = '\0';
+  new_string[write_index] = '\0';
 
-  c_strcpy(s, result_string);
-
-  return s;
+  return new_string;
 }
 
 // c_detab remove /t and insert n spaces
-// c_detab The main disadvantage is that we work only in the original buffer
-// (string) and if its size is not enough to store the converted string, the
-// function will not work.
-char *c_detab(char *s, const int space_for_tab, const int buff_size) {
+// free()
+char *c_detab(const char *s, const int space_for_tab) {
 
   if (s == NULL || c_is_empty_string(s)) {
-    return s;
+    return NULL;
   }
 
   // Find number of tabs
   int number_of_tabs = _c_count_tabs(s);
 
   if (number_of_tabs == 0) {
-    return s;
+    return NULL;
   }
 
   // Formula of size new string
@@ -240,27 +348,24 @@ char *c_detab(char *s, const int space_for_tab, const int buff_size) {
   const int len_new_string =
       (str_len - number_of_tabs) + (number_of_tabs * space_for_tab);
 
-  if (len_new_string >= buff_size) {
-    return s;
-  }
+  char *new_string = calloc(len_new_string + 1, sizeof(char));
 
-  // TODO: remove VLA on stack
-  char string_without_tabs[len_new_string + 1];
+  if (new_string == NULL) {
+    return NULL;
+  }
 
   int write_index = 0;
   for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] == '\t') {
-      _c_insert_n_spaces(string_without_tabs, space_for_tab, &write_index);
+      _c_insert_n_spaces(new_string, space_for_tab, &write_index);
     } else {
-      string_without_tabs[write_index++] = s[i];
+      new_string[write_index++] = s[i];
     }
   }
 
-  string_without_tabs[write_index] = '\0';
+  new_string[write_index] = '\0';
 
-  c_strcpy(s, string_without_tabs);
-
-  return s;
+  return new_string;
 }
 
 int c_delete_punctuation(char *s) {
@@ -337,21 +442,48 @@ int c_remove_digits(char *s) {
   return num_digits_removed;
 }
 
-// use-stdlib-memory Two bottom functions use char [][] instead of char **
-int c_count_words(const char *s) {
+int c_count_words_space(const char *s) {
 
   if (s == NULL) {
     return -1;
   }
 
-  // TODO: If we want make dynamic array_of_words
-  // must include <stdlib.h>
-  const int length_string = c_strlen(s);
-  char arr_words[length_string][length_string];
-  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
-  _c_get_arr_of_words(length_string, arr_words, s);
+  int counter = 0;
+  qboolean in_word = FALSE;
 
-  return _c_get_size_arr2d(length_string, length_string, arr_words);
+  for (int i = 0; s[i] != '\0'; ++i) {
+    unsigned char c = s[i];
+    if (c_is_space(c) && in_word) {
+      in_word = FALSE;
+    } else if (!c_is_space(c) && !in_word) {
+      in_word = TRUE;
+      counter++;
+    }
+  }
+
+  return counter;
+}
+
+int c_count_words_delim(const char *s, unsigned char delim) {
+
+  if (s == NULL) {
+    return -1;
+  }
+
+  int counter = 0;
+  qboolean in_word = FALSE;
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    unsigned char c = s[i];
+    if (c == delim && in_word) {
+      in_word = FALSE;
+    } else if (c != delim && !in_word) {
+      in_word = TRUE;
+      counter++;
+    }
+  }
+
+  return counter;
 }
 
 // Info: Don't save order of spaces. Trim string
@@ -469,8 +601,6 @@ qboolean c_is_palindrom(const char *s) {
   return TRUE;
 }
 
-char *c_sort_chars(char *s) { return _c_sort_str_chars(s); }
-
 int c_first_unique_char(const char *s) {
 
   if (s == NULL) {
@@ -546,54 +676,111 @@ char *c_trim(char *s) {
   return s;
 }
 
-// TODO:Simplify
-void c_delete_word_duplicate(char *s) {
-  const int length_string = c_strlen(s);
-  char arr_words[length_string][length_string];
-  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
-  _c_get_arr_of_words(length_string, arr_words, s);
-  _c_delete_duplicate_str_arr2d(length_string, length_string, arr_words);
+char *c_delete_word_duplicate(char *s) {
 
-  int k = 0;
-  for (int i = 0; i < length_string; ++i) {
-    int is_word_deleted = TRUE;
-    for (int j = 0; arr_words[i][j] != '\0'; ++j) {
-      s[k++] = arr_words[i][j];
-      is_word_deleted = FALSE;
-    }
-    // Bad desition?
-    if (i < length_string && !is_word_deleted) {
-      s[k++] = ' ';
-    }
-  }
-  s[k] = '\0';
-}
-
-// TODO: make with pointers arr
-void c_strtok(char *s, const int cols, char (*result)[cols], const char delim) {
-  _c_get_words_arr_by_delim(cols, result, s, delim);
-}
-
-// TODO: Simplify
-void c_sort_words(char *s) {
-  const int length_string = c_strlen(s);
-  char arr_words[length_string][length_string];
-  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
-  _c_get_arr_of_words(length_string, arr_words, s);
-  int num_words = _c_get_size_arr2d(length_string, length_string, arr_words);
-  _sort_words_arr2d(num_words, length_string, arr_words);
-
-  int k = 0;
-  for (int i = 0; i < num_words; ++i) {
-    for (int j = 0; arr_words[i][j] != '\0'; ++j) {
-      s[k++] = arr_words[i][j];
-    }
-    if (i < length_string) {
-      s[k++] = ' ';
-    }
+  if (s == NULL) {
+    return s;
   }
 
-  s[k] = '\0';
+  const int str_len = c_strlen(s);
+
+  char **array_of_words = c_split_space(s);
+
+  // c_free_2d_array(array_of_words, int size);
+  return s;
+}
+
+char **c_split_space(char *s) {
+
+  if (s == NULL) {
+    return NULL;
+  }
+
+  const int num_words = c_count_words_space(s);
+
+  char **array_of_words = calloc(num_words + 1, sizeof(char *));
+
+  if (array_of_words == NULL) {
+    return NULL;
+  }
+
+  int str_pos = 0;
+  int array_index = 0;
+
+  // TODO add function for user free 2d array
+  for (; array_index < num_words; ++array_index) {
+
+    int word_len = 0;
+    int word_begin_pos = str_pos;
+
+    // calculate size of one word array
+    for (; !c_is_space((unsigned char)s[str_pos]) && s[str_pos] != '\0';
+         ++str_pos) {
+      word_len++;
+    }
+
+    array_of_words[array_index] = calloc(word_len + 1, sizeof(char));
+
+    if (array_of_words[array_index] == NULL) {
+      c_free_2d_array(array_of_words, num_words);
+      return NULL;
+    }
+
+    // or memcpy analog
+    for (int j = 0; word_begin_pos < str_pos; ++j) {
+      array_of_words[array_index][j] = s[word_begin_pos++];
+    }
+  }
+
+  array_of_words[array_index] = NULL;
+
+  return array_of_words;
+}
+
+char **c_split_delim(char *s, const char delim) {
+
+  if (s == NULL) {
+    return NULL;
+  }
+
+  const int num_words = c_count_words_delim(s, delim);
+
+  char **array_of_words = calloc(num_words + 1, sizeof(char *));
+
+  if (array_of_words == NULL) {
+    return NULL;
+  }
+
+  int str_pos = 0;
+  int array_index = 0;
+
+  // TODO add function for user free 2d array
+  for (; array_index < num_words; ++array_index) {
+
+    int word_len = 0;
+    int word_begin_pos = str_pos;
+
+    // calculate size of one word array
+    for (; s[str_pos] != delim && s[str_pos] != '\0'; ++str_pos) {
+      word_len++;
+    }
+
+    array_of_words[array_index] = calloc(word_len + 1, sizeof(char));
+
+    if (array_of_words[array_index] == NULL) {
+      c_free_2d_array(array_of_words, num_words);
+      return NULL;
+    }
+
+    // or memcpy analog
+    for (int j = 0; word_begin_pos < str_pos; ++j) {
+      array_of_words[array_index][j] = s[word_begin_pos++];
+    }
+  }
+
+  array_of_words[array_index] = NULL;
+
+  return array_of_words;
 }
 
 int c_strstr(const char *s, const char *substr) {
@@ -647,55 +834,6 @@ int c_num_substr(const char *s, const char *substr) {
   return count;
 }
 
-// Size substr_new must be same as substr_old
-void c_str_overwrite_first(char *s, const char *substr_old,
-                           const char *substr_new, const int buff_size) {
-
-  if (s == NULL || substr_old == NULL || substr_new == NULL) {
-    return;
-  }
-
-  if (c_is_empty_string(s) || c_is_empty_string(substr_old) ||
-      c_is_empty_string(substr_new)) {
-    return;
-  }
-
-  const int STRSTR_RES = c_strstr(s, substr_old);
-
-  if (STRSTR_RES >= 0) {
-    c_overwrite_from(s, substr_new, STRSTR_RES, buff_size);
-  }
-}
-
-// Size substr_new must be same as substr_old
-char *c_str_replace_all(char *s, const char *substr_old,
-                        const char *substr_new) {
-
-  if (s == NULL) {
-    return s;
-  }
-
-  const int SUBSTR_LEN = c_strlen(substr_old);
-  const int STR_LEN = c_strlen(s);
-
-  for (int i = 0; i < STR_LEN; i += SUBSTR_LEN) {
-    c_str_replace_first(s + i, substr_old, substr_new);
-  }
-
-  return s;
-}
-
-// Size substr_new must be same as substr_old
-void c_str_replace_n(char *s, const char *substr_old, const char *substr_new,
-                     const int n) {
-  const int SUBSTR_LEN = c_strlen(substr_old);
-  int k = 0;
-  for (int i = 0; i < n; ++i) {
-    c_str_replace_first(s + k, substr_old, substr_new);
-    k += SUBSTR_LEN;
-  }
-}
-
 qboolean c_is_anagrams(const char *s1, const char *s2) {
 
   if (s1 == NULL || s2 == NULL) {
@@ -731,13 +869,6 @@ qboolean c_is_anagrams(const char *s1, const char *s2) {
 }
 
 int c_atoi(const char *s) {
-
-  // c_atoi don't process NULL and empty str
-  /*
-  if (s == NULL || c_is_empty_string(s)) {
-    return 0;
-  }
-  */
 
   int res = 0;
   int i = 0;
@@ -783,4 +914,26 @@ char *c_itoa(const int num, char *s) {
   s[i] = '\0';
 
   return s;
+}
+
+// free()
+char *c_itoa_alloc(int num) {
+
+  const int delim = 10;
+  int num_copy = num;
+  int num_len = 0;
+
+  while (num_copy /= delim) {
+    num_len++;
+  }
+
+  char *new_string = calloc(num_len + 1, sizeof(char));
+
+  if (new_string == NULL) {
+    return NULL;
+  }
+
+  c_itoa(num, new_string);
+
+  return new_string;
 }
