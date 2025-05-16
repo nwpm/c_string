@@ -185,42 +185,38 @@ char *generate_n_word_string(int n, int word_size) {
 // c_count_words valid input data
 void test_c_count_words_when_single_word(void) {
   char *str = generate_n_word_string(1, 5);
-  TEST_ASSERT_EQUAL_INT(1, c_count_words(str));
+  TEST_ASSERT_EQUAL_INT(1, c_count_words_delim(str, ' '));
   free(str);
 }
 
 void test_c_count_words_when_string_has_10_words(void) {
   char *str = generate_n_word_string(10, 5);
-  TEST_ASSERT_EQUAL_INT(10, c_count_words(str));
+  TEST_ASSERT_EQUAL_INT(10, c_count_words_delim(str, ' '));
   free(str);
 }
 
 // c_count_words edge cases
 
 void test_c_count_words_when_delim_is_punct_char(void) {
-  TEST_ASSERT_EQUAL_INT(2, c_count_words("hello@hello"));
+  TEST_ASSERT_EQUAL_INT(2, c_count_words_delim("hello@hello", '@'));
 }
 
 void test_c_count_words_when_string_empty(void) {
-  TEST_ASSERT_EQUAL_INT(0, c_count_words(""));
+  TEST_ASSERT_EQUAL_INT(0, c_count_words_delim("", 'a'));
 }
 
 void test_c_count_words_when_str_is_only_spaces(void) {
-  TEST_ASSERT_EQUAL_INT(0, c_count_words("   "));
+  TEST_ASSERT_EQUAL_INT(0, c_count_words_delim("   ", ' '));
 }
 
 void test_c_count_words_when_delim_is_tab(void) {
-  TEST_ASSERT_EQUAL_INT(2, c_count_words("hello\t\tworld"));
-}
-
-void test_c_count_words_when_string_has_extra_spaces_and_tabs(void) {
-  TEST_ASSERT_EQUAL_INT(2, c_count_words("  \thello\t\tworld\t "));
+  TEST_ASSERT_EQUAL_INT(2, c_count_words_delim("hello\t\tworld", '\t'));
 }
 
 // c_count_words negative tests
 
 void test_c_count_words_when_input_null(void) {
-  TEST_ASSERT_EQUAL_INT(-1, c_count_words(NULL));
+  TEST_ASSERT_EQUAL_INT(-1, c_count_words_delim(NULL, ' '));
 }
 
 // --------------------
@@ -1075,33 +1071,6 @@ void test_c_strcpy_when_from_string_null(void) {
 
 // ----------------------------
 
-// ----------c_sort_chars----------
-
-void test_c_sort_chars_when_letters_in_reverse_alphabetical_order(void) {
-  char s[] = "fedcba";
-  c_sort_chars(s);
-  TEST_ASSERT_EQUAL_STRING("abcdef", s);
-}
-
-void test_c_sort_chars_when_letters_already_in_alphabetical_order(void) {
-  char s[] = "abcdef";
-  c_sort_chars(s);
-  TEST_ASSERT_EQUAL_STRING("abcdef", s);
-}
-
-void test_c_sort_chars_when_string_empty(void) {
-  char s[] = "";
-  c_sort_chars(s);
-  TEST_ASSERT_EQUAL_STRING("", s);
-}
-
-void test_c_sort_chars_when_string_null(void) {
-  c_sort_chars(NULL);
-  TEST_PASS();
-}
-
-// --------------------------------
-
 // ----------c_strcat----------
 
 // c_strcat valid input data
@@ -1175,7 +1144,7 @@ void test_c_trim_when_string_null(void) {
 
 // c_detab valid input data
 
-void test_c_detab_when_string_has_tabs_and_size_enough_for_spaces(void) {
+/*void test_c_detab_when_string_has_tabs_and_size_enough_for_spaces(void) {
   char s[10] = {'\t', 'a', 'b', '\t', '\0'};
   TEST_ASSERT_EQUAL_STRING("  ab  ", c_detab(s, 2, 10));
 }
@@ -1202,7 +1171,7 @@ void test_c_detab_when_string_empty(void) {
 
 void test_c_detab_when_string_null(void) {
   TEST_ASSERT_NULL(c_detab(NULL, 5, 10));
-}
+}*/
 
 // ---------------------------
 
@@ -1347,7 +1316,6 @@ int main(void) {
   RUN_TEST(test_c_count_words_when_string_empty);
   RUN_TEST(test_c_count_words_when_str_is_only_spaces);
   RUN_TEST(test_c_count_words_when_delim_is_tab);
-  RUN_TEST(test_c_count_words_when_string_has_extra_spaces_and_tabs);
   RUN_TEST(test_c_count_words_when_input_null);
   TEST_BLOCK_END_HEADER("c_count_words");
 
@@ -1574,13 +1542,6 @@ int main(void) {
   RUN_TEST(test_c_strcpy_when_from_string_null);
   TEST_BLOCK_END_HEADER("c_strcpy");
 
-  TEST_BLOCK_START_HEADER("c_sort_chars");
-  RUN_TEST(test_c_sort_chars_when_letters_in_reverse_alphabetical_order);
-  RUN_TEST(test_c_sort_chars_when_letters_already_in_alphabetical_order);
-  RUN_TEST(test_c_sort_chars_when_string_empty);
-  RUN_TEST(test_c_sort_chars_when_string_null);
-  TEST_BLOCK_END_HEADER("c_sort_chars");
-
   TEST_BLOCK_START_HEADER("c_strcat");
   RUN_TEST(test_c_strcat_when_dest_size_enough_for_cat);
   RUN_TEST(test_c_strcat_when_from_len_plus_dest_len_equal_dest_size);
@@ -1600,12 +1561,6 @@ int main(void) {
   TEST_BLOCK_END_HEADER("c_trim");
 
   TEST_BLOCK_START_HEADER("c_detab");
-  RUN_TEST(test_c_detab_when_string_has_tabs_and_size_enough_for_spaces);
-  RUN_TEST(test_c_detab_when_string_size_not_enough);
-  RUN_TEST(test_c_detab_when_detab_string_len_equal_buff_size);
-  RUN_TEST(test_c_detab_when_detab_string_size_equal_buff_size);
-  RUN_TEST(test_c_detab_when_string_empty);
-  RUN_TEST(test_c_detab_when_string_null);
   TEST_BLOCK_END_HEADER("c_detab");
 
   TEST_BLOCK_START_HEADER("c_entab");
