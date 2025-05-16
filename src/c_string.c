@@ -648,26 +648,41 @@ int c_num_substr(const char *s, const char *substr) {
 }
 
 // Size substr_new must be same as substr_old
-void c_str_replace_first(char *s, const char *substr_old,
-                         const char *substr_new) {
-  const int FAIL_RESULT_STR = -1;
+void c_str_overwrite_first(char *s, const char *substr_old,
+                           const char *substr_new, const int buff_size) {
+
+  if (s == NULL || substr_old == NULL || substr_new == NULL) {
+    return;
+  }
+
+  if (c_is_empty_string(s) || c_is_empty_string(substr_old) ||
+      c_is_empty_string(substr_new)) {
+    return;
+  }
+
   const int STRSTR_RES = c_strstr(s, substr_old);
 
-  if (STRSTR_RES != FAIL_RESULT_STR) {
-    // 1 is dummy must fix parametrs
-    c_overwrite_from(s, substr_new, STRSTR_RES, 1);
+  if (STRSTR_RES >= 0) {
+    c_overwrite_from(s, substr_new, STRSTR_RES, buff_size);
   }
 }
 
 // Size substr_new must be same as substr_old
-void c_str_replace_all(char *s, const char *substr_old,
-                       const char *substr_new) {
+char *c_str_replace_all(char *s, const char *substr_old,
+                        const char *substr_new) {
+
+  if (s == NULL) {
+    return s;
+  }
+
   const int SUBSTR_LEN = c_strlen(substr_old);
   const int STR_LEN = c_strlen(s);
 
   for (int i = 0; i < STR_LEN; i += SUBSTR_LEN) {
     c_str_replace_first(s + i, substr_old, substr_new);
   }
+
+  return s;
 }
 
 // Size substr_new must be same as substr_old
@@ -741,9 +756,14 @@ int c_atoi(const char *s) {
 }
 
 // Required: s must have enough size for num
-void c_itoa(const int num, char *s) {
+char *c_itoa(const int num, char *s) {
 
-  int copy_num = num;
+  if (s == NULL) {
+    return s;
+  }
+
+  qboolean is_negative = (num < 0);
+  int copy_num = (is_negative) ? -num : num;
   int delim = 10;
   int i = 0;
 
@@ -754,5 +774,13 @@ void c_itoa(const int num, char *s) {
 
   } while (copy_num /= delim);
 
+  if (is_negative) {
+    s[i++] = '-';
+  }
+
   c_reverse(s);
+
+  s[i] = '\0';
+
+  return s;
 }
