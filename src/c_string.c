@@ -1,7 +1,13 @@
 #include "../include/c_string.h" // better way to include?
+#include "internal/_c_common.h"
 #include "internal/_str_internal.h"
 
-int c_strlen(const char s[]) {
+int c_strlen(const char *s) {
+
+  if (s == NULL) {
+    return -1;
+  }
+
   int i = 0;
   while (s[i] != '\0') {
     ++i;
@@ -9,236 +15,354 @@ int c_strlen(const char s[]) {
   return i;
 }
 
-void c_strcpy(char to[], const char from[]) {
+// TODO: add safe version
+char *c_strcpy(char *dest, const char *from) {
+
+  if (dest == NULL || from == NULL || dest == from) {
+    return dest;
+  }
+
   int i = 0;
-  while ((to[i] = from[i]) != '\0')
+  while ((dest[i] = from[i]) != '\0') {
     ++i;
-}
-
-// To string must have size >= to + from
-void c_strcat(char to[], char from[]) {
-
-  int start_insert_from = c_strlen(to);
-
-  int i = start_insert_from;
-  int result_string_size = start_insert_from + c_strlen(from);
-  for (int j = 0; i < result_string_size; ++i) {
-    to[i] = from[j++];
   }
 
-  to[i] = '\0';
+  return dest;
 }
 
-void c_to_lower(char s[]) {
-  _c_change_letter_size(s, UPPER_LETTER_START, UPPER_LETTER_END, PLUS);
-}
+// Required: "to" string must have size >= to + from
+char *c_strcat(char *dest, const char *from, const int dest_buff_size) {
 
-void c_to_upper(char s[]) {
-  _c_change_letter_size(s, LOWER_LETTER_START, LOWER_LETTER_END, MINUS);
-}
-
-int c_strcmp(const char first[], const char second[]) {
-
-  const int size_first = (c_strlen(first) + STR_END_SYMBOL);
-  const int size_second = (c_strlen(second) + STR_END_SYMBOL);
-
-  if (size_first == size_second) {
-    return _c_compare_symbols(first, second, size_first);
+  if (dest == NULL || from == NULL) {
+    return NULL;
   }
 
-  const int shorter_size =
-      (size_first >= size_second) ? size_first : size_second;
+  const int from_len = c_strlen(from);
+  const int dest_len = c_strlen(dest);
 
-  return _c_compare_symbols(first, second, shorter_size);
+  if (from_len + dest_len >= dest_buff_size) {
+    return dest;
+  }
+
+  int start_index = dest_len;
+  int end_index = start_index + from_len;
+  for (int j = 0; start_index < end_index; ++start_index) {
+    dest[start_index] = from[j++];
+  }
+
+  dest[start_index] = '\0';
+
+  return dest;
 }
 
-void c_invert_symbols(char s[]) {
+char *c_str_to_lower(char *s) {
+
+  if (s == NULL) {
+    return s;
+  }
 
   for (int i = 0; s[i] != '\0'; ++i) {
-    if ((s[i] >= UPPER_LETTER_START) && (s[i] <= UPPER_LETTER_END)) {
-      s[i] += DIFFERENCE_LETTERS_SIZE;
-    } else if ((s[i] >= LOWER_LETTER_START) && (s[i] <= LOWER_LETTER_END)) {
-      s[i] -= DIFFERENCE_LETTERS_SIZE;
+    s[i] = c_is_upper_letter(s[i]) ? c_letter_to_lower(s[i]) : s[i];
+  }
+
+  return s;
+}
+
+char *c_str_to_upper(char *s) {
+
+  if (s == NULL) {
+    return s;
+  }
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    s[i] = c_is_lower_letter(s[i]) ? c_letter_to_upper(s[i]) : s[i];
+  }
+
+  return s;
+}
+
+int c_strcmp(const char *first, const char *second) {
+  while (*first && (*first == *second)) {
+    ++first;
+    ++second;
+  }
+  return *first - *second;
+}
+
+qboolean c_is_lower_letter(const unsigned char c) {
+  return (c >= LOWER_LETTER_START && c <= LOWER_LETTER_END) ? TRUE : FALSE;
+}
+
+qboolean c_is_upper_letter(const unsigned char c) {
+  return (c >= UPPER_LETTER_START && c <= UPPER_LETTER_END) ? TRUE : FALSE;
+}
+
+char c_letter_to_lower(unsigned char c) {
+  if (c_is_upper_letter(c)) {
+    return c += DIFFERENCE_LETTERS_SIZE;
+  }
+  return c;
+}
+
+char c_letter_to_upper(unsigned char c) {
+  if (c_is_lower_letter(c)) {
+    return c -= DIFFERENCE_LETTERS_SIZE;
+  }
+  return c;
+}
+
+char *c_invert_symbols(char *s) {
+
+  if (s == NULL) {
+    return s;
+  }
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+
+    unsigned char c = s[i];
+
+    if (c_is_upper_letter(c)) {
+      s[i] = c_letter_to_lower(c);
+    } else if (c_is_lower_letter(c)) {
+      s[i] = c_letter_to_upper(c);
     }
   }
+
+  return s;
 }
 
 // Required: The `to` buffer must have enough space for the entire `substr`,
-// starting at position *insert_from, including the terminating '\0'
-void c_insert_str_from(char *to, const char *substr, const int insert_from) {
+// starting at position insert_from, including the terminating '\0'
+char *c_overwrite_from(char *dest, const char *substr, const int insert_from,
+                       const int buff_size) {
 
-  int copy_insert_from = insert_from;
+  if (dest == NULL || substr == NULL || c_is_empty_string(dest) ||
+      c_is_empty_string(substr)) {
+    return dest;
+  }
+
+  const int substr_len = c_strlen(substr);
+
+  if (insert_from + substr_len >= buff_size) {
+    return dest;
+  }
+
+  int insert_index = insert_from;
 
   for (int i = 0; substr[i] != '\0'; ++i) {
-    to[copy_insert_from++] = substr[i];
+    dest[insert_index++] = substr[i];
   }
+
+  return dest;
 }
 
-void c_delete_spaces(char s[]) {
+int c_delete_spaces(char *s) {
 
-  int j = 0;
+  if (s == NULL) {
+    return -1;
+  }
+
+  int removed = 0;
+  int write_pos = 0;
 
   for (int i = 0; s[i] != '\0'; ++i) {
-    if (s[i] != ' ') {
-      s[j++] = s[i];
+    if (!c_is_space(s[i])) {
+      s[write_pos++] = s[i];
+    } else {
+      removed++;
     }
   }
 
-  s[j] = '\0';
+  s[write_pos] = '\0';
+
+  return removed;
 }
 
-void c_entab(char s[], const int space_for_tab) {
-  const int buffer_size = space_for_tab + STR_END_SYMBOL;
-  char buffer[buffer_size];
-  _c_init_char_arr(buffer, '\0', buffer_size);
+// c_entab remove n spaces and set their to /t
+char *c_entab(char *s, const int space_for_tab, const int buff_size) {
 
-  int buff_i = 0;
-  int k = 0;
-  for (int i = 0; s[i] != '\0'; ++i) {
-    // Check - is buffer full
-    if (buffer[buffer_size - 2] != '\0') {
-      if (_c_is_string_of_spaces(buffer)) {
-        s[k++] = '\t';
-      } else {
-        _c_insert_str_from(s, buffer, &k);
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
+  }
+
+  // TODO: remove VLA on stack make alloc array
+  char result_string[buff_size];
+
+  const int str_len = c_strlen(s);
+  int write_index = 0;
+
+  for (int i = 0; s[i] != '\0';) {
+    qboolean is_space_block = TRUE;
+    for (int j = 0; j < space_for_tab && j + i < str_len; ++j) {
+      if (s[i + j] != ' ') {
+        is_space_block = FALSE;
+        break;
       }
-      // Clear buffer and index
-      _c_init_char_arr(buffer, '\0', buffer_size);
-      buff_i = 0;
     }
 
-    buffer[buff_i++] = s[i];
+    if (is_space_block) {
+      result_string[write_index++] = '\t';
+      i += space_for_tab;
+    } else {
+      result_string[write_index++] = s[i++];
+    }
   }
 
-  if (!c_is_empty_string(buffer)) {
-    _c_insert_str_from(s, buffer, &k);
-  }
+  result_string[write_index] = '\0';
 
-  s[k] = '\0';
+  c_strcpy(s, result_string);
+
+  return s;
 }
 
-/*c_detab The main disadvantage is that we work only in the original buffer
- * (string) and if its size is not enough to store the converted string, the
- * function will not work.*/
-void c_detab(char s[], const int space_for_tab) {
+// c_detab remove /t and insert n spaces
+// c_detab The main disadvantage is that we work only in the original buffer
+// (string) and if its size is not enough to store the converted string, the
+// function will not work.
+char *c_detab(char *s, const int space_for_tab, const int buff_size) {
 
-  if (c_is_empty_string(s)) {
-    return;
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
   }
 
   // Find number of tabs
   int number_of_tabs = _c_count_tabs(s);
 
   if (number_of_tabs == 0) {
-    return;
+    return s;
   }
 
   // Formula of size new string
   // 1. Find number of chars without tabs
   // 2. Calculate the number of spaces that will replace tabs
-  // 3. Result = (1) + (2) points
-  const int original_string_size = c_strlen(s) + STR_END_SYMBOL;
-  const int size_new_string = (original_string_size - number_of_tabs) +
-                              (number_of_tabs * space_for_tab);
+  // 3. Result = (1) + (2)
+  const int str_len = c_strlen(s);
+  const int len_new_string =
+      (str_len - number_of_tabs) + (number_of_tabs * space_for_tab);
 
-  char string_without_tabs[size_new_string];
+  if (len_new_string >= buff_size) {
+    return s;
+  }
 
-  int j = 0;
+  // TODO: remove VLA on stack
+  char string_without_tabs[len_new_string + 1];
+
+  int write_index = 0;
   for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] == '\t') {
-      _c_insert_n_spaces(string_without_tabs, space_for_tab, &j);
+      _c_insert_n_spaces(string_without_tabs, space_for_tab, &write_index);
     } else {
-      string_without_tabs[j++] = s[i];
+      string_without_tabs[write_index++] = s[i];
     }
   }
 
-  string_without_tabs[j] = '\0';
+  string_without_tabs[write_index] = '\0';
 
   c_strcpy(s, string_without_tabs);
+
+  return s;
 }
 
-void c_delete_punctuation(char s[]) {
+int c_delete_punctuation(char *s) {
 
-  int j = 0;
+  if (s == NULL) {
+    return -1;
+  }
+
+  int removed = 0;
+  int write_pos = 0;
 
   for (int i = 0; s[i] != '\0'; ++i) {
     if (!c_is_punct_char(s[i])) {
-      s[j++] = s[i];
+      s[write_pos++] = s[i];
+    } else {
+      removed++;
     }
   }
 
-  s[j] = '\0';
+  s[write_pos] = '\0';
+  return removed;
 }
 
-void c_reverse(char s[]) {
+char *c_reverse(char *s) {
 
-  int j = c_strlen(s) - STR_END_SYMBOL;
-
-  for (int i = 0; i <= j; ++i, --j) {
-    _c_swap_char(s + i, s + j);
+  if (s == NULL) {
+    return s;
   }
+
+  int end_index = c_strlen(s) - 1;
+
+  for (int start_index = 0; start_index <= end_index;
+       ++start_index, --end_index) {
+    _c_swap_char(s + start_index, s + end_index);
+  }
+
+  return s;
 }
 
-void c_change_char_to(char s[], const char from_char, const char to_char) {
+char *c_change_char_all(char *s, const unsigned char from_char,
+                        const unsigned char to_char) {
+
+  if (s == NULL) {
+    return s;
+  }
 
   for (int i = 0; s[i] != '\0'; ++i) {
     if (s[i] == from_char) {
       s[i] = to_char;
     }
   }
+
+  return s;
 }
 
-int c_remove_digits(char s[]) {
+int c_remove_digits(char *s) {
 
-  int j = 0;
-  int num_digits_removed = 0;
-  const int copy_string_size = c_strlen(s) + STR_END_SYMBOL;
-
-  char string_without_nums[copy_string_size];
-
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (!(s[i] >= '0' && s[i] <= '9')) {
-      string_without_nums[j++] = s[i];
-    } else {
-      num_digits_removed++;
-    }
+  if (s == NULL) {
+    return -1;
   }
 
-  string_without_nums[j] = '\0';
+  int num_digits_removed = 0;
 
-  c_strcpy(s, string_without_nums);
+  int k = 0;
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (c_is_digit(s[i])) {
+      ++num_digits_removed;
+    } else {
+      s[k++] = s[i];
+    }
+  }
+  s[k] = '\0';
 
   return num_digits_removed;
 }
 
-// Two bottom functions use char [][] instead of char **
-int c_count_words(const char s[]) {
+// use-stdlib-memory Two bottom functions use char [][] instead of char **
+int c_count_words(const char *s) {
+
+  if (s == NULL) {
+    return -1;
+  }
 
   // TODO: If we want make dynamic array_of_words
   // must include <stdlib.h>
   const int length_string = c_strlen(s);
   char arr_words[length_string][length_string];
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
-
-  int result = 0;
   _c_get_arr_of_words(length_string, arr_words, s);
 
-  for (int i = 0; arr_words[i][0] != '\0'; ++i) {
-    result++;
-  }
-
-  return result;
+  return _c_get_size_arr2d(length_string, length_string, arr_words);
 }
 
-// Don't save order of spaces. Trim string
+// Info: Don't save order of spaces. Trim string
 // and add only 1 space after word.
-void c_reverse_word_order(char s[], const char delim) {
+void c_reverse_word_order(char *s, const char delim) {
   const int length_string = c_strlen(s);
   char arr_words[length_string][length_string];
-  _c_init_char_arr2d('\0', length_string, length_string, arr_words);
+  _c_init_char_arr2d(END_SYMBOL, length_string, length_string, arr_words);
   _c_get_words_arr_by_delim(length_string, arr_words, s, delim);
 
-  int num_words = _c_get_size_arr2d(length_string, arr_words);
+  int num_words = _c_get_size_arr2d(length_string, length_string, arr_words);
 
   int k = 0;
   for (int i = num_words - 1; i >= 0; --i) {
@@ -254,152 +378,172 @@ void c_reverse_word_order(char s[], const char delim) {
   s[k] = '\0';
 }
 
-int c_is_empty_string(const char s[]) { return !c_strlen(s); }
+qboolean c_is_empty_string(const char *s) {
 
-int c_is_string_of_digits(const char s[]) {
-
-  if (c_is_empty_string(s)) {
+  if (s == NULL) {
     return FALSE;
   }
 
-  int is_all_digits = TRUE;
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (!((s[i] >= '0') && (s[i] <= '9'))) {
-      return !is_all_digits;
-    }
-  }
-
-  return is_all_digits;
+  return !c_strlen(s);
 }
 
-int c_is_char_in_string(const char s[], const char chr) {
+qboolean c_is_string_of_digits(const char *s) {
 
-  int char_in_string = TRUE;
-
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (s[i] == chr) {
-      return char_in_string;
-    }
-  }
-
-  return !char_in_string;
-}
-
-void c_delete_duplicates(char s[]) {
-
-  const int cleaned_string_size = c_strlen(s) + STR_END_SYMBOL;
-  char cleaned_string[cleaned_string_size];
-  _c_init_char_arr(cleaned_string, '\0', cleaned_string_size);
-
-  int j = 0;
-
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (!c_is_char_in_string(cleaned_string, s[i])) {
-      cleaned_string[j++] = s[i];
-    }
-  }
-
-  cleaned_string[j] = '\0';
-
-  c_strcpy(s, cleaned_string);
-}
-
-int c_is_palindrom(const char s[]) {
-
-  if (c_is_empty_string(s)) {
+  if (s == NULL || c_is_empty_string(s)) {
     return FALSE;
   }
 
-  int j = c_strlen(s) - 1;
-  int i = 0;
-
-  while (i < j) {
-    if (s[i] != s[j]) {
+  while (*s) {
+    if (!c_is_digit(*s)) {
       return FALSE;
-    } else {
-      i++;
-      j--;
     }
+    ++s;
   }
 
   return TRUE;
 }
 
-void c_sort_chars(char s[]) { _c_insert_char_sort(s); }
+int c_index_of_char(const char *s, const unsigned char c) {
 
-int c_first_unique_char(const char s[]) {
+  if (s == NULL || c == '\0') {
+    return -1;
+  }
 
-  const int copy_size = c_strlen(s) + 1;
-  char copy_string[copy_size];
-  copy_string[copy_size] = '\0';
-
-  c_strcpy(copy_string, s);
-  c_delete_duplicates(copy_string);
-
-  for (int i = 0; copy_string[i] != '\0'; ++i) {
-    int num_of_char = 0;
-    for (int j = 0; s[j] != '\0'; ++j) {
-      if (copy_string[i] == s[j]) {
-        num_of_char++;
-      }
-    }
-    if (num_of_char == 1) {
-      return copy_string[i];
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (s[i] == c) {
+      return i;
     }
   }
 
   return -1;
 }
 
-int c_is_digit(const char c) { return (c >= '0' && c <= '9') ? TRUE : FALSE; }
+char *c_delete_duplicates(char *s) {
 
-int c_is_punct_char(const char c) {
-  return ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') ||
-          (c >= '[' && c <= '`') || (c >= '{' && c <= '~'))
-             ? TRUE
-             : FALSE;
+  if (s == NULL) {
+    return s;
+  }
+
+  int count[ASCII_SIZE] = {0};
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    count[(unsigned char)s[i]]++;
+  }
+
+  int pos = 0;
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (count[(unsigned char)s[i]] > 0) {
+      s[pos++] = s[i];
+      count[(unsigned char)s[i]] = 0;
+    }
+  }
+
+  s[pos] = '\0';
+
+  return s;
 }
 
-int c_is_space(const char c) { return (c == ' ') ? TRUE : FALSE; }
+qboolean c_is_palindrom(const char *s) {
 
-int c_is_tab(const char c) { return (c == '\t') ? TRUE : FALSE; }
+  if (s == NULL || c_is_empty_string(s)) {
+    return FALSE;
+  }
 
-int c_is_letter(const char c) {
+  const int len_str = c_strlen(s);
+
+  if (len_str == 1) {
+    return TRUE;
+  }
+
+  int end_index = len_str - 1;
+  int start_index = 0;
+
+  while (start_index < end_index) {
+    if (c_letter_to_lower(s[start_index]) != c_letter_to_lower(s[end_index])) {
+      return FALSE;
+    }
+    start_index++;
+    end_index--;
+  }
+
+  return TRUE;
+}
+
+char *c_sort_chars(char *s) { return _c_sort_str_chars(s); }
+
+int c_first_unique_char(const char *s) {
+
+  if (s == NULL) {
+    return -1;
+  }
+
+  char count[ASCII_SIZE] = {0};
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    unsigned char c = (unsigned char)s[i];
+    count[c]++;
+  }
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (count[(unsigned char)s[i]] == 1) {
+      return i;
+    }
+  }
+
+  return -2;
+}
+
+qboolean c_is_digit(const unsigned char c) { return (c >= '0' && c <= '9'); }
+
+qboolean c_is_punct_char(const unsigned char c) {
+  return ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') ||
+          (c >= '[' && c <= '`') || (c >= '{' && c <= '~'));
+}
+
+qboolean c_is_space(const unsigned char c) {
+  return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' ||
+         c == '\f';
+}
+
+qboolean c_is_letter(const unsigned char c) {
   return ((c >= LOWER_LETTER_START && c <= LOWER_LETTER_END) ||
           (c >= UPPER_LETTER_START && c <= UPPER_LETTER_END))
              ? TRUE
              : FALSE;
 }
 
-void c_trim(char s[]) {
+char *c_trim(char *s) {
 
-  if (c_is_empty_string(s)) {
-    return;
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
   }
 
-  const int copy_size = c_strlen(s) + STR_END_SYMBOL;
-  char trimmed_copy[copy_size];
+  // Start index begin with first not space char
+  // End index start with last not space char
+  int start_index = 0;
+  int end_index = c_strlen(s) - 1;
 
-  int i = 0;
-  int j = c_strlen(s) - STR_END_SYMBOL;
-
-  while (c_is_space(s[i]) || c_is_tab(s[i])) {
-    ++i;
+  while (c_is_space(s[start_index])) {
+    ++start_index;
   }
 
-  while (c_is_space(s[j]) || c_is_tab(s[j])) {
-    --j;
+  while (end_index >= start_index && c_is_space(s[end_index])) {
+    --end_index;
   }
 
-  int k = 0;
-
-  for (; i <= j; ++i) {
-    trimmed_copy[k++] = s[i];
+  if (start_index > end_index) {
+    s[0] = '\0';
+    return s;
   }
 
-  trimmed_copy[k] = '\0';
+  int write_index = 0;
+  for (; start_index <= end_index; ++start_index) {
+    s[write_index++] = s[start_index];
+  }
 
-  c_strcpy(s, trimmed_copy);
+  s[write_index] = '\0';
+
+  return s;
 }
 
 // TODO:Simplify
@@ -436,7 +580,7 @@ void c_sort_words(char *s) {
   char arr_words[length_string][length_string];
   _c_init_char_arr2d('\0', length_string, length_string, arr_words);
   _c_get_arr_of_words(length_string, arr_words, s);
-  int num_words = _c_get_size_arr2d(length_string, arr_words);
+  int num_words = _c_get_size_arr2d(length_string, length_string, arr_words);
   _sort_words_arr2d(num_words, length_string, arr_words);
 
   int k = 0;
@@ -453,66 +597,92 @@ void c_sort_words(char *s) {
 }
 
 int c_strstr(const char *s, const char *substr) {
-  const int SUBSTR_LEN = c_strlen(substr);
-  const int STR_LEN = c_strlen(s);
-  const int BUFF_SIZE = SUBSTR_LEN + STR_END_SYMBOL;
-  int k = 0;
-  char buff[BUFF_SIZE];
-  _c_init_char_arr(buff, '\0', BUFF_SIZE);
 
-  for (int i = 0; i <= STR_LEN - SUBSTR_LEN; ++i) {
-    for (int j = i; j < i + SUBSTR_LEN; ++j) {
-      buff[k++] = s[j];
-    }
-
-    if (c_strcmp(buff, substr) == 0) {
-      return i;
-    }
-    k = 0;
+  if (s == NULL || substr == NULL) {
+    return -1;
   }
 
+  if (c_is_empty_string(s) || c_is_empty_string(substr)) {
+    return -1;
+  }
+
+  int str_len = c_strlen(s);
+  int substr_len = c_strlen(substr);
+
+  for (int i = 0; i <= str_len - substr_len; ++i) {
+    int j = 0;
+    while (j < substr_len && s[i + j] == substr[j]) {
+      ++j;
+    }
+
+    if (j == substr_len) {
+      return i;
+    }
+  }
   return -1;
 }
 
 int c_num_substr(const char *s, const char *substr) {
-  const int SUBSTR_LEN = c_strlen(substr);
-  const int STR_LEN = c_strlen(s);
-  const int FAIL_RESULT_STR = -1;
 
-  int res = 0;
-
-  for (int i = 0; i <= STR_LEN - SUBSTR_LEN;) {
-    if (c_strstr(s + i, substr) != FAIL_RESULT_STR) {
-      ++res;
-      i += SUBSTR_LEN;
-    } else {
-      ++i;
-    }
+  if (s == NULL || substr == NULL) {
+    return -1;
   }
 
-  return res;
+  if (c_is_empty_string(s) || c_is_empty_string(substr)) {
+    return 0;
+  }
+
+  int count = 0;
+  int i = 0;
+
+  while (s[i] != '\0') {
+    int match_pos = c_strstr(s + i, substr);
+    if (match_pos < 0) {
+      break;
+    }
+    count++;
+    i += match_pos + 1;
+  }
+
+  return count;
 }
 
 // Size substr_new must be same as substr_old
-void c_str_replace_first(char *s, const char *substr_old,
-                         const char *substr_new) {
-  const int FAIL_RESULT_STR = -1;
+void c_str_overwrite_first(char *s, const char *substr_old,
+                           const char *substr_new, const int buff_size) {
+
+  if (s == NULL || substr_old == NULL || substr_new == NULL) {
+    return;
+  }
+
+  if (c_is_empty_string(s) || c_is_empty_string(substr_old) ||
+      c_is_empty_string(substr_new)) {
+    return;
+  }
+
   const int STRSTR_RES = c_strstr(s, substr_old);
 
-  if (STRSTR_RES != FAIL_RESULT_STR) {
-    c_insert_str_from(s, substr_new, STRSTR_RES);
+  if (STRSTR_RES >= 0) {
+    c_overwrite_from(s, substr_new, STRSTR_RES, buff_size);
   }
 }
 
 // Size substr_new must be same as substr_old
-void c_str_replace_all(char *s, const char *substr_old,
-                       const char *substr_new) {
+char *c_str_replace_all(char *s, const char *substr_old,
+                        const char *substr_new) {
+
+  if (s == NULL) {
+    return s;
+  }
+
   const int SUBSTR_LEN = c_strlen(substr_old);
   const int STR_LEN = c_strlen(s);
 
   for (int i = 0; i < STR_LEN; i += SUBSTR_LEN) {
     c_str_replace_first(s + i, substr_old, substr_new);
   }
+
+  return s;
 }
 
 // Size substr_new must be same as substr_old
@@ -526,63 +696,74 @@ void c_str_replace_n(char *s, const char *substr_old, const char *substr_new,
   }
 }
 
-int c_is_anagrams(const char *s1, const char *s2) {
+qboolean c_is_anagrams(const char *s1, const char *s2) {
+
+  if (s1 == NULL || s2 == NULL) {
+    return FALSE;
+  }
+
   const int s1_len = c_strlen(s1);
   const int s2_len = c_strlen(s2);
 
-  if (s1_len == s2_len) {
+  if (s1_len != s2_len || s1_len == 0) {
+    return FALSE;
+  }
 
-    const int str_size = s1_len;
-    char s1_copy[str_size + STR_END_SYMBOL];
-    char s2_copy[str_size + STR_END_SYMBOL];
+  int count[ASCII_SIZE] = {0};
 
-    s1_copy[str_size] = '\0';
-    s2_copy[str_size] = '\0';
+  for (int i = 0; s1[i] != '\0'; ++i) {
+    unsigned char c = c_letter_to_lower(s1[i]);
+    count[c]++;
+  }
 
-    c_strcpy(s1_copy, s1);
-    c_strcpy(s2_copy, s2);
+  for (int i = 0; s2[i] != '\0'; ++i) {
+    unsigned char c = c_letter_to_lower(s2[i]);
+    count[c]--;
+  }
 
-    c_to_lower(s1_copy);
-    c_to_lower(s2_copy);
-
-    for (int i = 0; s1_copy[i] != '\0'; ++i) {
-      if (!c_is_char_in_string(s2_copy, s1_copy[i])) {
-        return FALSE;
-      }
+  for (int i = 0; i < ASCII_SIZE; ++i) {
+    if (count[i] != 0) {
+      return FALSE;
     }
   }
 
   return TRUE;
 }
 
-// TODO:
-// -separete function for copy and init string
-// -give the result taking into account the sign in the string
 int c_atoi(const char *s) {
 
-  const int str_size = c_strlen(s);
-  char copy_str[str_size + STR_END_SYMBOL];
-  copy_str[str_size] = '\0';
-  c_strcpy(copy_str, s);
-  c_reverse(copy_str);
+  // c_atoi don't process NULL and empty str
+  /*
+  if (s == NULL || c_is_empty_string(s)) {
+    return 0;
+  }
+  */
 
   int res = 0;
-  int exp_ten = 1;
+  int i = 0;
+  qboolean is_negative = FALSE;
 
-  for (int i = 0; copy_str[i] != '\0'; ++i) {
-    if (c_is_digit(copy_str[i])) {
-      res += (copy_str[i] - '0') * exp_ten;
-      exp_ten *= 10;
-    }
+  if (s[i] == '-') {
+    i++;
+    is_negative = TRUE;
   }
 
-  return res;
+  for (; s[i] != '\0' && c_is_digit(s[i]); ++i) {
+    res = (res * 10) + (s[i] - '0');
+  }
+
+  return is_negative ? -res : res;
 }
 
 // Required: s must have enough size for num
-void c_itoa(const int num, char *s) {
+char *c_itoa(const int num, char *s) {
 
-  int copy_num = num;
+  if (s == NULL) {
+    return s;
+  }
+
+  qboolean is_negative = (num < 0);
+  int copy_num = (is_negative) ? -num : num;
   int delim = 10;
   int i = 0;
 
@@ -593,5 +774,13 @@ void c_itoa(const int num, char *s) {
 
   } while (copy_num /= delim);
 
+  if (is_negative) {
+    s[i++] = '-';
+  }
+
   c_reverse(s);
+
+  s[i] = '\0';
+
+  return s;
 }

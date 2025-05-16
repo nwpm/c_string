@@ -1,5 +1,6 @@
 #include "_str_internal.h"
 #include "../../include/c_string.h"
+#include "_c_common.h"
 
 void _c_swap_char(char *c1, char *c2) {
   char tmp_val = *c1;
@@ -7,33 +8,7 @@ void _c_swap_char(char *c1, char *c2) {
   *c2 = tmp_val;
 }
 
-void _c_change_letter_size(char s[], int bottom_border, int upper_border,
-                           enum _operation_type operation) {
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (((s[i] >= bottom_border) && (s[i] <= upper_border)) &&
-        (operation == PLUS)) {
-      s[i] += DIFFERENCE_LETTERS_SIZE;
-    } else if (((s[i] >= bottom_border) && (s[i] <= upper_border)) &&
-               (operation == MINUS)) {
-      s[i] -= DIFFERENCE_LETTERS_SIZE;
-    }
-  }
-}
-
-// difference > 0 -> first
-// difference < 0 -> second
-int _c_compare_symbols(const char first[], const char second[],
-                       int min_length) {
-  for (int i = 0; i < min_length; ++i) {
-    int difference = first[i] - second[i];
-    if (difference) {
-      return difference;
-    }
-  }
-  return 0;
-}
-
-int _c_count_tabs(char s[]) {
+int _c_count_tabs(char *s) {
 
   int number_of_tabs = 0;
 
@@ -46,7 +21,7 @@ int _c_count_tabs(char s[]) {
   return number_of_tabs;
 }
 
-void _c_init_char_arr(char s[], char init_by, const int arr_size) {
+void _c_init_char_arr(char *s, char init_by, const int arr_size) {
 
   s[arr_size] = '\0';
 
@@ -64,9 +39,9 @@ void _c_init_char_arr2d(char init_by, const int rows, const int cols,
   }
 }
 
-int _c_get_size_arr2d(const int cols, char (*arr_words)[cols]) {
+int _c_get_size_arr2d(const int rows, const int cols, char (*arr_words)[cols]) {
   int result = 0;
-  for (int i = 0; arr_words[i][0] != '\0'; ++i) {
+  for (int i = 0; i < rows && arr_words[i][0] != '\0'; ++i) {
     result++;
   }
   return result;
@@ -125,10 +100,10 @@ void _c_get_words_arr_by_delim(const int cols, char (*arr_words)[cols],
   }
 }
 
-void _c_insert_char_sort(char s[]) {
+char *_c_sort_str_chars(char *s) {
 
-  if (c_is_empty_string(s)) {
-    return;
+  if (s == NULL || c_is_empty_string(s)) {
+    return s;
   }
 
   for (int j = 1; s[j] != '\0'; ++j) {
@@ -139,9 +114,11 @@ void _c_insert_char_sort(char s[]) {
     }
     s[i + 1] = key;
   }
+
+  return s;
 }
 
-void _c_insert_n_spaces(char s[], const int num_spaces, int *insert_from) {
+void _c_insert_n_spaces(char *s, const int num_spaces, int *insert_from) {
   for (int k = num_spaces; k != 0; --k) {
     s[(*insert_from)++] = ' ';
   }
