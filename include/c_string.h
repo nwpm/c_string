@@ -42,8 +42,7 @@ char *c_change_char_all(char *s, const unsigned char from_char,
                         const unsigned char to_char);
 char *c_delete_duplicates(char *s);
 char *c_strcat(char *dest, const char *from, const int dest_buff_size);
-char *c_strcat_safe(const char *dest, const char *from,
-                    const int dest_buff_size);
+char *c_strcat_safe(const char *dest, const char *from);
 char *c_trim(char *s);
 char *c_detab(const char *s, const int space_for_tab);
 char *c_entab(const char *s, const int space_for_tab, const int buff_size);
@@ -52,12 +51,8 @@ char *c_overwrite_from(char *dest, const char *substr, const int insert_from,
 char *c_insert_from(const char *dest, const char *substr, int insert_from);
 char *c_itoa(const int num, char *s);
 char *c_itoa_alloc(int num);
-char *c_delete_word_duplicate(char *s);
 
 char **c_split_delim(char *s, const char delim);
 char **c_split_space(char *s);
-
-// for correct work of these functions need alloc std functions
-void c_reverse_word_order(char *s, const char delim);
 
 #endif // !C_STRING_H
