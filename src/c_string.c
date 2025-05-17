@@ -69,7 +69,7 @@ char *c_strcpy_safe(char *dest, const char *from, const int dest_buff_size) {
 // Required: "dest" string must have size >= to + from
 char *c_strcat(char *dest, const char *from, const int dest_buff_size) {
 
-  if (dest == NULL || from == NULL) {
+  if (dest == NULL || from == NULL || dest == from || dest_buff_size <= 0) {
     return NULL;
   }
 
@@ -91,16 +91,16 @@ char *c_strcat(char *dest, const char *from, const int dest_buff_size) {
   return dest;
 }
 
-// Always return pointer to the new string
-char *c_strcat_safe(const char *dest, const char *from,
-                    const int dest_buff_size) {
+// free()
+char *c_strcat_safe(const char *dest, const char *from) {
 
-  if (dest == NULL || from == NULL || dest == from || dest_buff_size <= 0) {
+  if (dest == NULL || from == NULL || dest == from) {
     return NULL;
   }
 
   const int from_len = c_strlen(from);
   const int dest_len = c_strlen(dest);
+
   const int result_len = from_len + dest_len;
 
   char *new_string = calloc(result_len + 1, sizeof(char));
@@ -486,30 +486,6 @@ int c_count_words_delim(const char *s, unsigned char delim) {
   return counter;
 }
 
-// Info: Don't save order of spaces. Trim string
-// and add only 1 space after word.
-void c_reverse_word_order(char *s, const char delim) {
-  const int length_string = c_strlen(s);
-  char arr_words[length_string][length_string];
-  _c_init_char_arr2d(END_SYMBOL, length_string, length_string, arr_words);
-  _c_get_words_arr_by_delim(length_string, arr_words, s, delim);
-
-  int num_words = _c_get_size_arr2d(length_string, length_string, arr_words);
-
-  int k = 0;
-  for (int i = num_words - 1; i >= 0; --i) {
-    for (int j = 0; arr_words[i][j] != '\0'; ++j) {
-      s[k++] = arr_words[i][j];
-    }
-    // TODO: Simplify
-    // Don't add delim in the end str
-    if (i != 0) {
-      s[k++] = delim;
-    }
-  }
-  s[k] = '\0';
-}
-
 qboolean c_is_empty_string(const char *s) {
 
   if (s == NULL) {
@@ -676,27 +652,17 @@ char *c_trim(char *s) {
   return s;
 }
 
-char *c_delete_word_duplicate(char *s) {
-
-  if (s == NULL) {
-    return s;
-  }
-
-  const int str_len = c_strlen(s);
-
-  char **array_of_words = c_split_space(s);
-
-  // c_free_2d_array(array_of_words, int size);
-  return s;
-}
-
 char **c_split_space(char *s) {
 
-  if (s == NULL) {
+  if (s == NULL || c_is_empty_string(s)) {
     return NULL;
   }
 
   const int num_words = c_count_words_space(s);
+
+  if (num_words == 0) {
+    return NULL;
+  }
 
   char **array_of_words = calloc(num_words + 1, sizeof(char *));
 
@@ -739,11 +705,15 @@ char **c_split_space(char *s) {
 
 char **c_split_delim(char *s, const char delim) {
 
-  if (s == NULL) {
+  if (s == NULL || c_is_empty_string(s)) {
     return NULL;
   }
 
   const int num_words = c_count_words_delim(s, delim);
+
+  if (num_words == 0) {
+    return NULL;
+  }
 
   char **array_of_words = calloc(num_words + 1, sizeof(char *));
 
