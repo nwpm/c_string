@@ -4,6 +4,8 @@
 #include "_c_common.h"
 
 int _c_count_tabs(const char *s);
+int _c_count_spaces(const char *s);
+
 int _c_get_size_arr2d(const int rows, const int cols, char (*arr_words)[cols]);
 
 int _c_len_2d_array(char **array);
