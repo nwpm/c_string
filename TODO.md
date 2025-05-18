@@ -144,14 +144,17 @@ c_strcpy.
      tests.c
      - added tests for c_strcat, c_detab, c_entab, c_overwrite_from
 
+-[*] c_string.h
+     - c_reverse_word_order return now char*
+     c_string.c
+17.05.2025
 
-
-
-
-
-
-
-
-
-
-
+-[*] tests.c
+     - added tests for c_strcmp_safe, c_atoi_safe, c_itoa_safe.
+     new test for c_delete_spaces, c_delete_punctuation, c_is_anagrams. c_detab, c_entab
+     c_string.h
+     - added c_strcmp_safe, c_atoi_safe. c_index_of_char, c_is_punct_char , c_is_letter, c_is_digit, c_is_space, change_char_all delete const in c param, c_strcat_safe delete const in buff_size param. refactor c_entab. c_itoa_alloc to c_itoa_safe
+     c_string.c
+     - definition for c_strcmp_safe, c_atoi_safe. remove in c_first_unique_char return code -2. c_is_letter , c_is_lower_letter, c_is_upper_letter remove valiables start and end. c_is_empty_string return TRUE if string NULL
+, c_strcpy, c_strcat delete check for NULL now it's only in safe version
+, c_detab check if space_for_tabs < 0
