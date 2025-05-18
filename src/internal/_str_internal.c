@@ -21,6 +21,19 @@ int _c_count_tabs(const char *s) {
   return number_of_tabs;
 }
 
+int _c_count_spaces(const char *s) {
+
+  int number_of_spaces = 0;
+
+  for (int i = 0; s[i] != '\0'; ++i) {
+    if (s[i] == ' ') {
+      number_of_spaces++;
+    }
+  }
+
+  return number_of_spaces;
+}
+
 int _c_len_2d_array(char **array) {
 
   if (array == NULL) {
