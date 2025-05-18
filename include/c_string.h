@@ -3,8 +3,6 @@
 
 #include "../src/internal/_c_common.h"
 
-void c_free_2d_array(char **array);
-
 int c_strlen(const char *s);
 int c_strcmp(const char *first, const char *second);
 int c_strcmp_safe(const char *first, const char *second);
@@ -43,16 +41,9 @@ char *c_change_char_all(char *s, unsigned char from_char,
                         unsigned char to_char);
 char *c_delete_duplicates(char *s);
 char *c_strcat(char *dest, const char *from);
-char *c_strcat_safe(const char *dest, const char *from);
 char *c_trim(char *s);
-char *c_detab(const char *s, int space_for_tab);
-char *c_entab(const char *s, int space_for_tab);
 char *c_overwrite_from(char *dest, const char *substr, int insert_from,
                        int buff_size);
-char *c_insert_from(const char *dest, const char *substr, int insert_from);
 char *c_itoa(int num, char *s);
-char *c_itoa_safe(int num);
-
-char **c_split_delim(const char *s, unsigned char delim);
 
 #endif // !C_STRING_H

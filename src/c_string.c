@@ -1,20 +1,6 @@
 #include "../include/c_string.h" // better way to include?
 #include "internal/_c_common.h"
 #include "internal/_str_internal.h"
-#include <stdlib.h>
-
-void c_free_2d_array(char **array) {
-
-  if (array == NULL) {
-    return;
-  }
-
-  for (int i = 0; array[i] != NULL; ++i) {
-    free(array[i]);
-  }
-
-  free(array);
-}
 
 int c_strlen(const char *s) {
 
@@ -57,6 +43,10 @@ char *c_strcpy_safe(char *dest, const char *from, int dest_buff_size) {
 // Required: "dest" string must have size >= to + from
 char *c_strcat(char *dest, const char *from) {
 
+  if (dest == NULL || from == NULL || dest == from) {
+    return NULL;
+  }
+
   const int from_len = c_strlen(from);
   const int dest_len = c_strlen(dest);
 
@@ -69,37 +59,6 @@ char *c_strcat(char *dest, const char *from) {
   dest[start_index] = '\0';
 
   return dest;
-}
-
-// free()
-char *c_strcat_safe(const char *dest, const char *from) {
-
-  if (dest == NULL || from == NULL || dest == from) {
-    return NULL;
-  }
-
-  const int from_len = c_strlen(from);
-  const int dest_len = c_strlen(dest);
-
-  const int result_len = from_len + dest_len;
-
-  char *new_string = calloc(result_len + 1, sizeof(char));
-
-  if (new_string == NULL) {
-    return NULL;
-  }
-
-  int write_pos = 0;
-
-  for (int i = 0; dest[i] != '\0'; ++i) {
-    new_string[write_pos++] = dest[i];
-  }
-
-  for (int i = 0; from[i] != '\0'; ++i) {
-    new_string[write_pos++] = from[i];
-  }
-
-  return new_string;
 }
 
 char *c_str_to_lower(char *s) {
@@ -218,51 +177,6 @@ char *c_overwrite_from(char *dest, const char *substr, int insert_from,
   return dest;
 }
 
-// free()
-char *c_insert_from(const char *dest, const char *substr, int insert_from) {
-
-  if (dest == NULL || substr == NULL || insert_from < 0) {
-    return NULL;
-  }
-
-  const int dest_len = c_strlen(dest);
-  const int substr_len = c_strlen(substr);
-
-  if (insert_from > dest_len) {
-    return NULL;
-  }
-
-  const int result_len = dest_len + substr_len;
-
-  char *new_string = calloc(result_len + 1, sizeof(char));
-
-  if (new_string == NULL) {
-    return NULL;
-  }
-
-  int write_pos = 0;
-  int dest_index = 0;
-
-  if (insert_from != 0) {
-    for (; dest_index <= insert_from && dest[dest_index] != '\0';
-         ++dest_index) {
-      new_string[write_pos++] = dest[dest_index];
-    }
-  }
-
-  for (int i = 0; substr[i] != '\0'; ++i) {
-    new_string[write_pos++] = substr[i];
-  }
-
-  for (; dest[dest_index] != '\0'; ++dest_index) {
-    new_string[write_pos++] = dest[dest_index];
-  }
-
-  new_string[write_pos] = '\0';
-
-  return new_string;
-}
-
 int c_delete_spaces(char *s) {
 
   if (s == NULL) {
@@ -283,103 +197,6 @@ int c_delete_spaces(char *s) {
   s[write_pos] = '\0';
 
   return removed;
-}
-
-// c_entab remove n spaces and set their to /t
-// Return poiner to allocated result string
-// client must call free()
-char *c_entab(const char *s, int space_for_tab) {
-
-  if (s == NULL || c_is_empty_string(s) || space_for_tab <= 0) {
-    return NULL;
-  }
-
-  const int num_spaces = _c_count_spaces(s);
-
-  if (num_spaces < space_for_tab) {
-    return NULL;
-  }
-
-  const int str_len = c_strlen(s);
-  const int num_tabs = num_spaces / space_for_tab;
-  const int res_len = num_tabs + (str_len - num_tabs * space_for_tab);
-
-  char *new_string = calloc(res_len + 1, sizeof(char));
-
-  if (new_string == NULL) {
-    return NULL;
-  }
-
-  int write_index = 0;
-
-  for (int i = 0; s[i] != '\0';) {
-    qboolean is_space_block = TRUE;
-    int j = 0;
-    for (; j < space_for_tab && j + i < str_len; ++j) {
-      if (s[i + j] != ' ') {
-        is_space_block = FALSE;
-        break;
-      }
-    }
-
-    if (j < space_for_tab) {
-      is_space_block = FALSE;
-    }
-
-    if (is_space_block) {
-      new_string[write_index++] = '\t';
-      i += space_for_tab;
-    } else {
-      new_string[write_index++] = s[i++];
-    }
-  }
-
-  new_string[write_index] = '\0';
-
-  return new_string;
-}
-
-// c_detab remove /t and insert n spaces
-// free()
-char *c_detab(const char *s, int space_for_tab) {
-
-  if (s == NULL || c_is_empty_string(s) || space_for_tab < 0) {
-    return NULL;
-  }
-
-  // Find number of tabs
-  int number_of_tabs = _c_count_tabs(s);
-
-  if (number_of_tabs == 0) {
-    return NULL;
-  }
-
-  // Formula of size new string
-  // 1. Find number of chars without tabs
-  // 2. Calculate the number of spaces that will replace tabs
-  // 3. Result = (1) + (2)
-  const int str_len = c_strlen(s);
-  const int len_new_string =
-      (str_len - number_of_tabs) + (number_of_tabs * space_for_tab);
-
-  char *new_string = calloc(len_new_string + 1, sizeof(char));
-
-  if (new_string == NULL) {
-    return NULL;
-  }
-
-  int write_index = 0;
-  for (int i = 0; s[i] != '\0'; ++i) {
-    if (s[i] == '\t') {
-      _c_insert_n_spaces(new_string, space_for_tab, &write_index);
-    } else {
-      new_string[write_index++] = s[i];
-    }
-  }
-
-  new_string[write_index] = '\0';
-
-  return new_string;
 }
 
 int c_delete_punctuation(char *s) {
@@ -641,62 +458,6 @@ char *c_trim(char *s) {
   return s;
 }
 
-char **c_split_delim(const char *s, unsigned char delim) {
-
-  if (s == NULL || c_is_empty_string(s)) {
-    return NULL;
-  }
-
-  const int num_words = c_count_words_delim(s, delim);
-
-  if (num_words <= 1) {
-    return NULL;
-  }
-
-  char **array_of_words = calloc(num_words + 1, sizeof(char *));
-
-  if (array_of_words == NULL) {
-    return NULL;
-  }
-
-  int str_pos = 0;
-  int array_index = 0;
-
-  for (; array_index < num_words; ++array_index) {
-
-    int word_len = 0;
-    int word_begin_pos = str_pos;
-
-    // calculate size of one word array
-    for (; s[str_pos] != delim && s[str_pos] != '\0'; ++str_pos) {
-      word_len++;
-    }
-
-    if (word_len == 0) {
-      str_pos++;
-      break;
-    }
-
-    array_of_words[array_index] = calloc(word_len + 1, sizeof(char));
-
-    if (array_of_words[array_index] == NULL) {
-      c_free_2d_array(array_of_words);
-      return NULL;
-    }
-
-    // or memcpy analog
-    for (int j = 0; word_begin_pos < str_pos; ++j) {
-      array_of_words[array_index][j] = s[word_begin_pos++];
-    }
-
-    str_pos++;
-  }
-
-  array_of_words[array_index] = NULL;
-
-  return array_of_words;
-}
-
 int c_strstr(const char *s, const char *substr) {
 
   if (s == NULL || substr == NULL) {
@@ -833,26 +594,4 @@ char *c_itoa(int num, char *s) {
   s[i] = '\0';
 
   return s;
-}
-
-// free()
-char *c_itoa_safe(int num) {
-
-  const int delim = 10;
-  int num_copy = num;
-  int num_len = 0;
-
-  while (num_copy /= delim) {
-    num_len++;
-  }
-
-  char *new_string = calloc(num_len + 1, sizeof(char));
-
-  if (new_string == NULL) {
-    return NULL;
-  }
-
-  c_itoa(num, new_string);
-
-  return new_string;
 }
