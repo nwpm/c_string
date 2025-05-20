@@ -25,8 +25,8 @@ qboolean c_is_digit(unsigned char c);
 qboolean c_is_space(unsigned char c);
 qboolean c_is_empty_string(const char *s);
 qboolean c_is_anagrams(const char *s1, const char *s2);
-qboolean c_is_upper_letter(const unsigned char c);
-qboolean c_is_lower_letter(const unsigned char c);
+qboolean c_is_upper_letter(unsigned char c);
+qboolean c_is_lower_letter(unsigned char c);
 
 char c_letter_to_lower(unsigned char c);
 char c_letter_to_upper(unsigned char c);
