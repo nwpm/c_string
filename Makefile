@@ -45,11 +45,17 @@ INTERNAL_OBJ = $(OBJ_DIR)/_str_internal.o
 TESTS_OBJ    = $(OBJ_DIR)/libcstring_tests.o
 
 # ===Targets===
-.PHONY: all test install uninstall clean unity
+.PHONY: all debug release test install uninstall clean unity
 
 all: $(TESTS_BIN) $(LIB_TARGET)
 
 test: $(TESTS_BIN)
+
+debug:
+	make $(BUILD_TYPE)=debug
+
+release:
+	make $(BUILD_TYPE)=release
 
 install: $(LIB_TARGET)
 	install -d /usr/local/lib/ /usr/local/include/
