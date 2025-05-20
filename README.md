@@ -1,6 +1,6 @@
 # c_string
 
-## description
+## Description
 
 'c_string' - This is a small library written in C language,
 providing various functions for working with strings.
@@ -8,10 +8,11 @@ It was written for educational purposes,
 to study the basics of development in C language.
 
 **Key features**
--Exists in two versions
 
-1. Version with stdlib.h (`use-stdlib-memory` branch)
-2. Version that does not use any dependencies (`master` branch)
+Exists in two versions:
+
+- Version with stdlib.h (`use-stdlib-memory` branch)
+- Version that does not use any dependencies (`master` branch)
 
 ## Possibilities
 
@@ -24,11 +25,12 @@ to study the basics of development in C language.
 
 ## Project structure
 
-├── src/ # Main library code
-├── include/ # Header files
-├── tests/ # Tests and Unity framework
-├── Makefile # Project build
-└── README.md
+- src/ # Main library code
+- include/ # Header files
+- tests/ # Tests and Unity framework
+- examples/ # Examples of using lib
+- Makefile # Project build
+- README.md
 
 ## Setup
 
@@ -55,15 +57,12 @@ to study the basics of development in C language.
    make debug   #build lib in debug version
    make release #build lib in release version
 
-   make install #install lib in /usr/local/lib/
+   make install   #install lib in /usr/local/lib/
    make uninstall #uninstall lib from /usr/local/lib/
 
-   #tests
-   make all #build tests and lib in type(release/debug) version
-   make test #build tests in type(release/debug) version
-   ./bin/debug/libcstring_tests
+   ./bin/debug/libcstring_tests #run
    ```
 
 ## License
 
-MIT License (`LICENSE.md`)
+MIT License [LICENSE](https://github.com/nwpm/c_string/blob/master/LICENSE.md)
