@@ -52,10 +52,10 @@ all: $(TESTS_BIN) $(LIB_TARGET)
 test: $(TESTS_BIN)
 
 debug:
-	make $(BUILD_TYPE)=debug
+	$(MAKE) BUILD_TYPE=debug
 
 release:
-	make $(BUILD_TYPE)=release
+	$(MAKE) BUILD_TYPE=release
 
 install: $(LIB_TARGET)
 	install -d /usr/local/lib/ /usr/local/include/
