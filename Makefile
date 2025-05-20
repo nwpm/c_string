@@ -1,69 +1,98 @@
-PROJECT_NAME = c_string
-SRC_DIR = src
-INTERNAL_DIR = src/internal
-INCLUDE_DIR = include
+# === Project Info ===
+PROJECT_NAME = cstring
 
-DEBUG_BIN = bin/debug
-DEBUG_OBJS = $(DEBUG_BIN)/obj
-STR_DEBUG_OBJ = $(DEBUG_OBJS)/c_string.o
-INTERNAL_DEBUG_OBJ = $(DEBUG_OBJS)/_str_internal.o
-ALL_DEBUG_OBJS = $(STR_DEBUG_OBJ) $(INTERNAL_DEBUG_OBJ)
+# === Paths ===
+INCLUDE_DIR  = include
+SRC_DIR      = src
+INTERNAL_DIR = $(SRC_DIR)/internal
+TESTS_SRC    = tests/tests.c
 
-UNITY_LIB = tests/libs/unity
+# === Unity (tests) ===
+UNITY_LIB     = tests/libs/unity
 UNITY_LIB_SRC = $(UNITY_LIB)/src
-UNITY_BIN = $(UNITY_LIB)/bin
-
-TESTS_DIR = tests
-TESTS_SRC = $(TESTS_DIR)/tests.c
-DEBUG_TESTS_BIN = $(DEBUG_BIN)/d_libcstring_tests
-DEBUG_TESTS_OBJ = $(DEBUG_OBJS)/d_libcstring_tests.o
-
-# compiler settings
-CC = gcc
-STANDART = -std=c99
-WARNINGS_LEVEL = -Wall -Wextra -Wpedantic
-DONT_OPTIMIZE = -O0
-MAX_OPTIMIZE = -O3
-DEBUG_CFLAGS_ALL = -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR) -I$(UNITY_LIB_SRC)
-DEBUG_CFLAGS_CSTIRNG = -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR)
-DEBUG_CFLAGS_TESTS = -fsanitize=address -g $(DONT_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART) -I$(INCLUDE_DIR) -I$(INTERNAL_DIR) -I$(UNITY_LIB_SRC)
+UNITY_BIN     = $(UNITY_LIB)/bin
 
 
-RELEASE_CFLAGS = $(MAX_OPTIMIZE) $(WARNINGS_LEVEL) $(STANDART)
+# === Compiler ===
+CC     = gcc
+CFLAGS = -Wall -Wextra -Wpedantic -std=c99
 
-all : $(UNITY_BIN)/libunity.a $(DEBUG_BIN)/d_c_string.a $(DEBUG_TESTS_BIN)
+DEBUG_FLAGS   = -g -O0 -fsanitize=address
+RELEASE_FLAGS = -O2
 
-d_tests : $(DEBUG_TESTS_BIN)
+INCLUDES      = -I$(INCLUDE_DIR) -I$(INTERNAL_DIR) -I$(UNITY_LIB_SRC)
 
-$(DEBUG_TESTS_BIN) : $(DEBUG_TESTS_OBJ) $(DEBUG_BIN)/d_c_string.a $(DEBUG_BIN)/libunity.a
-	$(CC) $(DEBUG_CFLAGS_TESTS) $^ -o $@
+# === Build type ===
+BUILD_TYPE ?= debug
 
-$(DEBUG_TESTS_OBJ) : $(TESTS_SRC) | $(DEBUG_OBJS)
-	$(CC) $(DEBUG_CFLAGS_TESTS) -c $< -o $@
+ifeq ($(BUILD_TYPE), debug)
+	CFLAGS    += $(DEBUG_FLAGS)
+	BUILD_PATH = bin/debug
+else ifeq ($(BUILD_TYPE), release)
+	CLAGSS    += $(RELEASE_CFLAGS)
+	BUILD_PATH = bin/release
+else
+	$(error Unknown build type: $(BUILD_TYPE))
+endif
 
-d_lib : $(DEBUG_BIN)/d_c_string.a
+OBJ_DIR      = $(BUILD_PATH)/obj
+LIB_TARGET   = $(BUILD_PATH)/lib$(PROJECT_NAME).a
+UNITY_TARGET = $(UNITY_BIN)/libunity.a
+TESTS_BIN    = $(BUILD_PATH)/lib$(PROJECT_NAME)_tests
 
-$(DEBUG_BIN)/d_c_string.a : $(ALL_DEBUG_OBJS)
+STR_OBJ      = $(OBJ_DIR)/c_string.o
+INTERNAL_OBJ = $(OBJ_DIR)/_str_internal.o
+TESTS_OBJ    = $(OBJ_DIR)/libcstring_tests.o
+
+# ===Targets===
+.PHONY: all test install uninstall clean unity
+
+all: $(TESTS_BIN) $(LIB_TARGET)
+
+test: $(TESTS_BIN)
+
+install: $(LIB_TARGET)
+	install -d /usr/local/lib/ /usr/local/include/
+	cp $(LIB_TARGET) /usr/local/lib/
+	cp $(INCLUDE_DIR)/c_string.h /usr/local/include/
+
+uninstall:
+	rm -f /usr/local/lib/lib$(PROJECT_NAME).a
+	rm -f /usr/local/include/c_string.h
+
+clean :
+	rm -rf $(BUILD_PATH)/* $(UNITY_BIN)
+
+# ===Build rules===
+$(TESTS_BIN) : $(TESTS_OBJ) $(LIB_TARGET) $(UNITY_TARGET)
+	$(CC) $(CFLAGS) $^ -o $@
+
+$(TESTS_OBJ) : $(TESTS_SRC) | $(OBJ_DIR)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(LIB_TARGET) : $(INTERNAL_OBJ) $(STR_OBJ) | $(BUILD_PATH)
 	ar rcs $@ $^
 
-$(STR_DEBUG_OBJ) : $(SRC_DIR)/c_string.c | $(DEBUG_OBJS)
-	$(CC) $(DEBUG_CFLAGS_CSTIRNG) -c $< -o $@
+$(STR_OBJ) : $(SRC_DIR)/c_string.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -Iinclude -I$(INTERNAL_DIR) -c $< -o $@
 
-$(INTERNAL_DEBUG_OBJ) : $(INTERNAL_DIR)/_str_internal.c | $(DEBUG_OBJS)
-	$(CC) $(DEBUG_CFLAGS_CSTIRNG) -c $< -o $@ 
+$(INTERNAL_OBJ) : $(INTERNAL_DIR)/_str_internal.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I$(INTERNAL_DIR) -c $< -o $@ 
 
-$(DEBUG_OBJS) :
+$(OBJ_DIR) :
 	mkdir -p $@
 
-unity_lib : $(UNITY_BIN)/libunity.a
+$(BUILD_PATH):
+	mkdir -p $@
 
-$(UNITY_BIN)/libunity.a : $(UNITY_BIN)
+# ===Unity rules===
+
+unity: $(UNITY_TARGET)
+
+$(UNITY_TARGET) : $(UNITY_BIN)
 	cd $(UNITY_BIN) && cmake ..
 	cd $(UNITY_BIN) && make
-	mv $(UNITY_BIN)/libunity.a $(DEBUG_BIN)/libunity.a
+	cp $(UNITY_BIN)/libunity.a $(BUILD_PATH)/libunity.a
 
 $(UNITY_BIN) :
 	mkdir -p $@
-
-clean :
-	rm -rf bin/debug/* $(UNITY_BIN)
