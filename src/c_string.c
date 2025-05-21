@@ -2,19 +2,21 @@
 #include "internal/_c_common.h"
 #include "internal/_str_internal.h"
 
-/*
+/**
  * @file c_string.c
  * @brief Source file for c_string lib
  * @author nwpm
  * @date 20.05.2025
-*/
+ */
 
-/*
-  * @brief Return the length of given byte string
-  * @param *s - poiner to the null-terminated byte string to be examinated
-  * @return The length of the null-terminated byte string or -1 if *s - NULL
-  * @example ./examples/c_strlen.c
-*/
+/**
+ * @brief Return the length of given byte string
+ * @param s Poiner to the null-terminated byte string to be examinated
+ * @return The result of function:
+ * @retval k Number of characters different from null-terminator
+ * @retval -1 If s pointer is NULL
+ * @note The function checks for NULL pointers and handles them as specified.
+ */
 int c_strlen(const char *s) {
 
   if (s == NULL) {
@@ -28,19 +30,20 @@ int c_strlen(const char *s) {
   return i;
 }
 
-/*
-  * @brief Copies the character string pointed to by from,
-  * including the null terminator, to the character array 
-  * whose first element is pointed to by dest.
-  * @param *dest - pointer to the character array to write to
-  * @param *from - pointer to the null-terminated byte string to copy from
-  * @return Pointer dest or NULL if dest or from is NULL
-  * @warning UB if size of dest not enough for from
-  * @example ./examples/c_strcpy.c
-*/
+/**
+ * @brief Copies the character string pointed to by from,
+ * including the null terminator, to the character array
+ * whose first element is pointed to by dest.
+ * @param dest Pointer to the character array to write to
+ * @param from Pointer to the null-terminated byte string to copy from
+ * @return The result of function:
+ * @retval dest Pointer to changed dest string
+ * @retval NULL If dest or from NULL pointers
+ * @warning UB if size of dest not enough for from
+ */
 char *c_strcpy(char *dest, const char *from) {
 
-  if(dest == NULL || from == NULL){
+  if (dest == NULL || from == NULL) {
     return NULL;
   }
 
@@ -52,17 +55,19 @@ char *c_strcpy(char *dest, const char *from) {
   return dest;
 }
 
-/*
-  * @brief Copies the character string pointed to by from, 
-  * including the null terminator, to the character array whose 
-  * first element is pointed to by dest.
-  * @param *dest - pointer to the character array to write to
-  * @param *from - pointer to the null-terminated byte string to copy from
-  * @param dest_buff_size - size of array dest
-  * @return Pointer dest or NULL if dest or from is NULL, or dest_buff_size <= 0
-  * @note Checks if the size of the character array dest is sufficient for the string from.
-  * @example ./examples/c_strcpy_safe.c
-*/
+/**
+ * @brief Copies the character string pointed to by from,
+ * including the null terminator, to the character array whose
+ * first element is pointed to by dest.
+ * @param dest Pointer to the character array to write to
+ * @param from Pointer to the null-terminated byte string to copy from
+ * @param dest_buff_size Size of array dest
+ * @return The result of the function:
+ * @retval dest Pointer to changed dest string
+ * @retval NULL If dest or from is NULL pointers. Or dest_buff_size <= 0
+ * @note Checks if the size of the character array dest is sufficient for the
+ * string from.
+ */
 char *c_strcpy_safe(char *dest, const char *from, int dest_buff_size) {
 
   if (dest == NULL || from == NULL || dest == from || dest_buff_size <= 0) {
@@ -78,17 +83,18 @@ char *c_strcpy_safe(char *dest, const char *from, int dest_buff_size) {
   return c_strcpy(dest, from);
 }
 
-/*
-  * @brief Appends a copy of the character string pointed to by from to the end
-  * of the character string pointed to by dest. 
-  * The character from[0] replaces the null terminator at the end of dest. 
-  * The resulting byte string is null-terminated.
-  * @param *dest - pointer to the character array to append to
-  * @param *from - pointer to the null-terminated byte string to append from
-  * @return Pointer dest or NULL if dest or from is NULL, or dest == from
-  * @note Size of dest array must be no less than dest + from len
-  * @example ./examples/c_strcat.c
-*/
+/**
+ * @brief Appends a copy of the character string pointed to by from to the end
+ * of the character string pointed to by dest.
+ * The character from[0] replaces the null terminator at the end of dest.
+ * The resulting byte string is null-terminated.
+ * @param dest Pointer to the character array to append to
+ * @param from Pointer to the null-terminated byte string to append from
+ * @return The result of the concatenation:
+ * @retval s Pointer to changed dest string
+ * @retval NULL If dest or from is NULL pointers. Or pointers dest and from are same
+ * @note Size of dest array must be no less than dest + from len
+ */
 char *c_strcat(char *dest, const char *from) {
 
   if (dest == NULL || from == NULL || dest == from) {
@@ -109,12 +115,13 @@ char *c_strcat(char *dest, const char *from) {
   return dest;
 }
 
-/*
-  * @brief Changes the case of the input string to lowercase
-  * @param *s - pointer to the character array being edited
-  * @return Pointer s or NULL if s is NULL
-  * @example ./examples/c_str_to_lower.c
-*/
+/**
+ * @brief Changes the case of the input string to lowercase
+ * @param s Pointer to the byte string being edited
+ * @return The result of the function:
+ * @retval s Pointer to changed string
+ * @retval NULL If s pointer is NULL
+ */
 char *c_str_to_lower(char *s) {
 
   if (s == NULL) {
@@ -128,12 +135,13 @@ char *c_str_to_lower(char *s) {
   return s;
 }
 
-/*
-  * @brief Changes the case of the input string to uppercase
-  * @param *s - pointer to the character array being edited
-  * @return Pointer s or NULL if s is NULL
-  * @example ./examples/c_str_to_upper.c
-*/
+/**
+ * @brief Changes the case of the input string to uppercase
+ * @param s Pointer to the byte string being edited
+ * @return The result of the function:
+ * @retval s Pointer to changed string
+ * @retval NULL If s pointer is NULL
+ */
 char *c_str_to_upper(char *s) {
 
   if (s == NULL) {
@@ -147,19 +155,20 @@ char *c_str_to_upper(char *s) {
   return s;
 }
 
-/*
-  * @brief Compares two null-terminated byte strings lexicographically.
-  * @details The sign of the result is the sign of the difference between 
-  * the values of the first pair of characters that differ in the strings being compared.
-  * @param *first - pointer to the null-terminated byte string to compare
-  * @param *second - pointer to the null-terminated byte string to compare
-  * @return Negative value - if the first appears before second in lexicographicalorder. 
-  * Positive value - if first appears after second in lexicographical order.
-  * Zero - if first and second equal
-  * @warning UB if pointers of fisrt and second are not
-  * null-terminated strings
-  * @example ./examples/c_strcmp.c
-*/
+/**
+ * @brief Compares two null-terminated byte strings lexicographically.
+ * @details The sign of the result is the sign of the difference between
+ * the values of the first pair of characters that differ in the strings being
+ * compared.
+ * @param first Pointer to the first byte string to compare
+ * @param second Pointer to the second byte string to compare
+ * @return The result of the comparison:
+ * @retval <0 If the first appears before second in lexicographical order.
+ * @retval >0 If first appears after second in lexicographical order. 
+ * @retval 0 If first and second equal.
+ * @warning UB if pointers of fisrt and second are not
+ * null-terminated strings
+ */
 int c_strcmp(const char *first, const char *second) {
   while (*first && (*first == *second)) {
     ++first;
@@ -168,18 +177,21 @@ int c_strcmp(const char *first, const char *second) {
   return *first - *second;
 }
 
-/*
-  * @brief Compares two null-terminated byte strings lexicographically.
-  * @details The sign of the result is the sign of the difference between 
-  * the values of the first pair of characters that differ in the strings being compared. Have check for NULL pointer
-  * @param *first - pointer to the null-terminated byte string to compare
-  * @param *second - pointer to the null-terminated byte string to compare
-  * @return Negative value - if the first appears before second in lexicographicalorder. If pointer to the first string is NULL return -1.If pointer to the second string is NULL return 1, If both return 0.
-  * Positive value - if first appears after second in lexicographical order.
-  * Zero - if first and second equal
-  * @note Have check for NULL pointers
-  * @example ./examples/c_strcmp_safe.c
-*/
+/**
+ * @brief Compares two null-terminated byte strings lexicographically.
+ * @details The sign of the result is the sign of the difference between
+ * the values of the first pair of characters that differ in the strings being
+ * compared.
+ * @param first Pointer to the first byte string to compare
+ * @param second Pointer to the second byte string to compare
+ * @return The result of the comparison:
+ * @retval <0 If the first appears before second in lexicographical order.
+ * @retval >0 If first appears after second in lexicographical order.
+ * @retval 0 If first and second equal or both pointers are NULL.
+ * @retval 1 If the first pointer is NULL.
+ * @retval -1 If the second pointer is NULL.
+ * @note Have check for NULL pointers
+ */
 int c_strcmp_safe(const char *first, const char *second) {
 
   if (first == NULL && second == NULL) {
@@ -197,32 +209,29 @@ int c_strcmp_safe(const char *first, const char *second) {
   return c_strcmp(first, second);
 }
 
-/*
-  * @brief Check for lowercase character symbol
-  * @param *s - unsigned char for check
-  * @return TRUE if char in lowercase, FALSE if not
-  * @example ./examples/c_is_lower_letter.c
-*/
-qboolean c_is_lower_letter(unsigned char c) {
-  return (c >= 'a' && c <= 'z');
-}
+/**
+ * @brief Check if the given character is a lowercase character.
+ * @param s Unsigned char
+ * @return The result of check:
+ * @retval TRUE If char in lowercase.
+ * @retval FALSE If char isn't lowercase.
+ */
+qboolean c_is_lower_letter(unsigned char c) { return (c >= 'a' && c <= 'z'); }
 
-/*
-  * @brief Check for uppercase character symbol
-  * @param *s - unsigned char for check
-  * @return TRUE if char in uppercase, FALSE if not
-  * @example ./examples/c_is_upper_letter.c
-*/
-qboolean c_is_upper_letter(unsigned char c) {
-  return (c >= 'A' && c <= 'Z');
-}
+/**
+ * @brief Check if the given character is a uppercase character.
+ * @param s Unsigned char
+ * @return The result of check:
+ * @retval TRUE If char is uppercase.
+ * @retval FALSE If char isn't uppercase.
+ */
+qboolean c_is_upper_letter(unsigned char c) { return (c >= 'A' && c <= 'Z'); }
 
-/*
-  * @brief Convert char to the lowercase
-  * @param *s - unsigned char for convert
-  * @return Lowercase unsigned char
-  * @example ./examples/c_letter_to_lower.c
-*/
+/**
+ * @brief Changes the given character to a lowercase character.
+ * @param c Unsigned char for convert
+ * @return Lowercase unsigned char
+ */
 char c_letter_to_lower(unsigned char c) {
   if (c_is_upper_letter(c)) {
     return c += DIFFERENCE_LETTERS_SIZE;
@@ -230,12 +239,11 @@ char c_letter_to_lower(unsigned char c) {
   return c;
 }
 
-/*
-  * @brief Convert char to the uppercase
-  * @param *s - unsigned char for convert
-  * @return Uppercase unsigned char
-  * @example ./examples/c_letter_to_upper.c
-*/
+/**
+ * @brief Changes the given character to a uppercase character.
+ * @param c Unsigned char for convert
+ * @return Uppercase unsigned char
+ */
 char c_letter_to_upper(unsigned char c) {
   if (c_is_lower_letter(c)) {
     return c -= DIFFERENCE_LETTERS_SIZE;
@@ -243,12 +251,11 @@ char c_letter_to_upper(unsigned char c) {
   return c;
 }
 
-/*
-  * @brief Invert case of null-terminated string
-  * @param *s - pointer to the null-terminated string
-  * @return *s - null-terminated string with invert case
-  * @example ./examples/c_invert_symbols.c
-*/
+/**
+ * @brief Invert case of input string
+ * @param s Pointer to the string
+ * @return String with inverted case
+ */
 char *c_invert_symbols(char *s) {
 
   if (s == NULL) {
@@ -269,14 +276,15 @@ char *c_invert_symbols(char *s) {
   return s;
 }
 
-/*
-  * @brief Overwrite chars of null_terminated string dest from insert_from index,by chars from null-terminated string substr
-  * @param *s - pointer to the null-terminated string
-  * @param *substr - pointer to the null-terminated string of writting chars
-  * @param insert_from - starting index of dest string from which the overwriting begin
-  * @return *s - null-terminated, overwrited string
-  * @example ./examples/c_overwrite_from.c
-*/
+/**
+ * @brief Overwrite chars of string dest, from insert_from
+ * index, to chars from string substr
+ * @param s Pointer to the string
+ * @param substr Pointer to the string of writting chars
+ * @param insert_from Starting index of dest string 
+ * from which the overwriting begin.
+ * @return s Pointer to overwrited string
+ */
 char *c_overwrite_from(char *dest, const char *substr, int insert_from,
                        int buff_size) {
 
@@ -300,13 +308,14 @@ char *c_overwrite_from(char *dest, const char *substr, int insert_from,
   return dest;
 }
 
-/*
-  * @brief Removes all spaces from null-terminated string
-  * @param *s - pointer to the null-terminated string
-  * @return Number of deleted spaces. -1 if string has not spaces
-  * @note Have check for NULL pointer
-  * @example ./examples/c_delete_spaces.c
-*/
+/**
+ * @brief Removes all spaces from string
+ * @param s Pointer to the string
+ * @return The result of function:
+ * @retval k Number of deleted spaces.
+ * @retval -1 If pointer s is NULL.
+ * @note Have check for NULL pointer
+ */
 int c_delete_spaces(char *s) {
 
   if (s == NULL) {
@@ -329,13 +338,14 @@ int c_delete_spaces(char *s) {
   return removed;
 }
 
-/*
-  * @brief Removes all punctuation chars from null-terminated string
-  * @param *s - pointer to the null-terminated string
-  * @return Number of deleted spaces. -1 if string has not spaces
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_delete_punctuation.c
-*/
+/**
+ * @brief Removes all punctuation chars from string
+ * @param s Pointer to the string
+ * @return The result of function:
+ * @retval k Number of deleted spaces.
+ * @retval -1 If pointer s is NULL.
+ * @note Have check for NULL pointer.
+ */
 int c_delete_punctuation(char *s) {
 
   if (s == NULL) {
@@ -357,13 +367,14 @@ int c_delete_punctuation(char *s) {
   return removed;
 }
 
-/*
-  * @brief Reverses the order of chars in null-terminated string
-  * @param *s - pointer to the null-terminated string
-  * @return Pointer to reversed string. NULL if pointer to the string is NULL
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_delete_reverse.c
-*/
+/**
+ * @brief Reverses the order of chars in string
+ * @param s Pointer to the string
+ * @return The result of reverse:
+ * @retval s Pointer to reversed string.
+ * @retval NULL If pointer to the string is NULL.
+ * @note Have check for NULL pointer.
+ */
 char *c_reverse(char *s) {
 
   if (s == NULL) {
@@ -380,6 +391,16 @@ char *c_reverse(char *s) {
   return s;
 }
 
+/**
+ * @brief Replaces all occurrences of the char X with the char Y
+ * @param s Pointer to the string
+ * @param from_char Unsigned char to be replaced.
+ * @param to_char Unsigned char that will be inserted instead from_char.
+ * @return The result of change:
+ * @retval s Pointer to changed string.
+ * @retval NULL If pointer to the string is NULL.
+ * @note Have check for NULL pointer.
+ */
 char *c_change_char_all(char *s, unsigned char from_char,
                         unsigned char to_char) {
 
@@ -396,13 +417,14 @@ char *c_change_char_all(char *s, unsigned char from_char,
   return s;
 }
 
-/*
-  * @brief Remove all digits from null-terminated string
-  * @param *s - pointer to the null-terminated string
-  * @return Number of removed digits. -1 if string pointer is NULL
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_remove_digits.c
-*/
+/**
+ * @brief Remove all digits from string
+ * @param s Pointer to the string
+ * @return The result of remove:
+ * @retval k Number of removed digits.
+ * @retval -1 If pointer s is NULL.
+ * @note Have check for NULL pointer.
+ */
 int c_remove_digits(char *s) {
 
   if (s == NULL) {
@@ -424,14 +446,15 @@ int c_remove_digits(char *s) {
   return num_digits_removed;
 }
 
-/*
-  * @brief Count number of words separated by delim in null-terminated string
-  * @param *s - pointer to the null-terminated string
-  * @param delim - word separation symbol
-  * @return Number of words sepatated by delim in string. -1 if string pointer is NULL
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_count_words_delim.c
-*/
+/**
+ * @brief Count number of words separated by delim in string
+ * @param s Pointer to the string.
+ * @param delim Unsigned char word separation symbol.
+ * @return The result of count:
+ * @retval k Number of words sepatated by delim in string. 
+ * @retval -1 If pointer s is NULL.
+ * @note Have check for NULL pointer.
+ */
 int c_count_words_delim(const char *s, unsigned char delim) {
 
   if (s == NULL) {
@@ -454,14 +477,14 @@ int c_count_words_delim(const char *s, unsigned char delim) {
   return counter;
 }
 
-/*
-  * @brief Check if length of null-terminated string is 0
-  * @param *s - pointer to the null-terminated string
-  * @return TRUE if length of string is 0 and if pointer "s" is NULL
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_is_empty_string.c
-*/
-
+/**
+ * @brief Check if length of string is 0
+ * @param s Pointer to the string.
+ * @return The result of check:
+ * @retval TRUE If length of string is 0
+ * @retval FALSE If length of string >0. Or pointer s is NULL.
+ * @note Have check for NULL pointer.
+ */
 qboolean c_is_empty_string(const char *s) {
 
   if (s == NULL) {
@@ -471,14 +494,15 @@ qboolean c_is_empty_string(const char *s) {
   return !c_strlen(s);
 }
 
-/*
-  * @brief Check if all chars in null-terminated string is chars of digits
-  * @param *s - pointer to the null-terminated string
-  * @return TRUE if all chars in string is digits. FALSE if not, 
-  * or pointer "s" is NULL or string is empty.
-  * @note Have check for NULL pointer and empty string.
-  * @example ./examples/c_delete_reverse.c
-*/
+/**
+ * @brief Check if all chars in string is chars of digits
+ * @param s Pointer to the string
+ * @return The result of check:
+ * @retval TRUE If all chars in string is digits.
+ * @retval FALSE If in string contains chars other than digits.
+ * Or pointer s is NULL, or s is pointer to empty string.
+ * @note Have check for NULL pointer and empty string.
+ */
 qboolean c_is_string_of_digits(const char *s) {
 
   if (s == NULL || c_is_empty_string(s)) {
@@ -495,14 +519,16 @@ qboolean c_is_string_of_digits(const char *s) {
   return TRUE;
 }
 
-/*
-  * @brief Return index of first char "c"
-  * @param *s - pointer to the null-terminated string
-  * @param c - ???
-  * @return Index
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_delete_reverse.c
-*/
+/**
+ * @brief Return index of the first searched char
+ * @param s Pointer to the string.
+ * @param c Unsigned char whose index is searching.
+ * @return The result of search:
+ * @retval k Index of searching char.
+ * @retval -1 If char isn't in string or s is NULL pointer. 
+ * Or searching char is null-terminator.
+ * @note Have check for NULL pointer.
+ */
 int c_index_of_char(const char *s, unsigned char c) {
 
   if (s == NULL || c == '\0') {
@@ -518,14 +544,14 @@ int c_index_of_char(const char *s, unsigned char c) {
   return -1;
 }
 
-/*
-  * @brief Remove all duplicated chars in null-terminated string
-  * @param *s - pointer to the null-terminated string
-  * @return Pointed to the cleaned string. 
-  * NULL if pointer to the string is NULL
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_delete_duplicates.c
-*/
+/**
+ * @brief Remove all duplicated chars string
+ * @param s Pointer to the string
+ * @return The result of function:
+ * @retval s Pointer to the cleared from duplicates string.
+ * @retval NULL If pointer s is NULL.
+ * @note Have check for NULL pointer.
+ */
 char *c_delete_duplicates(char *s) {
 
   if (s == NULL) {
@@ -551,14 +577,15 @@ char *c_delete_duplicates(char *s) {
   return s;
 }
 
-/*
-  * @brief Check if a string is palindrom
-  * @param *s - pointer to the null-terminated string
-  * @return TRUE if string is palindrome. 
-  * FALSE if not palindrome or string pointer is NULL or string is empty
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_is_palindrom.c
-*/
+/**
+ * @brief Check if a string is palindrom
+ * @param s Pointer to the string.
+ * @return The result of check:
+ * @retval TRUE If string is palindrom.
+ * @retval FALSE If string isn't palindrom or pointer s is NULL.
+ * Or s is pointer to the empty string.
+ * @note Have check for NULL pointer.
+ */
 qboolean c_is_palindrom(const char *s) {
 
   if (s == NULL || c_is_empty_string(s)) {
@@ -585,14 +612,14 @@ qboolean c_is_palindrom(const char *s) {
   return TRUE;
 }
 
-/*
-  * @brief Return index of first unique char
-  * @param *s - pointer to the null-terminated string
-  * @return Index of first unique char.
-  * -1 if pointer to stirng is NULL
-  * @note Have check for NULL pointer.
-  * @example ./examples/c_first_unique_char.c
-*/
+/**
+ * @brief Return index of first unique char
+ * @param s Pointer to the string.
+ * @return The result of function:
+ * @retval k Index of first unique char.
+ * @retval -1 If pointer to stirng is NULL or string hasn't unique chars.
+ * @note Have check for NULL pointer.
+ */
 int c_first_unique_char(const char *s) {
 
   if (s == NULL) {
@@ -615,55 +642,71 @@ int c_first_unique_char(const char *s) {
   return -1;
 }
 
-/*
-  * @brief Checks if char is digit
-  * @param c - unsigned char 
-  * @return TRUE if char is digit. FALSE if not.
-  * @example ./examples/c_is_digit.c
-*/
+/**
+ * @brief Checks if char is digit
+ * @param c Unsigned char
+ * @return The result of function:
+ * @retval TRUE If char is digit.
+ * @retval FALSE If char isn't digit.
+ */
 qboolean c_is_digit(unsigned char c) { return (c >= '0' && c <= '9'); }
 
-/*
-  * @brief Checks if char is punctuation char
-  * @details Punctuation char is char in ASCII table 
-  * which start from 33 code, end with 126 code. And excluding codes of digits,
-  * upper and lower letters.
-  * @param c - unsigned char
-  * @return TRUE if "c" is punct char. FALSE if not.
-  * @example ./examples/c_is_punct_char.c
-*/
+/**
+ * @brief Checks if char is punctuation char
+ * @details Punctuation char is char in ASCII table
+ * which start from 33 code, end with 126 code. And excluding codes of digits,
+ * upper and lower letters.
+ * @param c - unsigned char
+ * @return TRUE if "c" is punct char. FALSE if not.
+ * @example ./examples/c_is_punct_char.c
+ */
+
+/**
+ * @brief Checks if char is punctuation char
+ * @param c Unsigned char
+ * @return The result of function:
+ * @retval TRUE If char is punctuation char.
+ * @retval FALSE If char isn't punctuation char.
+ * @note Punctuation char is char in ASCII table which start from
+ * 33 code, end with 126 code. And excluding codes of digits,
+ * upper and lower letters.
+ */
 qboolean c_is_punct_char(unsigned char c) {
   return ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') ||
           (c >= '[' && c <= '`') || (c >= '{' && c <= '~'));
 }
 
-/*
-  * @brief Checks if char is space char
-  * @param c - unsigned char
-  * @return TRUE if "c" is space char. FALSE if not.
-  * @example ./examples/c_is_space.c
-*/
+/**
+ * @brief Checks if char is char of space
+ * @param c Uunsigned char
+ * @return The result of function:
+ * @retval TRUE If char is space char.
+ * @retval FALSE If char isn't space char.
+ */
 qboolean c_is_space(unsigned char c) {
   return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' ||
          c == '\f';
 }
 
-/*
-  * @brief Checks if char is letter char
-  * @param c - unsigned char
-  * @return TRUE if "c" is letter char. FALSE if not.
-  * @example ./examples/c_is_letter.c
-*/
+/**
+ * @brief Checks if char is letter char
+ * @param c Unsigned char
+ * @return The result of function:
+ * @retval TRUE If char is letter.
+ * @retval FALSE If char isn't letter.
+ */
 qboolean c_is_letter(unsigned char c) {
   return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
 }
 
-/*
-  * @brief Removes spaces from the beginning and end of a string
-  * @details Spaces as classified by the currently installed C locale
-  * @param *s - pointer to the null-terminated string
-  * @example ./examples/c_is_space.c
-*/
+/**
+ * @brief Removes spaces from the beginning and end of a string
+ * @param s Pointer to the string
+ * @return The result of trim:
+ * @retval s Pointer to the trimmed string.
+ * @retval NULL If pointer s is NULL or s point to the empty string.
+ * @note Spaces as classified by the currently installed C locale
+ */
 char *c_trim(char *s) {
 
   if (s == NULL || c_is_empty_string(s)) {
@@ -698,6 +741,17 @@ char *c_trim(char *s) {
   return s;
 }
 
+/**
+ * @brief Finds the first occurrence of the null-terminated byte string
+ * pointed to by substr in the null-terminated byte string pointed to by s.
+ * The terminating null characters are not compared
+ * @param s Pointer to the string to examine
+ * @param substr Pointer to the string to search for.
+ * @return The result of function:
+ * @retval k Index of the first character of the found substring in s.
+ * @retval -1 If s or substr pointers is NULL 
+ * or pointers to the empty string.
+*/
 int c_strstr(const char *s, const char *substr) {
 
   if (s == NULL || substr == NULL) {
@@ -724,6 +778,15 @@ int c_strstr(const char *s, const char *substr) {
   return -1;
 }
 
+/**
+ * @brief Calculates the number of substrings in a string
+ * @param s Pointer to the string to examine
+ * @param substr Pointer to the string to search for.
+ * @return The result of function:
+ * @retval k Number of substrings in a string.
+ * @retval -1 If s or substr pointers is NULL
+ * or pointers to the empty string.
+*/
 int c_num_substr(const char *s, const char *substr) {
 
   if (s == NULL || substr == NULL) {
@@ -749,6 +812,16 @@ int c_num_substr(const char *s, const char *substr) {
   return count;
 }
 
+/**
+ * @brief Checks if strings are anagrams
+ * @param s1 Pointer to the first string.
+ * @param s2 Pointer to the second string.
+ * @return The result of function:
+ * @retval TRUE If strings are anagrams.
+ * @retval FALSE If string aren't anagrams. 
+ * Or s1 or s2 is NULL pointers.
+ * or pointers to the empty string.
+*/
 qboolean c_is_anagrams(const char *s1, const char *s2) {
 
   if (s1 == NULL || s2 == NULL) {
@@ -783,6 +856,11 @@ qboolean c_is_anagrams(const char *s1, const char *s2) {
   return TRUE;
 }
 
+/**
+ * @brief Interprets an integer value in a byte string pointed to by s
+ * @param s Pointer to the string to be interpreted.
+ * @return Integer value corresponding to the contents of s on success.
+*/
 int c_atoi(const char *s) {
 
   int res = 0;
@@ -801,6 +879,11 @@ int c_atoi(const char *s) {
   return is_negative ? -res : res;
 }
 
+/**
+ * @brief Interprets an integer value in a byte string pointed to by s
+ * @param s Pointer to the string to be interpreted.
+ * @return Integer value corresponding to the contents of s on success.
+*/
 int c_atoi_safe(const char *s) {
 
   if (s == NULL) {
@@ -810,7 +893,13 @@ int c_atoi_safe(const char *s) {
   return c_atoi(s);
 }
 
-// Required: s must have enough size for num
+/**
+ * @brief Converts an integer value to a string
+ * @param num Value to be converted to a string.
+ * @param s Pointer to the array of chars.
+ * @return s Pointer to the string s.
+ * @note Array s must have enough size for num
+*/
 char *c_itoa(int num, char *s) {
 
   qboolean is_negative = (num < 0);
