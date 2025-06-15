@@ -2,13 +2,21 @@
 #define C_STRING_H
 
 #include "../src/internal/_c_common.h"
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 void c_free_2d_array(char **array);
 
-int c_strlen(const char *s);
-int c_strcmp(const char *first, const char *second);
-int c_strcmp_safe(const char *first, const char *second);
-int c_remove_digits(char *s);
+size_t c_strlen(const char *s);
+int64_t c_strlen_safe(const char *s);
+
+int32_t c_strcmp(const char *first, const char *second);
+int32_t c_strcmp_safe(const char *first, const char *second);
+
+size_t c_remove_digits(char *s);
+int32_t c_remove_digits_safe(char *s);
+
 int c_first_unique_char(const char *s);
 int c_strstr(const char *s, const char *substr);
 int c_num_substr(const char *s, const char *substr);

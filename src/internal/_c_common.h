@@ -15,10 +15,6 @@ static const int UPPER_LETTER_END = 90;
 static const int TRUE = 1;
 static const int FALSE = 0;
 
-static const int SIZE_END_SYMBOL = 1;
-
 static const int DIFFERENCE_LETTERS_SIZE = 32;
-
-static const char END_SYMBOL = '\0';
 
 #endif // !_C_COMMON_H

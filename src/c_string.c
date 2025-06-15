@@ -1,7 +1,6 @@
 #include "../include/c_string.h" // better way to include?
 #include "internal/_c_common.h"
 #include "internal/_str_internal.h"
-#include <stdlib.h>
 
 void c_free_2d_array(char **array) {
 
@@ -16,17 +15,28 @@ void c_free_2d_array(char **array) {
   free(array);
 }
 
-int c_strlen(const char *s) {
+size_t c_strlen(const char *s) {
 
-  if (s == NULL) {
-    return -1;
-  }
-
-  int i = 0;
+  size_t i = 0;
   while (s[i] != '\0') {
     ++i;
   }
   return i;
+}
+
+int64_t c_strlen_safe(const char *s){
+
+  if(s == NULL){
+    return -1;
+  }
+
+  size_t len = c_strlen(s);
+
+  if(len > INT64_MAX){
+    return -2;
+  }
+
+  return (int64_t)len;
 }
 
 char *c_strcpy(char *dest, const char *from) {
@@ -128,7 +138,7 @@ char *c_str_to_upper(char *s) {
   return s;
 }
 
-int c_strcmp(const char *first, const char *second) {
+int32_t c_strcmp(const char *first, const char *second) {
   while (*first && (*first == *second)) {
     ++first;
     ++second;
@@ -435,12 +445,8 @@ char *c_change_char_all(char *s, unsigned char from_char,
   return s;
 }
 
-int c_remove_digits(char *s) {
-
-  if (s == NULL) {
-    return -1;
-  }
-
+size_t c_remove_digits(char *s) {
+  
   int num_digits_removed = 0;
 
   int k = 0;
@@ -454,6 +460,15 @@ int c_remove_digits(char *s) {
   s[k] = '\0';
 
   return num_digits_removed;
+}
+
+int32_t c_remove_digits_safe(char *s) {
+
+  if (s == NULL) {
+    return -1;
+  }
+
+  return c_remove_digits(s);
 }
 
 int c_count_words_delim(const char *s, unsigned char delim) {
